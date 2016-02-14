@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>String Format no JavaScript</title>
+
+            <link href="http://www.codeforcloud.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.codeforcloud.info/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.codeforcloud.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="prototype" />
+        <meta name="tags" contents="javascript" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.codeforcloud.info/2014/11/20/String-Format-No-Javascript/">
+	<meta property="og:title" content="String Format no JavaScript">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.codeforcloud.info/">
+	<meta property="article:published_time" content="2014-11-20 00:00:00-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.codeforcloud.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.codeforcloud.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>String Format no JavaScript</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.codeforcloud.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Qui 20 novembro 2014
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Nessa minha recente aproximação com o <strong>JavaScript</strong>, a primeira coisa que senti falta foi de um método do tipo <em>Format</em> para trabalhar com strings.</p>
+
+
+<h3>Decepção</h3>
+<p>Confesso que foi uma triste surpresa saber que nativamente o JavaScript não possui um método para essa finalidade. Nesse momento me imaginei fazendo esse tipo de concatenação:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">texto</span> <span class="o">=</span> <span class="s1">&#39;Olá &#39;</span> <span class="o">+</span> <span class="nx">nome</span> <span class="o">+</span> <span class="s1">&#39;, seja bem vindo ao site &#39;</span> <span class="o">+</span> <span class="nx">site</span> <span class="o">+</span> <span class="s1">&#39;\nVocê é realmente &#39;</span> <span class="o">+</span> <span class="nx">nome</span> <span class="o">+</span> <span class="s1">&#39;?&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<h3>Esperança</h3>
+<p>Da mesma forma que fui surpreendido negativamente, também tive uma ótima surpresa ao descobrir que o JavaScript permite <em>tunar</em> seus objetos, incluido novas propriedades e novos métodos, graças a propriedade <strong>prototype</strong>. Com isso o céu é o limite.</p>
+<h3>Solução</h3>
+<p>O seguinte código cria um método chamado <strong>format</strong> no prototype dos objetos <strong>Strings</strong>, tornando esse método disponível para qualquer string do código:</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">format</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">format</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">formatted</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">regexp</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;\\{&#39;</span><span class="o">+</span><span class="nx">i</span><span class="o">+</span><span class="s1">&#39;\\}&#39;</span><span class="p">,</span> <span class="s1">&#39;gi&#39;</span><span class="p">);</span>
+            <span class="nx">formatted</span> <span class="o">=</span> <span class="nx">formatted</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">regexp</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">formatted</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Ao colocar esse código no ~~head do html na tag script~~ início do seu arquivo <em>JS</em>, você será capaz de montar o texto do primeiro exemplo da seguinte forma:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">texto</span> <span class="o">=</span> <span class="s1">&#39;Olá {0}, seja bem vindo ao site {1}\nVocê é realmente {0}?&#39;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">nome</span><span class="p">,</span> <span class="nx">site</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Com certeza mais elegante e mais aderente a outras linguagens, como por exemplo o Python.</p>
+<h3>Explicação</h3>
+<p>Neste código mágico primeiro verificamos se a propriedade <em>format</em> do prototype de String está nula, caso esteja, atribuimos a ela um método que basicamente recupera o valor do objeto com o <strong>this</strong> (no caso, o conteúdo da string) e executa um for em cada argumento passado para esse método, esse <em>for</em> substitui todas as ocorrências de <em>{N}</em>, pelo valor do argumento em seu determinado índice. Por exemplo, o resultado deste código:</p>
+<div class="highlight"><pre><span></span><span class="s1">&#39;Seja bem vindo {1}, {0}.&#39;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;Diego&#39;</span><span class="p">,</span> <span class="s1">&#39;Garcia&#39;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Será:</p>
+<div class="highlight"><pre><span></span>Seja bem vindo Garcia, Diego.
+</pre></div>
+
+
+<h3>Possibilidade</h3>
+<p>As possibilidades com o uso do prototype são infinitas, comparando a outras linguagens, o prototype nos permite criar <strong>class helpers</strong> em JavaScript, o que por si só, já é incrivel.</p>
+<h4>Referências</h4>
+<p><a href="http://www.w3schools.com/jsref/jsref_prototype_string.asp">Prototype String - W3Schools</a><br />
+<a href="http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format">JavaScript equivalent to Printf -  StackOverFlow</a><br />
+<a href="http://www.codeproject.com/Tips/59262/JavaScript-date-helper-class">Date Helper - CodeProject</a><br /></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.codeforcloud.info/tag/prototype.html">prototype</a>, <a href="http://www.codeforcloud.info/tag/javascript.html">javascript</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2014/11/20/String-Format-No-Javascript/';
+                var disqus_url = 'http://www.codeforcloud.info/2014/11/20/String-Format-No-Javascript/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.codeforcloud.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.codeforcloud.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.codeforcloud.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

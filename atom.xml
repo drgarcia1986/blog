@@ -1,0 +1,994 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.codeforcloud.info/" rel="alternate"></link><link href="http://www.codeforcloud.info/atom.xml" rel="self"></link><id>http://www.codeforcloud.info/</id><updated>2015-05-01T11:05:00-03:00</updated><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://www.codeforcloud.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2015-05-01:2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
+Veremos nesse post uma &lt;em&gt;receita de bolo&lt;/em&gt; de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.&lt;/p&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Esse post é a continuação do post &lt;a href="/docker-por-onde-comecar.html"&gt;Docker, por onde começar&lt;/a&gt;, recomendo que faça a leitura do post inicial (caso ainda não tenha feito) antes de prosseguir.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;A aplicação de exemplo&lt;/h3&gt;
+&lt;p&gt;A idéia aqui não é criar uma aplicação complexa e perder tempo explicando como essa aplicação funciona, mas sim, criar uma estrutura que pode servir de molde para outras aplicações que irão rodar em containers (ou não).
+Sendo assim, iremos criar a estrutura básica de uma aplicação que poderá ser usada como base para qualquer outra aplicação, independente do Framework, desde que tenha suporte a WSGI.&lt;/p&gt;
+&lt;h4&gt;O arquivo RUN.py&lt;/h4&gt;
+&lt;p&gt;O que vai realmente importar para o nosso exemplo é o arquivo &lt;code&gt;run.py&lt;/code&gt;, nele iremos carregar e disponibilizar o &lt;code&gt;wsgi&lt;/code&gt; do nosso app.
+Basicamente esse será o arquivo que deverá ser chamado quando quisermos colocar nossa aplicação no ar.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;my_app&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O arquivo &lt;code&gt;run.py&lt;/code&gt; é genérico, ou seja, funciona tanto para aplicações flask, bottle, falcon, etc.
+Por exemplo, se estivessemos criando uma aplicação Flask, bastaria ter o seguinte código no arquivo &lt;code&gt;my_app.py&lt;/code&gt; (ou &lt;code&gt;my_app/__init__.py&lt;/code&gt;).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Hello from docker!&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Já uma aplicação bottle, poderia ser dessa maneira.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;bottle&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;bottle&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;route&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Hello from docker!&amp;#39;&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;bottle&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_app&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E assim por diante.
+Como falei anteriormente, a idéia é não se aprofundar na aplicação, mas sim na arquitetura.&lt;/p&gt;
+&lt;h4&gt;Gunicorn&lt;/h4&gt;
+&lt;p&gt;O &lt;a href="http://gunicorn.org/"&gt;Gunicorn&lt;/a&gt; é um servidor HTTP dedicado que serve aplicações WSGI, como é o caso de aplicações desenvolvidas com &lt;em&gt;Flask&lt;/em&gt;, &lt;em&gt;Django&lt;/em&gt;, &lt;em&gt;Bootle&lt;/em&gt;, etc.
+Com o gunicorn é possível por exemplo executar uma aplicação wsgi com diversos &lt;code&gt;workers&lt;/code&gt; fazendo assim com que as requisições sejam divididas entre eles e como consequência, tornar a aplicação &lt;em&gt;mais robusta&lt;/em&gt;.
+Utilizaremos o Gunicorn para controlar a instancia de nossa aplicação, com a seguinte &lt;em&gt;command line&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gunicorn -b 0.0.0.0:8000 -w &lt;span class="m"&gt;4&lt;/span&gt; run:app
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com o comando acima, estamos liberando o acesso externo para a aplicação, estamos rodando a aplicação com 4 &lt;code&gt;workers&lt;/code&gt; e finalmente estamos definindo que o objeto WSGI que deverá ser executado é o objeto &lt;code&gt;app&lt;/code&gt; que se encontra no scritp &lt;code&gt;run.py&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Outra opção ao Gunicorn é o &lt;a href="https://uwsgi-docs.readthedocs.org/en/latest/"&gt;uWSGI&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;Supervisor&lt;/h4&gt;
+&lt;p&gt;O &lt;a href="http://supervisord.org/"&gt;Supervisor&lt;/a&gt; é um sistema de que monitora e controla processos unix.
+O Supervisor garante que caso nossa aplicação finalize devido a alguma falha, ele se encarregará de subir novamente o processo, assim como subir o processo da aplicação caso o sistema operacional seja reiniciado.
+Utilizaremos o Supervisor para controlar nosso processo do &lt;em&gt;Gunicorn&lt;/em&gt;, com as seguintes configurações.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[supervisord]&lt;/span&gt;
+&lt;span class="na"&gt;nodaemon&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;true&lt;/span&gt;
+
+&lt;span class="k"&gt;[program:my_app]&lt;/span&gt;
+&lt;span class="na"&gt;command&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;gunicorn -b 0.0.0.0:8000 -w 4 run:app&lt;/span&gt;
+&lt;span class="na"&gt;directory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;/my_app/&lt;/span&gt;
+&lt;span class="na"&gt;autostart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;true&lt;/span&gt;
+&lt;span class="na"&gt;autorestart&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;true&lt;/span&gt;
+&lt;span class="na"&gt;stdout_logfile&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;/my_app/logs/supervisor.log&lt;/span&gt;
+&lt;span class="na"&gt;redirect_stderr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;true&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Basicamente estamos definindo a &lt;em&gt;command line&lt;/em&gt; de nossa aplicação e redirecionando a saída padrão e a saída de erro para um arquivo de log.&lt;/p&gt;
+&lt;h3&gt;Conteinerizando a aplicação&lt;/h3&gt;
+&lt;p&gt;Finalmente iremos colocar tudo isso dentro de uma imagem do Docker e executar como um container.
+Veja um exemplo de como a estrutura do projeto pode ficar.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;├── my_app
+│   └── __init__.py
+├── requirements.txt
+├── run.py
+└── supervisord.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Não esqueça de criar o &lt;code&gt;requirements.txt&lt;/code&gt; com as dependências do seu projeto :)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Para a mágica acontecer, iremos criar nosso &lt;code&gt;Dockerfile&lt;/code&gt; na raiz do diretório do projeto.&lt;/p&gt;
+&lt;h4&gt;Dockerfile&lt;/h4&gt;
+&lt;p&gt;O intuito do Dockerfile será criar uma imagem do Docker com toda a stack que iremos utilizar no projeto, o código fonte da aplicação e uma configuração básica de execução, para que seja possível fácilmente executar a aplicação a partir de um container dessa imagem.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="s"&gt; python:2.7&lt;/span&gt;
+
+&lt;span class="k"&gt;MAINTAINER&lt;/span&gt;&lt;span class="s"&gt; Diego Garcia &amp;lt;drgarcia1986@gmail.com&amp;gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt;&lt;span class="s"&gt; . /my_app&lt;/span&gt;
+&lt;span class="k"&gt;ADD&lt;/span&gt;&lt;span class="s"&gt; supervisord.conf /etc/supervisor/conf.d/my_app.conf&lt;/span&gt;
+
+&lt;span class="k"&gt;WORKDIR&lt;/span&gt;&lt;span class="s"&gt; /my_app&lt;/span&gt;
+
+&lt;span class="k"&gt;RUN&lt;/span&gt; pip install supervisor gunicorn
+&lt;span class="k"&gt;RUN&lt;/span&gt; pip install -r requirements.txt
+
+&lt;span class="k"&gt;RUN&lt;/span&gt; mkdir logs
+&lt;span class="k"&gt;RUN&lt;/span&gt; touch logs/supervisor.log
+
+&lt;span class="k"&gt;EXPOSE&lt;/span&gt;&lt;span class="s"&gt; 8000&lt;/span&gt;
+
+&lt;span class="k"&gt;CMD&lt;/span&gt;&lt;span class="s"&gt; [&amp;quot;supervisord&amp;quot;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Já existem as imagens do Python no repostórios padrão do &lt;a href="https://hub.docker.com/"&gt;DockerHub&lt;/a&gt; :)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Pronto, já temos tudo que precisamos para containerizar nossa aplicação, sendo assim, &lt;code&gt;It's party time!&lt;/code&gt;.&lt;/p&gt;
+&lt;h3&gt;Executando a aplicação via container&lt;/h3&gt;
+&lt;h4&gt;Criar&lt;/h4&gt;
+&lt;p&gt;Estrutura pronta e Dockerfile pronto, agora é a vez de criar a imagem docker da nossa aplicação, para isso, usaremos o comando &lt;code&gt;docker build&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker build -t my_app .
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Executar&lt;/h4&gt;
+&lt;p&gt;Após o processo de criação da imagem, basta usar o comando &lt;code&gt;docker run&lt;/code&gt; para executar o container.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker run -d -p 8000:8000 my_app
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;A opção &lt;code&gt;-d&lt;/code&gt; está dizendo ao comando que queremos executar o container em background, enquanto que a opção &lt;code&gt;-p&lt;/code&gt; faz o mapeamento da porta 8000 do container com a porta 8000 local.
+Você pode dar um nome para o container, para isso basta utilizar a opção &lt;code&gt;--name&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Com isso nossa aplicação finalmente está no ar em &lt;code&gt;127.0.0.1:8000&lt;/code&gt;.&lt;/p&gt;
+&lt;h4&gt;Listar&lt;/h4&gt;
+&lt;p&gt;Para listar o containers que estão em execução, utilize o comando &lt;code&gt;docker ps&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker ps
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Parar&lt;/h4&gt;
+&lt;p&gt;E por fim, para parar a execução de um container, existe o comando &lt;code&gt;docker stop&lt;/code&gt; que espera como parametro o &lt;em&gt;ID&lt;/em&gt; (que pode ser obtido através do comando &lt;code&gt;docker ps&lt;/code&gt;) ou nome do container.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker stop 80febff98649
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Conclusão&lt;/h3&gt;
+&lt;p&gt;Vimos de uma forma simples e prática como criar um flow de conteinerização de aplicações python wsgi que pode ser reaproveitado sempre que necessário afim de agilizar bastante o processo de configuração e execução da aplicação.
+Em um próximo post veremos um pouco sobre o &lt;strong&gt;docker compose&lt;/strong&gt; e como fazer o deploy de nossos containers na nuvem.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Docker, por onde começar</title><link href="http://www.codeforcloud.info/2015/02/15/docker-por-onde-comecar/" rel="alternate"></link><updated>2015-02-15T10:32:26-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2015-02-15:2015/02/15/docker-por-onde-comecar/</id><summary type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
+Arrisco dizer que, nos próximos anos, se o Docker não acabar com a virtualização, essa só irá existir em conjunto com o Docker.
+O projeto ainda está no começo mas já existem pessoas utilizando em produção.
+Entenda um pouco sobre o que é o Docker e como você pode começar a utilizar em seu dia a dia.&lt;/p&gt;
+
+
+&lt;h3&gt;Docker&lt;/h3&gt;
+&lt;p&gt;O Docker é uma plataforma open source (escrita em &lt;strong&gt;Go&lt;/strong&gt;) que trabalha com o conceito de &lt;em&gt;containers&lt;/em&gt;.
+A ideia do projeto é simples, se você precisa de uma stack com &lt;strong&gt;ubuntu&lt;/strong&gt;, &lt;strong&gt;python&lt;/strong&gt;, &lt;strong&gt;nginx&lt;/strong&gt; e &lt;strong&gt;supervisor&lt;/strong&gt; por exemplo, você pode colocar tudo isso em um container e deixar esse container pronto para &lt;em&gt;subir&lt;/em&gt; a qualquer hora, sem que seja necessário instalar esses aplicativos novamente.
+Pensando dessa forma, o conceito pode se confundir com o conceito de virtualização, porém, o funcionamento é muito diferente.
+Enquanto que em uma máquina virtual, possuimos um S.O. completo e isolado, no Docker, aproveitamos o kernel do S.O. hospedeiro, fazendo com isso com que o processo seja muito mais rápido mas sem perder o isolamento dos arquivos e dos processos.&lt;/p&gt;
+&lt;p align="center"&gt;
+    &lt;img src="/images/docker_vs_vm.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Para que isso seja possível, o docker utiliza o &lt;a href="https://linuxcontainers.org/"&gt;Linux Containers&lt;/a&gt; para ter acesso aos recursos do S.O. e também utiliza o &lt;a href="http://aufs.sourceforge.net/"&gt;AuFS&lt;/a&gt; para controlar o sistema de arquivos.&lt;/p&gt;
+&lt;h3&gt;Instalado o Docker&lt;/h3&gt;
+&lt;p&gt;Chega de conversa fiada, vamos para a prática, afinal, &lt;em&gt;talk is cheap&lt;/em&gt;.
+Para instalar o Docker no ubuntu, basta instalar o pacote &lt;code&gt;docker.io&lt;/code&gt; através do &lt;code&gt;apt-get&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo apt-get install docker.io
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para confirmar se a instalação foi bem sucedida, utilize o comando &lt;code&gt;docker version&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker version
+Client version: 1.0.1
+Client API version: 1.12
+Go version &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: go1.2.1
+Git commit &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: 990021a
+Server version: 1.0.1
+Server API version: 1.12
+Go version &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: go1.2.1
+Git commit &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: 990021a
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Para utilizar o Docker é necessário acesso de root.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Criando uma imagem de um container&lt;/h3&gt;
+&lt;p&gt;Agora iremos criar uma imagem de um container do docker para aplicações &lt;code&gt;WSGI&lt;/code&gt; com Python (&lt;em&gt;python2.7&lt;/em&gt;, &lt;em&gt;pip&lt;/em&gt; e &lt;em&gt;virtualenv&lt;/em&gt;), Nginx, Gunicorn e Supervisor instalados.
+Esse container será baseado na imagem do &lt;strong&gt;Ubuntu&lt;/strong&gt;.&lt;/p&gt;
+&lt;h4&gt;Ubuntu&lt;/h4&gt;
+&lt;p&gt;As imagens dos containers do docker são armazenadas no &lt;strong&gt;Docker Hub&lt;/strong&gt; e podem ser baixadas através do comando &lt;code&gt;docker pull&lt;/code&gt; (veremos mais sobre o &lt;em&gt;docker hub&lt;/em&gt;).
+Para baixar a imagem do ubuntu, basta executar o comando a seguir.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker pull ubuntu:14.04
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;No comando acima, realizamos o download da imagem do ubuntu na &lt;em&gt;tag&lt;/em&gt; 14.04.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Para testar se o download da imagem foi bem sucedido, iremos executar uma instrução dentro do container do ubuntu, através do comando &lt;code&gt;docker run&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker run ubuntu:14.04 cat /etc/lsb-release
+&lt;span class="nv"&gt;DISTRIB_ID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Ubuntu
+&lt;span class="nv"&gt;DISTRIB_RELEASE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;14.04
+&lt;span class="nv"&gt;DISTRIB_CODENAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;trusty
+&lt;span class="nv"&gt;DISTRIB_DESCRIPTION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Ubuntu 14.04.1 LTS&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Essa instrução irá executar o comando &lt;code&gt;cat /etc/lsb-release&lt;/code&gt; dentro do container do ubuntu.
+Se você conseguiu executar esse comando com sucesso, parabéns, você já está utilizando o Docker :).&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Se você tiver algum problema para executar o comando &lt;code&gt;docker pull&lt;/code&gt; adicione ao final do arquivo &lt;code&gt;/etc/resolv.conf&lt;/code&gt; a linha &lt;code&gt;nameserver 8.8.8.8&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;Fluxo de criação do container&lt;/h4&gt;
+&lt;p&gt;Antes de prosseguirmos é importante entender o fluxo de criação dos containers.
+O Docker é muito semelhante ao &lt;strong&gt;GIT&lt;/strong&gt; em termos de fluxo de trabalho.
+Por padrão o docker &lt;strong&gt;não&lt;/strong&gt; efetiva os comandos que são executados em um container.
+Para que as alterações sejam efetivadas é necessário realizar um &lt;code&gt;commit&lt;/code&gt; dessas alterações.
+Isso é excelente para realizar experimentos, pois, imagine que você pode acessar um container, instalar um aplicativo qualquer, realizar diversos teste e sair do container, desta forma as alterações feitas somente serão afetivadas se o comando &lt;code&gt;docker commit&lt;/code&gt; for executado.&lt;/p&gt;
+&lt;p&gt;Veremos isso na prática ao instalar nossa stack em nosso container.&lt;/p&gt;
+&lt;h4&gt;Criando a Stack&lt;/h4&gt;
+&lt;p&gt;Agora que já temos a imagem base para criar nosso container, podemos dar sequência.
+Como iremos instalar diversos aplicativos, faremos do modo mais simples, instalaremos pelo bash do container.
+Para iniciar o bash de um container, execute o comando &lt;code&gt;docker run -t -i IMAGEM /bin/bash&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker run -t -i ubuntu:14.04 /bin/bash
+root@4e0ba33ccad5:/#
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Assim será iniciado o bash do container e neste ponto não tem muito segredo, basta instalar os aplicativos.
+Começaremos pelos aplicativos que são instalados através do &lt;code&gt;apt-get&lt;/code&gt; (&lt;em&gt;python&lt;/em&gt;, &lt;em&gt;pip&lt;/em&gt; e &lt;em&gt;nginx&lt;/em&gt;).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@4e0ba33ccad5:/# apt-get update
+root@4e0ba33ccad5:/# apt-get install -y python python-pip nginx
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com o python e o pip instalado, agora podemos instalar o &lt;em&gt;virtualenv&lt;/em&gt;, o &lt;em&gt;gunicorn&lt;/em&gt; e o &lt;em&gt;supervisor&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@4e0ba33ccad5:/# pip install virtualenv supervisor gunicorn
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para sair do container use o comando &lt;code&gt;exit&lt;/code&gt;.&lt;/p&gt;
+&lt;h4&gt;Realizando commit da alterações&lt;/h4&gt;
+&lt;p&gt;Para que essa alterações sejam efetivadas em nosso container (gerando assim uma nova imagem), devemos executar &lt;em&gt;commit&lt;/em&gt;.
+O comando &lt;code&gt;docker commit&lt;/code&gt; possui a seguinte sintaxe.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;docker commit &lt;span class="o"&gt;[&lt;/span&gt;OPÇÕES&lt;span class="o"&gt;]&lt;/span&gt; CONTAINER &lt;span class="o"&gt;[&lt;/span&gt;REPOSITORIO&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Porém, sabemos que o nome da imagem é &lt;code&gt;ubuntu:14.04&lt;/code&gt; mas não sabemos a identificação do container que criamos.
+Para saber qual é a identificação do ultimo container criado, execute o comando &lt;code&gt;docker ps -l&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker ps -l
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+4e0ba33ccad5        ubuntu:14.04        /bin/bash           &lt;span class="m"&gt;22&lt;/span&gt; minutes ago      Exited &lt;span class="o"&gt;(&lt;/span&gt;0&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;11&lt;/span&gt; minutes ago                       focused_mayer
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Segundo o resultado do comando &lt;code&gt;docker ps&lt;/code&gt; o ID do nosso container é &lt;code&gt;4e0b&lt;/code&gt; (só precisaremos dos 4 primeiros digitos).
+Sendo assim, para finalmente realizar o commit, utilizaremos o comando a seguir.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker commit 4e0b wsgi-stack
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com o comando acima, estamos criando uma nova imagem chamada &lt;code&gt;wsgi-stack&lt;/code&gt; com o conteúdo das alterações que realizamos anteriormente.
+Para conferir se tudo funcinou corretamente, vamos executar o comando &lt;code&gt;python --version&lt;/code&gt; em nosso novo container.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker run wsgi-stack python --version
+Python 2.7.6
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com isso nossa imagem &lt;strong&gt;wsgi-stack&lt;/strong&gt; já está concluída e pronta para o uso, mas antes de efetivamente colocarmos uma aplicações para rodar nela, veremos uma forma mais fácil de criar imagens do docker, através do &lt;strong&gt;Dockerfile&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;Dockerfile&lt;/h3&gt;
+&lt;p&gt;Um &lt;code&gt;Dockerfile&lt;/code&gt; é um script que automatiza a criação de imagens do docker.
+Podemos simplificar a criação da imagem &lt;code&gt;wsgi-stack&lt;/code&gt; que criamos anteriormente com o seguinte &lt;code&gt;Dockerfile&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="s"&gt; ubuntu:14.04&lt;/span&gt;
+
+&lt;span class="k"&gt;MAINTAINER&lt;/span&gt;&lt;span class="s"&gt; Diego Garcia &amp;lt;drgarcia1986@gmal.com&amp;gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;RUN&lt;/span&gt; apt-get update
+&lt;span class="k"&gt;RUN&lt;/span&gt; apt-get install -y python python-pip nginx
+&lt;span class="k"&gt;RUN&lt;/span&gt; pip install virtualenv gunicorn supervisor
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para criar a imagem baseado no Dockerfile, basta executar o comando &lt;code&gt;docker build&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker build -t wsgi-stack .
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;O &lt;code&gt;.&lt;/code&gt; (ponto) indica que o &lt;code&gt;Dockerfile&lt;/code&gt; está no mesmo diretório onde o comando &lt;code&gt;docker build&lt;/code&gt; está sendo executado.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Basicamente o comando acima cria uma imagem chamada &lt;code&gt;wsgi-stack&lt;/code&gt; baseada no &lt;code&gt;Dockerfile&lt;/code&gt; que está presente no mesmo diretório.&lt;/p&gt;
+&lt;h4&gt;Comandos do Dockerfile&lt;/h4&gt;
+&lt;p&gt;O Dockerfile é uma ferramenta muito poderosa para a criação de imagens do docker.
+Veja alguns comandos que podem ser utilizados no Dockerfile.&lt;/p&gt;
+&lt;h5&gt;FROM&lt;/h5&gt;
+&lt;p&gt;Primeira instrução, define a imagem base.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="s"&gt; ubuntu14:04&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;MAINTAINER&lt;/h5&gt;
+&lt;p&gt;Especifica o autor da imagem.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;MAINTAINER&lt;/span&gt;&lt;span class="s"&gt; Foo foo@bar.com&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;RUN&lt;/h5&gt;
+&lt;p&gt;Equivalente ao comando &lt;code&gt;docker run&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;RUN&lt;/span&gt; apt-get install python
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;ENV&lt;/h5&gt;
+&lt;p&gt;Define uma variável de ambiente.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;ENV&lt;/span&gt;&lt;span class="s"&gt; PORT=8000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;EXPOSE&lt;/h5&gt;
+&lt;p&gt;Expõe portas.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;EXPOSE&lt;/span&gt;&lt;span class="s"&gt; 8000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;ADD&lt;/h5&gt;
+&lt;p&gt;Copia arquivos do host hospedeiro para dentro da imagem.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;ADD&lt;/span&gt;&lt;span class="s"&gt; foo.txt /bar/foo.txt&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;ENTRYPOINT&lt;/h5&gt;
+&lt;p&gt;Permite que a imagem seja executada como uma aplicativo (a partir da linha de comando especificada).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;ENTRYPOINT&lt;/span&gt;&lt;span class="s"&gt; [&amp;quot;python&amp;quot;, &amp;quot;app.py&amp;quot;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h5&gt;CMD&lt;/h5&gt;
+&lt;p&gt;Comando que será executado quando a execução do container for acionada.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;CMD&lt;/span&gt;&lt;span class="s"&gt; [&amp;quot;supervisord&amp;quot;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;DockerHub&lt;/h3&gt;
+&lt;p&gt;O DockerHub é uma espécie de &lt;em&gt;GitHub&lt;/em&gt; do Docker.
+Nele você pode criar uma conta e armazenar suas imagens do Docker, assim como usufluir das imagens de outros usuários.
+Em nosso exemplo, utilizamos a imagem do &lt;em&gt;ubuntu&lt;/em&gt; que está armazenada no DockerHub, através do comando &lt;code&gt;docker pull ubuntu&lt;/code&gt; e através do &lt;code&gt;FROM ubuntu&lt;/code&gt; do Dockerfile.
+Assim como no GitHub, o endereço das imagens é sempre &lt;code&gt;ususário/imagem&lt;/code&gt; com exceção das imagens padrão (como é o caso da imagem do ubuntu).&lt;/p&gt;
+&lt;h4&gt;Enviando uma imagem para o Docker Hub&lt;/h4&gt;
+&lt;p&gt;Para enviarmos nossa imagem &lt;code&gt;wsgi-stack&lt;/code&gt; para o DockerHub, primeiro é necessario &lt;a href="https://hub.docker.com/account/signup/"&gt;criar uma conta&lt;/a&gt; no serviço e depois fazer &lt;em&gt;login&lt;/em&gt; no aplicativo do Docker.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker login
+Username: drgarcia1986
+Password:
+Email: drgarcia1986@gmail.com
+Login Succeeded
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora para enviar a imagem para o DockerHub, basta utilizar o comando &lt;code&gt;docker push [IMAGEM]&lt;/code&gt;, porém, o nome da imagem deve serguir o padrão &lt;code&gt;user/image&lt;/code&gt; e nossa imagem está com o nome de &lt;code&gt;wsgi-stack&lt;/code&gt;, para resolver essa questão, podemos criar uma &lt;code&gt;tag&lt;/code&gt; da imagem com o nome no padrão esperado pelo Docker Hub.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker tag wsgi-stack drgarcia1986/wsgi-stack
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E finalmente enviar nossa imagem para o DockerHub.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine~$ sudo docker push drgarcia1986/wsgi-stack
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Pronto, agora sempre que for preciso um docker com &lt;em&gt;python2.7&lt;/em&gt;, &lt;em&gt;pip&lt;/em&gt;, &lt;em&gt;virtualenv&lt;/em&gt;, &lt;em&gt;nginx&lt;/em&gt;, &lt;em&gt;supervisor&lt;/em&gt; e &lt;em&gt;gunicorn&lt;/em&gt;, basta fazer um pull da imagem &lt;em&gt;drgarcia1986/wsgi-stack&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine~$ sudo docker pull drgarcia1986/wsgi-stack
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Em uma segunda parte desse artigo veremos como executar uma aplicação web dentro de um conteiner e como automatizar ainda mais a criação de imagens do Docker através do ~Fig~ &lt;strong&gt;docker compose&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Testes de carga com o Locust</title><link href="http://www.codeforcloud.info/2015/01/10/testes-de-carga-com-o-locust/" rel="alternate"></link><updated>2015-01-10T18:45:15-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2015-01-10:2015/01/10/testes-de-carga-com-o-locust/</id><summary type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
+
+
+&lt;h2&gt;Locust&lt;/h2&gt;
+&lt;p&gt;O Locust é uma ferramenta open source escrita em python para testes de carga em aplicações web (independente da técnologia). A principal caracteristica do Locust é a forma como são escritos os testes, simples códigos python. Com poucas linhas de código é possível escrever testes de carga que vão realmente colocar sua aplicação em um campo de batalha.&lt;/p&gt;
+&lt;h3&gt;Instalação&lt;/h3&gt;
+&lt;p&gt;Para quem usa Python a facilidade de uso já começa na instalação, basta utilizar o comando &lt;code&gt;pip install locustio&lt;/code&gt; e a instalação está feita.
+Para instalar o Locust em um ambiente unix com &lt;em&gt;virtualenv&lt;/em&gt;, basta criar o virtualenv:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/locust$ virtualenv venv
+New python executable in venv/bin/python
+Installing setuptools, pip...done.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ativar o virtualenv&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/locust$ &lt;span class="nb"&gt;source&lt;/span&gt; venv/bin/activate
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E instalar o Locust&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ pip install locustio
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para confirmar se o Locust está instalado, use o comando &lt;code&gt;locust&lt;/code&gt; com a opção &lt;code&gt;-V&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ locust -V
+&lt;span class="o"&gt;[&lt;/span&gt;2015-01-08 22:59:28,251&lt;span class="o"&gt;]&lt;/span&gt; machine/INFO/stdout: Locust 0.7.2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Não se preocupe se aparecerem mensagens de &lt;em&gt;warning&lt;/em&gt; alertando sobre a ausência do &lt;em&gt;zmq&lt;/em&gt;, a ausência desse pacote não afeta nossa demostração.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Aplicação para testes&lt;/h3&gt;
+&lt;p&gt;Para demonstrar a utilização do Locust, vamos criar um simples webservice que realiza conversões de tempo (por ex. &lt;em&gt;hora para segundo&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;Na criação desse webservice, utilizaremos o &lt;strong&gt;Flask&lt;/strong&gt; por ser um dos frameworks mais simples e utilizados atualmente. Como o Locust utiliza o Flask internamente, ele já está instalado em nosso virtualenv.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Como o foco do post não é falar do &lt;em&gt;Flask&lt;/em&gt;, não entrarei em detalhes do framework, se você não está familiarizado com ele, recomendo a leitura deste &lt;a href="pythonclub.com.br/what-the-flask-pt-1-introducao-ao-desenvolvimento-web-com-python"&gt;excelente artigo&lt;/a&gt; do Bruno Rocha.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Crie um arquivo chamado &lt;strong&gt;converter.py&lt;/strong&gt; com o seguinte código:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;
+
+
+&lt;span class="n"&gt;converter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;DH&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;     &lt;span class="c1"&gt;# day to hours&lt;/span&gt;
+             &lt;span class="s1"&gt;&amp;#39;HM&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;     &lt;span class="c1"&gt;# hour to minutes&lt;/span&gt;
+             &lt;span class="s1"&gt;&amp;#39;MS&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;     &lt;span class="c1"&gt;# minute to seconds&lt;/span&gt;
+             &lt;span class="s1"&gt;&amp;#39;DM&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;1440&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="c1"&gt;# day to minutes&lt;/span&gt;
+             &lt;span class="s1"&gt;&amp;#39;DS&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;86400&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="c1"&gt;# day to seconds&lt;/span&gt;
+             &lt;span class="s1"&gt;&amp;#39;HS&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;3600&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;   &lt;span class="c1"&gt;# hour to seconds&lt;/span&gt;
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;lt;rule&amp;gt;/&amp;lt;int:value&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;conversion&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rule&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;converter&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;rule&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()](&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;KeyError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Rule for conversion not found&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;404&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para testar essa aplicação basta inicia-la&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ python converter.py
+ * Running on http://127.0.0.1:5000/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E realizar uma requisição&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl http://127.0.0.1:5000/hm/3
+180
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Criando as &lt;em&gt;Locust Tasks&lt;/em&gt;&lt;/h3&gt;
+&lt;p&gt;Agora que já temos o que testar, vamos finalmente escrever nosso script Locust. Como eu disse anteriormente, os scripts Locust são scripts python, sem nenhum segredo.&lt;/p&gt;
+&lt;p&gt;Os testes são baseados em &lt;strong&gt;Tasks&lt;/strong&gt; que são criadas em uma classe que herda da classe &lt;code&gt;TaskSet&lt;/code&gt; do Locust. Na classe &lt;em&gt;TaskSet&lt;/em&gt; o que determina se um método é uma &lt;em&gt;task&lt;/em&gt; é a presença do decorator &lt;code&gt;@task&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;O Locust trabalha com o conceito de requests baseados em clientes com caracteristicas especificas. O principal atributo das classes de cliente &lt;em&gt;Locust&lt;/em&gt; é o atributo &lt;code&gt;task_set&lt;/code&gt;, que recebe a classe onde as tasks de teste estão especificadas. Como o foco é o teste de aplicações web, o protocolo em questão é o protocolo &lt;strong&gt;HTTP&lt;/strong&gt;, sendo assim, a classe base para criação desses &lt;em&gt;clientes&lt;/em&gt; é a classe &lt;code&gt;HttpLocust&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Não se assuste, como estamos falando de &lt;strong&gt;Python&lt;/strong&gt;, a explicação é praticamente maior que o código :).&lt;/p&gt;
+&lt;p&gt;Para testar alguns métodos de nosso webservice, crie um arquivo chamado &lt;strong&gt;locust_script.py&lt;/strong&gt; com o código a seguir.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ConverterTasks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_hour&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/5&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_minute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dm/2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ApiUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HttpLocust&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;task_set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ConverterTasks&lt;/span&gt;
+    &lt;span class="n"&gt;min_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+    &lt;span class="n"&gt;max_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;No código acima, criamos a classe &lt;code&gt;ConverterTasks&lt;/code&gt; onde especificamos nossas tasks para os testes através do decorator &lt;code&gt;@task&lt;/code&gt; e a classe &lt;code&gt;ApiUser&lt;/code&gt; onde especificamos o nosso cliente Locust do tipo &lt;code&gt;HttpLocust&lt;/code&gt;, preenchendo o atributo &lt;code&gt;task_set&lt;/code&gt; com a classe &lt;code&gt;ConverterTask&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Como nosso cliente Locust é do tipo &lt;strong&gt;HttpLocust&lt;/strong&gt;, foi possível utilizar o objeto &lt;code&gt;self.client&lt;/code&gt; em nosso &lt;strong&gt;task_set&lt;/strong&gt;. Note que o objeto &lt;em&gt;self.client&lt;/em&gt; da classe &lt;em&gt;ConverterTasks&lt;/em&gt; consiste em um cliente http.&lt;/p&gt;
+&lt;p&gt;Os atributos &lt;code&gt;min_wait&lt;/code&gt; e &lt;code&gt;max_wait&lt;/code&gt; especificam o tempo mínimo e máximo em milisegundos que o teste deve aguardar entre a execução de uma task e outra. O valor padrão desses atributos é &lt;em&gt;1000&lt;/em&gt; (1 segundo).&lt;/p&gt;
+&lt;h3&gt;Executando os testes&lt;/h3&gt;
+&lt;p&gt;Com o script locust escrito, é chegada a hora da mágica, vamos finalmente ver o Locust em ação. Se certifique que seu webservice está no ar e inicie seu script Locust com o seguinte comando:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ locust -f locust_script.py –H http://127.0.0.1:5000
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A opção &lt;code&gt;-f&lt;/code&gt; específica o arquivo com script Locust e a opção &lt;code&gt;-H&lt;/code&gt; específica o endereço do webservice que será testado.
+Ao executar esse comando, o Locust será iniciado na porta &lt;strong&gt;8089&lt;/strong&gt; (porta padrão que pode ser alterada através da opção &lt;code&gt;-P&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Ao abrir no browser a url http://127.0.0.1:8089 será apresentada a seguinte tela:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tela inicial" src="/images/locust_inicial.png" /&gt;&lt;/p&gt;
+&lt;p&gt;O campo &lt;strong&gt;Number of users to simulate&lt;/strong&gt; é referente a quantidade de usuários simultâneos que serão utilizados para o teste, já o campo &lt;strong&gt;Hatch rate&lt;/strong&gt; é referente a quantidade de usuários que serão adicionados ao teste por segundo (até atingir o numéro de usuários específicado na opção anterior). Específique as opções anteriores e clique em &lt;strong&gt;Start swarming&lt;/strong&gt; para que os testes sejam iniciados e seja apresentada a seguinte tela.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Testes" src="/images/locust.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Talvez as informações mais importantes apresentadas nessa tela é o &lt;strong&gt;RPS&lt;/strong&gt; (request per seconds) e os &lt;strong&gt;failures&lt;/strong&gt;.
+Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e são totalizados no final da listagem.&lt;/p&gt;
+&lt;h3&gt;Definindo &lt;em&gt;peso&lt;/em&gt; para os teste&lt;/h3&gt;
+&lt;p&gt;É possível determinar o &lt;em&gt;peso&lt;/em&gt; de uma &lt;em&gt;task&lt;/em&gt; através do parâmetro opcional &lt;strong&gt;weight&lt;/strong&gt; do decarator &lt;code&gt;@task&lt;/code&gt;. Por exemplo, imagine que no cenário real são mais requisições para conversão de &lt;em&gt;dias para minutos&lt;/em&gt; do que de &lt;em&gt;dias para horas&lt;/em&gt;, sendo assim nossos testes devem seguir essa mesma lógica.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ConverterTasks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@task&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_hour&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/5&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_minute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dm/2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ApiUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HttpLocust&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;task_set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ConverterTasks&lt;/span&gt;
+    &lt;span class="n"&gt;min_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+    &lt;span class="n"&gt;max_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Da forma como foi especificado acima, para cada requisição de conversão de &lt;em&gt;dia para horas&lt;/em&gt;, serão executadas duas de &lt;em&gt;dia para minutos&lt;/em&gt;.&lt;/p&gt;
+&lt;h3&gt;Utilizando outros Verbos HTTP&lt;/h3&gt;
+&lt;p&gt;Nesse nosso exemplo só utilizamos o método http &lt;em&gt;GET&lt;/em&gt;, até mesmo porque nosso webservice só possui métodos GET, porém, é possível utilizar os outros verbos HTTP, por exemplo:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;RegistersTasks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;create_person&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;post&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/person&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Foo&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;email&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;foo@bar.net&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;create_group&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;post&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/group&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Bar&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;WebsiteUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HttpLocust&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;task_set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;RegistersTasks&lt;/span&gt;
+    &lt;span class="n"&gt;min_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+    &lt;span class="n"&gt;max_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O cliente HTTP presente no objeto &lt;code&gt;self.client&lt;/code&gt; é baseado na biblioteca &lt;a href="http://docs.python-requests.org/en/latest/"&gt;Requests&lt;/a&gt;, sendo assim, os métodos http (GET, POST, PUT, DELETE, OPTIONS) estão disponiveis.&lt;/p&gt;
+&lt;h3&gt;Testando com valores dinámicos&lt;/h3&gt;
+&lt;p&gt;No teste do conversor de tempo, utilizamos valores fixos, porém, para se apróximar mais da realidade, o ideal seria testar com valores aleatórios. Como estamos falando de código Python, isso é muito simples, bastar alterar de:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/5&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;para:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;
+
+
+&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Mas isso geraria um problema, pois o Locust agrupa o relatório de testes por url, como estamos realizando até 10 chamadas diferentes para o mesmo recurso, teriamos até 10 chamadas diferentes sendo listas e contabilizadas separadamente.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Random" src="/images/locust_random.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Para resolver esse problema, podemos nomear os requests independente da url, atráves do parâmetro &lt;code&gt;name&lt;/code&gt; dos métodos do client HTTP. Sendo assim nosso código poderia ficar da seguinte forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ConverterTasks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_hour&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dh/[int]&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;day_to_minute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dm/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dm/[int]&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ApiUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HttpLocust&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;task_set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ConverterTasks&lt;/span&gt;
+    &lt;span class="n"&gt;min_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+    &lt;span class="n"&gt;max_wait&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com isso o relatório volta a ser apresentado da maneira esperada.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="nomeadas" src="/images/locust_name.png" /&gt;&lt;/p&gt;
+&lt;h3&gt;Sessão de usuário&lt;/h3&gt;
+&lt;p&gt;O cliente http da classe &lt;code&gt;HttpLocust&lt;/code&gt; preserva os cookies entre os requests, possibilitando realizar logins e consumir métodos remotos que dependem de uma sessão de usuário ativa.&lt;/p&gt;
+&lt;p&gt;Para validar esse conceito, criaremos uma aplicação simples que possui login de usuário e um recurso protegido pela sessão. Somente o necessário para ver o Locust em ação.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;abort&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;SECRET_KEY&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;a7b05c4e06fe0502af4a3d42dd41327b&amp;#39;&lt;/span&gt;
+
+&lt;span class="n"&gt;users&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;john&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;mypass&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;John Lee&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+         &lt;span class="s1"&gt;&amp;#39;bob&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;secret&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Robert Brown&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}}&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/login&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;methods&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;GET&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;POST&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;login&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;POST&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;users&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;form&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;username&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;User not found&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;404&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;form&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Wrong password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;401&lt;/span&gt;
+        &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;user&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;home&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="c1"&gt;# GET&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;            &amp;lt;form action=&amp;quot;&amp;quot; method=&amp;quot;POST&amp;quot;&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;                &amp;lt;p&amp;gt;User &amp;lt;input type=text name=username&amp;gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;                &amp;lt;p&amp;gt;Pass &amp;lt;input type=password name=password&amp;gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;                &amp;lt;p&amp;gt;&amp;lt;input type=submit value=SignIn&amp;gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;           &amp;lt;/form&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/logout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;logout&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;user&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;index&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/home&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;home&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;user&amp;#39;&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;            &amp;lt;h1&amp;gt;Welcome &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;            &amp;lt;p&amp;gt;For logout click &amp;lt;a href=&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;&amp;gt;here&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;user&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;logout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;abort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;401&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;lt;h1&amp;gt;Flask with session :)&amp;lt;/h1&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;lt;p&amp;gt;Click &amp;lt;a href=&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;&amp;gt;here&amp;lt;/a&amp;gt; to login page&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class="s1"&gt;    &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;login&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A aplicação representada no código acima consiste em uma página inicial (&lt;code&gt;/&lt;/code&gt;), uma página de login (&lt;code&gt;/login&lt;/code&gt;), uma página de logout (&lt;code&gt;/logout&lt;/code&gt;) e uma página home do usuário (&lt;code&gt;/home&lt;/code&gt;) que só está acessivel para usuários logados. Obviamente esse é só um exemplo didático.&lt;/p&gt;
+&lt;p&gt;Se criarmos um script Locust para testar essa aplicação e nele não realizarmos o login do usuário, teriamos uma série de falhas para consumir o método remoto &lt;code&gt;/home&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="401" src="/images/locust_session_fail.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Porém a classe &lt;code&gt;TaskSet&lt;/code&gt; do Locust possui o método &lt;code&gt;on_start&lt;/code&gt; que consiste no método que será executado (apenas uma vez) antes do cliente Locust iniciar as tasks. Será nele que iremos realizar o &lt;em&gt;login&lt;/em&gt; do usuário.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;SessionTasks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_start&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;post&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/login&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;username&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;john&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                    &lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;mypass&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;home&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/home&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@task&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;WebsiteUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HttpLocust&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;task_set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;SessionTasks&lt;/span&gt;
+    &lt;span class="n"&gt;min_wai&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;
+    &lt;span class="n"&gt;max_wait&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Como estamos realizando o login do usuário sempre que o cliente Locust inicia suas &lt;em&gt;tasks&lt;/em&gt;, os cookies de sessão já estarão armazenados nos controles do objeto &lt;code&gt;self.client&lt;/code&gt;, com isso, é possível testar até mesmo os métodos que dependem de autenticação para serem consumidos.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="session" src="/images/locust_session_success.png" /&gt;&lt;/p&gt;
+&lt;h3&gt;Escalando os testes&lt;/h3&gt;
+&lt;p&gt;O Locust é baseado em eventos, graças a isso é possível simular milhares de usuários concorrentes na mesma máquinas, porém em alguns casos esse numero não é o suficiente. Pensando nessa necessidade, o Locust possibilita trabalhar de forma distribuida, através do conceito de &lt;strong&gt;Master&lt;/strong&gt; e &lt;strong&gt;Slave&lt;/strong&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Segundo a documentação do Locust, recomenda-se instalar a biblioteca &lt;a href="http://zeromq.github.io/pyzmq/index.html"&gt;ZeroMQ&lt;/a&gt; para melhorar o desempenho dos testes distribuidos. Essa é a razão do &lt;em&gt;warning&lt;/em&gt; no momento da execução.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Para iniciar uma instância &lt;em&gt;master&lt;/em&gt; do Locust, basta utilizar o parâmetro &lt;code&gt;--master&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ locust -f locust_script.py -H http://127.0.0.1:5000 --master
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Essa instancia do Locust não irá simular nenhum cliente para teste, apenas irá disponibilizar a interface web com as estatisticas dos testes realizados e irá aguardar a conexão dos &lt;em&gt;slaves&lt;/em&gt;, poís esses serão os responsáveis pela realização dos testes.&lt;/p&gt;
+&lt;p&gt;Agora, para iniciar uma instância &lt;em&gt;slave&lt;/em&gt; do Locust, são utilizados dois parâmetros, o &lt;code&gt;--slave&lt;/code&gt; que determina que essa instância é um slave e o parâmetro &lt;code&gt;--master-host&lt;/code&gt; com a localização do &lt;em&gt;master&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine2:~/locust$ locust -f locust_script.py --slave --master-host&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.15
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Tanto a máquina &lt;strong&gt;master&lt;/strong&gt; quanto as máquinas &lt;strong&gt;slave&lt;/strong&gt; precisam ter o Locust instalado e possuir uma cópia do script de testes que será executado de forma distribuida.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Com as instâncias slaves iniciadas, basta acessar no browser o Locust (da máquina &lt;em&gt;master&lt;/em&gt;) e ver os testes em ação.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="distribuido" src="/images/locust_distributed.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="http://locust.io/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
+&lt;a href="http://docs.locust.io/en/latest/index.html"&gt;Documentação&lt;/a&gt;&lt;/p&gt;</summary><category term="python"></category><category term="tests"></category></entry><entry><title>Use o cURL</title><link href="http://www.codeforcloud.info/2014/12/13/use-o-curl/" rel="alternate"></link><updated>2014-12-13T01:04:33-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-12-13:2014/12/13/use-o-curl/</id><summary type="html">&lt;p&gt;O &lt;strong&gt;cURL&lt;/strong&gt; é uma poderosa ferramenta de linha de comando open source utilizada basicamente para transferir dados pela sintaxe de chamadas baseadas em URL.
+Muito popular no mundo Unix, o cURL já vem por padrão na maioria das distribuições linux, porém, existem também versões para windows. Apesar da utilização principal do cURL ser voltada para realizar requisições &lt;em&gt;HTTP&lt;/em&gt;, o que poucos sabem é que ele também funciona para outros protocolos como por exemplo &lt;em&gt;FTP&lt;/em&gt;, &lt;em&gt;IMAP&lt;/em&gt;, &lt;em&gt;POP3&lt;/em&gt;, etc.&lt;/p&gt;
+
+
+&lt;p&gt;Mesmo que muitos torçam o nariz para a linha de comando, ficar ninja no cURL vai lhe ajudar (e muito) em seu dia a dia, principalmente se você é um desenvolvedor de APIs.
+Veja o básico para começar a trabalhar com ele.&lt;/p&gt;
+&lt;h4&gt;Sintaxe Padrão&lt;/h4&gt;
+&lt;p&gt;A sintaxe padrão do cURL é a seguinte&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl [parâmetros] [url]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para requisições simples, não é necessário nenhum parâmetro, somente a url de destino.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl http://localhost/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Definindo o verbo HTTP&lt;/h4&gt;
+&lt;p&gt;Por padrão, uma requisição simples no cURL é feita implicitamente através do verbo &lt;strong&gt;GET&lt;/strong&gt;, mas é possível alterar o verbo HTTP da requisição através da opção &lt;code&gt;-X&lt;/code&gt;. Sendo assim, para realizar uma chamada com o verbo &lt;strong&gt;DELETE&lt;/strong&gt; por exemplo, basta fazer desta forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X DELETE http://localhost/person/foo
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Enviando corpo na requisição&lt;/h4&gt;
+&lt;p&gt;Principalmente em métodos &lt;em&gt;POST&lt;/em&gt; e &lt;em&gt;PUT&lt;/em&gt; é natural transmitir na requisição algum conteúdo no corpo, para fazer isso no cURL basta utilizar a opção &lt;code&gt;-d&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X POST -d &amp;#39;name=Fulano&amp;amp;email=fulano@foo.bar&amp;#39; http://localhost:8888/person/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Alterando os cabeçalhos da requisição&lt;/h3&gt;
+&lt;p&gt;Geralmente é necessário especificar alguma informação no cabeçalho da requisição, como por exemplo o &lt;em&gt;Authorization&lt;/em&gt;, &lt;em&gt;Content-Type&lt;/em&gt;, etc. Para isso, utilize a opção &lt;code&gt;-H&lt;/code&gt; em cada item de cabeçalho adicionado.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X POST -H &amp;#39;Content-Type: application/json&amp;#39; -d &amp;#39;{&amp;quot;name&amp;quot;: &amp;quot;Fulano&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;fulano@foo.bar&amp;quot;}&amp;#39; http://localhost:8888/person/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Salvando a resposta em arquivo&lt;/h3&gt;
+&lt;p&gt;É muito comum realizar requisições para pegar um conteúdo que deverá ser salvo em um arquivo, por exemplo, baixar configurações, credenciais e os famosos &lt;em&gt;dotfiles&lt;/em&gt;. Existem duas formas de se fazer isso, uma é direcionando a saída do curl para um arquivo através do &lt;code&gt;&amp;gt;&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl http://mydotfiles.net/vimrc &amp;gt; ~/.vimrc
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ou através da opção &lt;code&gt;-o&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -o ~/.vimrc http://mydotfiles.net/vimrc
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Exibindo o cabeçalho de resposta&lt;/h4&gt;
+&lt;p&gt;O cURL por padrão exibe somente o conteúdo do corpo da resposta, porém, muitas vezes (para não dizer todas), é necessário visualizar os cabeçalhos de retorno, como por exemplo o &lt;em&gt;status code&lt;/em&gt;. Nesses casos utilize a opção &lt;code&gt;-i&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -i http://localhost:8888/person
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Depois que comecei a usar o &lt;strong&gt;cURL&lt;/strong&gt;, nunca mais usei nenhum tipo de client HTTP para realizar testes em minhas APIs e sinto que essa troca me tornou mais produtivo e mais profissional.
+Como o cURL é praticamente um padrão, me sinto confortavel em usa-lo até para registrar o uso de APIs em manuais e exemplos.&lt;/p&gt;
+&lt;p&gt;Para saber mais comandos, você pode usar tanto o help &lt;code&gt;curl --help&lt;/code&gt; quanto o manual &lt;code&gt;curl --man&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="http://curl.haxx.se/"&gt;Site oficial&lt;/a&gt;&lt;/p&gt;</summary></entry><entry><title>Validações de formulários e inputs</title><link href="http://www.codeforcloud.info/2014/11/23/validacoes-de-formularios-e-inputs/" rel="alternate"></link><updated>2014-11-23T10:13:03-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-23:2014/11/23/validacoes-de-formularios-e-inputs/</id><summary type="html">&lt;p&gt;Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o &lt;strong&gt;HTML5&lt;/strong&gt; adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em &lt;em&gt;JavaScript&lt;/em&gt;.&lt;/p&gt;
+
+
+&lt;h3&gt;RegEx&lt;/h3&gt;
+&lt;p&gt;Para demonstrar validações com RegEx em formulários e inputs, já iremos começar com o caso mais comum, &lt;strong&gt;e-mail&lt;/strong&gt;. Seja para um formulário de fale-conosco, comentários em um blogs, cadastros, etc, e-mail costuma ser o dado mais comum na internet.&lt;/p&gt;
+&lt;h4&gt;Ao modo JavaScript&lt;/h4&gt;
+&lt;p&gt;O modo mais comum de fazer qualquer validação em formulários HTML é com certeza o JavaScript. Para nosso exemplo iremos criar uma função chamada &lt;em&gt;validarEmail()&lt;/em&gt; que irá receber como parametro o endereço de e-mail que deverá ser validado e o &lt;em&gt;id&lt;/em&gt; de uma &lt;em&gt;div&lt;/em&gt; de mensagem genérica. Essa função fará a validação com &lt;strong&gt;RegEx&lt;/strong&gt; e irá mostrar uma mensagem na div indicando o resultado da validação.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;validarEmail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;email&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;validacao&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;ck_email&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sr"&gt;/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;valid&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;validacao&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="nx"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;ck_email&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;test&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;email&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Endereço de e-mail inválido&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Endereço de e-mail válido&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Nesse exemplo, faremos essa validação no evento &lt;strong&gt;onBlur&lt;/strong&gt; do input, ou seja, quando o input perder o foco.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Digite seu e-mail:
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;onBlur&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;validarEmail(this.value, &amp;#39;validacao&amp;#39;);&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;validacao&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/3H2EU/2/embedded/result,js,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h4&gt;Ao modo HTML5&lt;/h4&gt;
+&lt;p&gt;Com o &lt;strong&gt;HTML5&lt;/strong&gt; agora podemos realizar validações baseadas em &lt;em&gt;RegEx&lt;/em&gt; direto no input, através da propriedade &lt;strong&gt;pattern&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;pattern&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A principal diferença desta abordagem é o momento da validação. A validação baseada no pattern (assim como outras validações próprias do html5) estão diretamente ligadas a formulários, ou seja, a validação será executada somente no momento do &lt;em&gt;submit&lt;/em&gt; do formulário.&lt;/p&gt;
+&lt;p&gt;Para não estender muito o post, as próximas validações faremos somente ao modo &lt;strong&gt;HTML5&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;Campo obrigatório&lt;/h3&gt;
+&lt;p&gt;A validação de campo obrigatório é moleza somente com recursos do HTML5, basta adicionar no input a propriedade &lt;strong&gt;required&lt;/strong&gt; e toda a mágica é feita :) .&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Tipo do campo&lt;/h3&gt;
+&lt;p&gt;Uma forma muito útil e simples de validar e estilizar o conteúdo de um input é determinando o seu tipo (&lt;em&gt;type&lt;/em&gt;). Por exemplo, para um campo que deverá armazenar números, podemos usar um input do tipo &lt;strong&gt;number&lt;/strong&gt;. Inclusive, com o tipo number é possível determinar um numero mínimo e um número máximo que o input deve aceitar, através das propriedades &lt;strong&gt;min&lt;/strong&gt; e &lt;strong&gt;max&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;qtde&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;qtde&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;max&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;10&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Existe um série de outros tipos específicos de inputs que podem nos fazer poupar muito trabalho, veja uma pequena lista:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;number&lt;/li&gt;
+&lt;li&gt;range&lt;/li&gt;
+&lt;li&gt;url&lt;/li&gt;
+&lt;li&gt;e-mail (sim, existe, porém a validação não é tão poderosa)&lt;/li&gt;
+&lt;li&gt;entre outros.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Veja exemplos dos tipos acima
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/uqkxd2v3/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Esses tipos específicos são muito úteis para sites voltados para mobile, pois os navegadores mobile já estão preparados para exibir ao usuário somente a opção de teclado compatível com o input.&lt;/p&gt;
+&lt;h3&gt;Estilizando inputs de acordo com a validação&lt;/h3&gt;
+&lt;p&gt;É possível de forma simples e genérica aplicar estilos CSS em inputs com valores válidos ou inválidos, de acordo com as regras que você determinar. Por exemplo, criaremos um padrão em que inputs inválidos terão o fundo avermelhando e os inputs válidos terão o fundo azulado.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#F08080&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#87CEFA&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para testarmos esse estilo, usaremos dois inputs, um do tipo &lt;em&gt;text&lt;/em&gt; porém de preenchimento obrigatório (&lt;em&gt;required&lt;/em&gt;) e um do tipo &lt;em&gt;number&lt;/em&gt; com o valor mínimo de 18.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Nome: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+Idade: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;18&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Simples, prático e o melhor de tudo, genérico. Veja esse código funcionando:
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wtku5m7L/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Para deixar a aparência ainda mais profissional, podemos utilizar imagens nos inputs. Faremos o mesmo exemplo, porém, ao invés de usarmos cores de fundo nos inputs, iremos acrescentar pequenos icones após o conteúdo, indicado se o campo está válido ou inválido.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/invalid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+ &lt;span class="p"&gt;}&lt;/span&gt;
+ &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/valid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+ &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O efeito no input do tipo number não é muito agradável, demonstrarei somente no campo do tipo text.
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wnjLjfcy/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Outra forma excelente de obter um efeito semelhante a este é utilizando os pseudo-elementos &lt;strong&gt;after&lt;/strong&gt; ou &lt;strong&gt;before&lt;/strong&gt;. Faremos uma pequena alteração no HTML, adicionando um &lt;em&gt;label&lt;/em&gt; para cada input.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt; &lt;span class="na"&gt;for&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Nome&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;18&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt; &lt;span class="na"&gt;for&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Idade&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Após o conteúdo deste label, iremos adicionar o simbolo &lt;strong&gt;X&lt;/strong&gt; para os inputs inválidos e o simbolo &lt;strong&gt;✓&lt;/strong&gt; para os inputs válidos, utilizando o pseudo-elemento &lt;em&gt;after&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; X&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; ✓&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado:
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/gzn6muzu/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;h3&gt;Customizando as mensagens de validação padrão&lt;/h3&gt;
+&lt;p&gt;Para finalizar, se você já testou fazer validações com o &lt;em&gt;pattern&lt;/em&gt; dos inputs, já deve ter notado que a mensagem que é exibida indicando que o conteúdo do input está inválido é muito genérica, no Firefox por exemplo a mensagem exibida é &lt;em&gt;"Por favor, satisfaça o formato requisitado"&lt;/em&gt;.
+Existe uma forma de modificar essa mensagem via javascript, através do método &lt;strong&gt;setCustomValidity&lt;/strong&gt; aplicado no evento &lt;strong&gt;oninvalid&lt;/strong&gt; do input. Por exemplo, vamos imaginar um input que irá receber uma senha e essa senha pode conter qualquer tipo de caracter, porém, deverá ter um tamanho minímo de 8 caracteres.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;senha&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;oninvalid&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;this.setCustomValidity(&amp;#39;No m&amp;amp;iacute;nimo 8 caracteres&amp;#39;)&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;oninput&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;this.setCustomValidity(&amp;#39;&amp;#39;)&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;password&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;senha&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;pattern&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;.{8,}&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note que foi necessário manipular o &lt;em&gt;CustomValidity&lt;/em&gt; setando uma string vazia no evento &lt;strong&gt;oninput&lt;/strong&gt; do input, isso porque, ao setar o CustomValidity com algum valor, o html interpreta que o input está inválido e não muda esse estado mesmo alterando o conteúdo para algo válido.
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/4wfmphhj/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.w3schools.com/tags/att_input_pattern.asp"&gt;Input Pattern - W3Schools&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://www.the-art-of-web.com/html/html5-form-validation/"&gt;Html5 form validation - Art of Web&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message"&gt;Set Custom Validation Message - Stackoverflow&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://www.w3schools.com/css/css_pseudo_elements.asp"&gt;CSS Pseudo Elements&lt;/a&gt;&lt;/p&gt;</summary><category term="html"></category><category term="forms"></category><category term="javascript"></category></entry><entry><title>Arredondando bordas com CSS3</title><link href="http://www.codeforcloud.info/2014/11/21/Arredondando-bordas-com-css3/" rel="alternate"></link><updated>2014-11-21T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-21:2014/11/21/Arredondando-bordas-com-css3/</id><summary type="html">&lt;p&gt;Uma das hypes atuais da web é o uso massivo de imagens redondas, principalmente em avatares. Google, Facebook, Instagram e iOS, são só alguns exemplos de grandes nomes do design que aderiram a essa tendencia. Mas calma, se você quer pegar carona nessa onda, você não precisa ficar editando imagem por imagem do seu site.&lt;/p&gt;
+
+
+&lt;h3&gt;Então "Comofas"?&lt;/h3&gt;
+&lt;p&gt;Com o &lt;strong&gt;CSS3&lt;/strong&gt;, conseguir esse efeito é &lt;em&gt;moleza&lt;/em&gt;, basta utilizar a propriedades &lt;strong&gt;border-radius&lt;/strong&gt;. Essa propriedade recebe como valor uma porcentagem ou uma medida em pixels, que determina quanto a borda do elemento deverá ser arredondada.&lt;/p&gt;
+&lt;h3&gt;De Quadrado para Circulo&lt;/h3&gt;
+&lt;p&gt;Transformar uma imagem quadrada em uma imagem redonda é muito simples, basta determinar sua propriedade &lt;em&gt;border-radius&lt;/em&gt; com 50%.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.avatar&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora, qualquer elemento html (de preferencia quadrado) que seja da classe &lt;strong&gt;avatar&lt;/strong&gt;, será transformado em um circulo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;img&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;avatar&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;img/photo.jpg&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado com uma imagem aleatória&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/8/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h3&gt;Arredondando cantos&lt;/h3&gt;
+&lt;p&gt;Se a sua intenção não for criar circulos, você pode diminuir a porcentagem do raio (radius) ou trabalhar com pixels. Você pode também arredondar somente cantos específicos de um elemento. Assim como a grande maioria das propriedades do CSS, a propriedade &lt;em&gt;border-radius&lt;/em&gt; consiste em um conjunto de popriedades especificas para cada canto de um elemento, como por exemplo a propriedade &lt;strong&gt;border-top-left-radius&lt;/strong&gt;.
+Para arredondar somente os cantos inferiores de um elemento, podemos fazer da seguinte forma.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.inferior&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border-bottom&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;left&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="nb"&gt;border-bottom&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;right&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;ou assim&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.inferior&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja esse exemplo com a mesma imagem aleatória anterior&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/3/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h3&gt;É Cross-Browser?&lt;/h3&gt;
+&lt;p&gt;Realizei testes tanto com o Firefox (gecko) como com Chrome (webkit) e não tive problemas, o IE 9 (trident) também já está compativel, mas por garantia e compatibilidade com versões antigas de outros browsers, você pode usar as propriedades especificas de cada motor de renderização&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.seletor&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;webkit&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;moz&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://msdn.microsoft.com/pt-br/library/gg589503%28v=vs.85%29.aspx"&gt;Cantos arredondados no IE 9&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://css-tricks.com/almanac/properties/b/border-radius/"&gt;border-radius - CSS Tricks&lt;/a&gt;&lt;br /&gt;&lt;/p&gt;</summary><category term="css"></category><category term="front-end"></category><category term="html"></category></entry><entry><title>String Format no JavaScript</title><link href="http://www.codeforcloud.info/2014/11/20/String-Format-No-Javascript/" rel="alternate"></link><updated>2014-11-20T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-20:2014/11/20/String-Format-No-Javascript/</id><summary type="html">&lt;p&gt;Nessa minha recente aproximação com o &lt;strong&gt;JavaScript&lt;/strong&gt;, a primeira coisa que senti falta foi de um método do tipo &lt;em&gt;Format&lt;/em&gt; para trabalhar com strings.&lt;/p&gt;
+
+
+&lt;h3&gt;Decepção&lt;/h3&gt;
+&lt;p&gt;Confesso que foi uma triste surpresa saber que nativamente o JavaScript não possui um método para essa finalidade. Nesse momento me imaginei fazendo esse tipo de concatenação:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;texto&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Olá &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;nome&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;, seja bem vindo ao site &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;site&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;\nVocê é realmente &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;nome&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;?&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Esperança&lt;/h3&gt;
+&lt;p&gt;Da mesma forma que fui surpreendido negativamente, também tive uma ótima surpresa ao descobrir que o JavaScript permite &lt;em&gt;tunar&lt;/em&gt; seus objetos, incluido novas propriedades e novos métodos, graças a propriedade &lt;strong&gt;prototype&lt;/strong&gt;. Com isso o céu é o limite.&lt;/p&gt;
+&lt;h3&gt;Solução&lt;/h3&gt;
+&lt;p&gt;O seguinte código cria um método chamado &lt;strong&gt;format&lt;/strong&gt; no prototype dos objetos &lt;strong&gt;Strings&lt;/strong&gt;, tornando esse método disponível para qualquer string do código:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nb"&gt;String&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prototype&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;String&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prototype&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;length&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;regexp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="nb"&gt;RegExp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;\\{&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;\\}&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;gi&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+            &lt;span class="nx"&gt;formatted&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;regexp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ao colocar esse código no ~~head do html na tag script~~ início do seu arquivo &lt;em&gt;JS&lt;/em&gt;, você será capaz de montar o texto do primeiro exemplo da seguinte forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;texto&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Olá {0}, seja bem vindo ao site {1}\nVocê é realmente {0}?&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;nome&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;site&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com certeza mais elegante e mais aderente a outras linguagens, como por exemplo o Python.&lt;/p&gt;
+&lt;h3&gt;Explicação&lt;/h3&gt;
+&lt;p&gt;Neste código mágico primeiro verificamos se a propriedade &lt;em&gt;format&lt;/em&gt; do prototype de String está nula, caso esteja, atribuimos a ela um método que basicamente recupera o valor do objeto com o &lt;strong&gt;this&lt;/strong&gt; (no caso, o conteúdo da string) e executa um for em cada argumento passado para esse método, esse &lt;em&gt;for&lt;/em&gt; substitui todas as ocorrências de &lt;em&gt;{N}&lt;/em&gt;, pelo valor do argumento em seu determinado índice. Por exemplo, o resultado deste código:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Seja bem vindo {1}, {0}.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Diego&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Garcia&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Será:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Seja bem vindo Garcia, Diego.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Possibilidade&lt;/h3&gt;
+&lt;p&gt;As possibilidades com o uso do prototype são infinitas, comparando a outras linguagens, o prototype nos permite criar &lt;strong&gt;class helpers&lt;/strong&gt; em JavaScript, o que por si só, já é incrivel.&lt;/p&gt;
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.w3schools.com/jsref/jsref_prototype_string.asp"&gt;Prototype String - W3Schools&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format"&gt;JavaScript equivalent to Printf -  StackOverFlow&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://www.codeproject.com/Tips/59262/JavaScript-date-helper-class"&gt;Date Helper - CodeProject&lt;/a&gt;&lt;br /&gt;&lt;/p&gt;</summary><category term="prototype"></category><category term="javascript"></category></entry></feed>

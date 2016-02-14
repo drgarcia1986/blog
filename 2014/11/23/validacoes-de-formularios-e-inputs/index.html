@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Validações de formulários e inputs</title>
+
+            <link href="http://www.codeforcloud.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.codeforcloud.info/html.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.codeforcloud.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="html" />
+        <meta name="tags" contents="forms" />
+        <meta name="tags" contents="javascript" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.codeforcloud.info/2014/11/23/validacoes-de-formularios-e-inputs/">
+	<meta property="og:title" content="Validações de formulários e inputs">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.codeforcloud.info/">
+	<meta property="article:published_time" content="2014-11-23 10:13:03-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.codeforcloud.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.codeforcloud.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Validações de formulários e inputs</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.codeforcloud.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Dom 23 novembro 2014
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o <strong>HTML5</strong> adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em <em>JavaScript</em>.</p>
+
+
+<h3>RegEx</h3>
+<p>Para demonstrar validações com RegEx em formulários e inputs, já iremos começar com o caso mais comum, <strong>e-mail</strong>. Seja para um formulário de fale-conosco, comentários em um blogs, cadastros, etc, e-mail costuma ser o dado mais comum na internet.</p>
+<h4>Ao modo JavaScript</h4>
+<p>O modo mais comum de fazer qualquer validação em formulários HTML é com certeza o JavaScript. Para nosso exemplo iremos criar uma função chamada <em>validarEmail()</em> que irá receber como parametro o endereço de e-mail que deverá ser validado e o <em>id</em> de uma <em>div</em> de mensagem genérica. Essa função fará a validação com <strong>RegEx</strong> e irá mostrar uma mensagem na div indicando o resultado da validação.</p>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">validarEmail</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">validacao</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ck_email</span> <span class="o">=</span> <span class="sr">/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">valid</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">validacao</span><span class="p">);</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">ck_email</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">email</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">valid</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;Endereço de e-mail inválido&quot;</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">valid</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;Endereço de e-mail válido&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Nesse exemplo, faremos essa validação no evento <strong>onBlur</strong> do input, ou seja, quando o input perder o foco.</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Digite seu e-mail:
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">onBlur</span><span class="o">=</span><span class="s">&quot;validarEmail(this.value, &#39;validacao&#39;);&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;validacao&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>Veja o resultado</p>
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/3H2EU/2/embedded/result,js,html" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<h4>Ao modo HTML5</h4>
+<p>Com o <strong>HTML5</strong> agora podemos realizar validações baseadas em <em>RegEx</em> direto no input, através da propriedade <strong>pattern</strong>.</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">pattern</span><span class="o">=</span><span class="s">&quot;^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+
+
+<p>A principal diferença desta abordagem é o momento da validação. A validação baseada no pattern (assim como outras validações próprias do html5) estão diretamente ligadas a formulários, ou seja, a validação será executada somente no momento do <em>submit</em> do formulário.</p>
+<p>Para não estender muito o post, as próximas validações faremos somente ao modo <strong>HTML5</strong>.</p>
+<h3>Campo obrigatório</h3>
+<p>A validação de campo obrigatório é moleza somente com recursos do HTML5, basta adicionar no input a propriedade <strong>required</strong> e toda a mágica é feita :) .</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">required</span> <span class="p">/&gt;</span>
+</pre></div>
+
+
+<h3>Tipo do campo</h3>
+<p>Uma forma muito útil e simples de validar e estilizar o conteúdo de um input é determinando o seu tipo (<em>type</em>). Por exemplo, para um campo que deverá armazenar números, podemos usar um input do tipo <strong>number</strong>. Inclusive, com o tipo number é possível determinar um numero mínimo e um número máximo que o input deve aceitar, através das propriedades <strong>min</strong> e <strong>max</strong>.</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;qtde&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;qtde&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;number&quot;</span> <span class="na">min</span><span class="o">=</span><span class="s">&quot;3&quot;</span> <span class="na">max</span><span class="o">=</span><span class="s">&quot;10&quot;</span><span class="p">/&gt;</span>
+</pre></div>
+
+
+<p>Existe um série de outros tipos específicos de inputs que podem nos fazer poupar muito trabalho, veja uma pequena lista:</p>
+<ul>
+<li>number</li>
+<li>range</li>
+<li>url</li>
+<li>e-mail (sim, existe, porém a validação não é tão poderosa)</li>
+<li>entre outros.</li>
+</ul>
+<p>Veja exemplos dos tipos acima
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/uqkxd2v3/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>Esses tipos específicos são muito úteis para sites voltados para mobile, pois os navegadores mobile já estão preparados para exibir ao usuário somente a opção de teclado compatível com o input.</p>
+<h3>Estilizando inputs de acordo com a validação</h3>
+<p>É possível de forma simples e genérica aplicar estilos CSS em inputs com valores válidos ou inválidos, de acordo com as regras que você determinar. Por exemplo, criaremos um padrão em que inputs inválidos terão o fundo avermelhando e os inputs válidos terão o fundo azulado.</p>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span><span class="o">,</span> <span class="nt">input</span><span class="nd">:focus:invalid</span> <span class="p">{</span>
+    <span class="nb">background-color</span><span class="o">:</span> <span class="m">#F08080</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">input</span><span class="nd">:valid</span> <span class="p">{</span>
+    <span class="nb">background-color</span><span class="o">:</span> <span class="m">#87CEFA</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Para testarmos esse estilo, usaremos dois inputs, um do tipo <em>text</em> porém de preenchimento obrigatório (<em>required</em>) e um do tipo <em>number</em> com o valor mínimo de 18.</p>
+<div class="highlight"><pre><span></span>Nome: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">required</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+Idade: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;idade&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;idade&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;number&quot;</span> <span class="na">min</span><span class="o">=</span><span class="s">&quot;18&quot;</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</pre></div>
+
+
+<p>Simples, prático e o melhor de tudo, genérico. Veja esse código funcionando:
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wtku5m7L/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>Para deixar a aparência ainda mais profissional, podemos utilizar imagens nos inputs. Faremos o mesmo exemplo, porém, ao invés de usarmos cores de fundo nos inputs, iremos acrescentar pequenos icones após o conteúdo, indicado se o campo está válido ou inválido.</p>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span><span class="o">,</span> <span class="nt">input</span><span class="nd">:focus:invalid</span> <span class="p">{</span>
+     <span class="nb">background-image</span><span class="o">:</span> <span class="sx">url(/imgs/invalid.png)</span><span class="p">;</span>
+     <span class="nb">background-position</span><span class="o">:</span> <span class="nb">right</span> <span class="nb">top</span><span class="p">;</span>
+     <span class="nb">background-repeat</span><span class="o">:</span> <span class="nb">no-repeat</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="nt">input</span><span class="nd">:valid</span> <span class="p">{</span>
+     <span class="nb">background-image</span><span class="o">:</span> <span class="sx">url(/imgs/valid.png)</span><span class="p">;</span>
+     <span class="nb">background-position</span><span class="o">:</span> <span class="nb">right</span> <span class="nb">top</span><span class="p">;</span>
+     <span class="nb">background-repeat</span><span class="o">:</span> <span class="nb">no-repeat</span><span class="p">;</span>
+ <span class="p">}</span>
+</pre></div>
+
+
+<p>O efeito no input do tipo number não é muito agradável, demonstrarei somente no campo do tipo text.
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wnjLjfcy/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>Outra forma excelente de obter um efeito semelhante a este é utilizando os pseudo-elementos <strong>after</strong> ou <strong>before</strong>. Faremos uma pequena alteração no HTML, adicionando um <em>label</em> para cada input.</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;nome&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">required</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;nome&quot;</span><span class="p">&gt;</span>Nome<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;idade&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;idade&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;number&quot;</span> <span class="na">min</span><span class="o">=</span><span class="s">&quot;18&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;idade&quot;</span><span class="p">&gt;</span>Idade<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>Após o conteúdo deste label, iremos adicionar o simbolo <strong>X</strong> para os inputs inválidos e o simbolo <strong>✓</strong> para os inputs válidos, utilizando o pseudo-elemento <em>after</em>.</p>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span> <span class="o">+</span> <span class="nt">label</span><span class="o">:</span><span class="nd">:after</span> <span class="p">{</span>
+    <span class="nb">content</span><span class="o">:</span><span class="s1">&#39; X&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">input</span><span class="nd">:valid</span> <span class="o">+</span> <span class="nt">label</span><span class="o">:</span><span class="nd">:after</span> <span class="p">{</span>
+    <span class="nb">content</span><span class="o">:</span><span class="s1">&#39; ✓&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Veja o resultado:
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/gzn6muzu/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<h3>Customizando as mensagens de validação padrão</h3>
+<p>Para finalizar, se você já testou fazer validações com o <em>pattern</em> dos inputs, já deve ter notado que a mensagem que é exibida indicando que o conteúdo do input está inválido é muito genérica, no Firefox por exemplo a mensagem exibida é <em>"Por favor, satisfaça o formato requisitado"</em>.
+Existe uma forma de modificar essa mensagem via javascript, através do método <strong>setCustomValidity</strong> aplicado no evento <strong>oninvalid</strong> do input. Por exemplo, vamos imaginar um input que irá receber uma senha e essa senha pode conter qualquer tipo de caracter, porém, deverá ter um tamanho minímo de 8 caracteres.</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;senha&quot;</span> <span class="na">oninvalid</span><span class="o">=</span><span class="s">&quot;this.setCustomValidity(&#39;No m&amp;iacute;nimo 8 caracteres&#39;)&quot;</span> <span class="na">oninput</span><span class="o">=</span><span class="s">&quot;this.setCustomValidity(&#39;&#39;)&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;password&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;senha&quot;</span> <span class="na">pattern</span><span class="o">=</span><span class="s">&quot;.{8,}&quot;</span> <span class="na">required</span> <span class="p">/&gt;</span>
+</pre></div>
+
+
+<p>Note que foi necessário manipular o <em>CustomValidity</em> setando uma string vazia no evento <strong>oninput</strong> do input, isso porque, ao setar o CustomValidity com algum valor, o html interpreta que o input está inválido e não muda esse estado mesmo alterando o conteúdo para algo válido.
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/4wfmphhj/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<h4>Referências</h4>
+<p><a href="http://www.w3schools.com/tags/att_input_pattern.asp">Input Pattern - W3Schools</a> <br />
+<a href="http://www.the-art-of-web.com/html/html5-form-validation/">Html5 form validation - Art of Web</a> <br />
+<a href="http://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message">Set Custom Validation Message - Stackoverflow</a> <br />
+<a href="http://www.w3schools.com/css/css_pseudo_elements.asp">CSS Pseudo Elements</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.codeforcloud.info/tag/html.html">html</a>, <a href="http://www.codeforcloud.info/tag/forms.html">forms</a>, <a href="http://www.codeforcloud.info/tag/javascript.html">javascript</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2014/11/23/validacoes-de-formularios-e-inputs/';
+                var disqus_url = 'http://www.codeforcloud.info/2014/11/23/validacoes-de-formularios-e-inputs/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.codeforcloud.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.codeforcloud.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.codeforcloud.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.codeforcloud.info/" rel="alternate"></link><link href="http://www.codeforcloud.info/html.atom.xml" rel="self"></link><id>http://www.codeforcloud.info/</id><updated>2014-11-23T10:13:03-02:00</updated><entry><title>Validações de formulários e inputs</title><link href="http://www.codeforcloud.info/2014/11/23/validacoes-de-formularios-e-inputs/" rel="alternate"></link><updated>2014-11-23T10:13:03-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-23:2014/11/23/validacoes-de-formularios-e-inputs/</id><summary type="html">&lt;p&gt;Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o &lt;strong&gt;HTML5&lt;/strong&gt; adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em &lt;em&gt;JavaScript&lt;/em&gt;.&lt;/p&gt;
+
+
+&lt;h3&gt;RegEx&lt;/h3&gt;
+&lt;p&gt;Para demonstrar validações com RegEx em formulários e inputs, já iremos começar com o caso mais comum, &lt;strong&gt;e-mail&lt;/strong&gt;. Seja para um formulário de fale-conosco, comentários em um blogs, cadastros, etc, e-mail costuma ser o dado mais comum na internet.&lt;/p&gt;
+&lt;h4&gt;Ao modo JavaScript&lt;/h4&gt;
+&lt;p&gt;O modo mais comum de fazer qualquer validação em formulários HTML é com certeza o JavaScript. Para nosso exemplo iremos criar uma função chamada &lt;em&gt;validarEmail()&lt;/em&gt; que irá receber como parametro o endereço de e-mail que deverá ser validado e o &lt;em&gt;id&lt;/em&gt; de uma &lt;em&gt;div&lt;/em&gt; de mensagem genérica. Essa função fará a validação com &lt;strong&gt;RegEx&lt;/strong&gt; e irá mostrar uma mensagem na div indicando o resultado da validação.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;validarEmail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;email&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;validacao&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;ck_email&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sr"&gt;/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;valid&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;validacao&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="nx"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;ck_email&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;test&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;email&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Endereço de e-mail inválido&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Endereço de e-mail válido&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Nesse exemplo, faremos essa validação no evento &lt;strong&gt;onBlur&lt;/strong&gt; do input, ou seja, quando o input perder o foco.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Digite seu e-mail:
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;onBlur&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;validarEmail(this.value, &amp;#39;validacao&amp;#39;);&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;validacao&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/3H2EU/2/embedded/result,js,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h4&gt;Ao modo HTML5&lt;/h4&gt;
+&lt;p&gt;Com o &lt;strong&gt;HTML5&lt;/strong&gt; agora podemos realizar validações baseadas em &lt;em&gt;RegEx&lt;/em&gt; direto no input, através da propriedade &lt;strong&gt;pattern&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;pattern&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;email&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A principal diferença desta abordagem é o momento da validação. A validação baseada no pattern (assim como outras validações próprias do html5) estão diretamente ligadas a formulários, ou seja, a validação será executada somente no momento do &lt;em&gt;submit&lt;/em&gt; do formulário.&lt;/p&gt;
+&lt;p&gt;Para não estender muito o post, as próximas validações faremos somente ao modo &lt;strong&gt;HTML5&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;Campo obrigatório&lt;/h3&gt;
+&lt;p&gt;A validação de campo obrigatório é moleza somente com recursos do HTML5, basta adicionar no input a propriedade &lt;strong&gt;required&lt;/strong&gt; e toda a mágica é feita :) .&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Tipo do campo&lt;/h3&gt;
+&lt;p&gt;Uma forma muito útil e simples de validar e estilizar o conteúdo de um input é determinando o seu tipo (&lt;em&gt;type&lt;/em&gt;). Por exemplo, para um campo que deverá armazenar números, podemos usar um input do tipo &lt;strong&gt;number&lt;/strong&gt;. Inclusive, com o tipo number é possível determinar um numero mínimo e um número máximo que o input deve aceitar, através das propriedades &lt;strong&gt;min&lt;/strong&gt; e &lt;strong&gt;max&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;qtde&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;qtde&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;max&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;10&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Existe um série de outros tipos específicos de inputs que podem nos fazer poupar muito trabalho, veja uma pequena lista:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;number&lt;/li&gt;
+&lt;li&gt;range&lt;/li&gt;
+&lt;li&gt;url&lt;/li&gt;
+&lt;li&gt;e-mail (sim, existe, porém a validação não é tão poderosa)&lt;/li&gt;
+&lt;li&gt;entre outros.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Veja exemplos dos tipos acima
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/uqkxd2v3/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Esses tipos específicos são muito úteis para sites voltados para mobile, pois os navegadores mobile já estão preparados para exibir ao usuário somente a opção de teclado compatível com o input.&lt;/p&gt;
+&lt;h3&gt;Estilizando inputs de acordo com a validação&lt;/h3&gt;
+&lt;p&gt;É possível de forma simples e genérica aplicar estilos CSS em inputs com valores válidos ou inválidos, de acordo com as regras que você determinar. Por exemplo, criaremos um padrão em que inputs inválidos terão o fundo avermelhando e os inputs válidos terão o fundo azulado.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#F08080&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#87CEFA&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para testarmos esse estilo, usaremos dois inputs, um do tipo &lt;em&gt;text&lt;/em&gt; porém de preenchimento obrigatório (&lt;em&gt;required&lt;/em&gt;) e um do tipo &lt;em&gt;number&lt;/em&gt; com o valor mínimo de 18.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Nome: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+Idade: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;18&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Simples, prático e o melhor de tudo, genérico. Veja esse código funcionando:
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wtku5m7L/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Para deixar a aparência ainda mais profissional, podemos utilizar imagens nos inputs. Faremos o mesmo exemplo, porém, ao invés de usarmos cores de fundo nos inputs, iremos acrescentar pequenos icones após o conteúdo, indicado se o campo está válido ou inválido.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/invalid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+ &lt;span class="p"&gt;}&lt;/span&gt;
+ &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/valid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+ &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O efeito no input do tipo number não é muito agradável, demonstrarei somente no campo do tipo text.
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wnjLjfcy/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p&gt;Outra forma excelente de obter um efeito semelhante a este é utilizando os pseudo-elementos &lt;strong&gt;after&lt;/strong&gt; ou &lt;strong&gt;before&lt;/strong&gt;. Faremos uma pequena alteração no HTML, adicionando um &lt;em&gt;label&lt;/em&gt; para cada input.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt; &lt;span class="na"&gt;for&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;nome&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Nome&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;number&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;18&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt; &lt;span class="na"&gt;for&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;idade&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Idade&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Após o conteúdo deste label, iremos adicionar o simbolo &lt;strong&gt;X&lt;/strong&gt; para os inputs inválidos e o simbolo &lt;strong&gt;✓&lt;/strong&gt; para os inputs válidos, utilizando o pseudo-elemento &lt;em&gt;after&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; X&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; ✓&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado:
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/gzn6muzu/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;h3&gt;Customizando as mensagens de validação padrão&lt;/h3&gt;
+&lt;p&gt;Para finalizar, se você já testou fazer validações com o &lt;em&gt;pattern&lt;/em&gt; dos inputs, já deve ter notado que a mensagem que é exibida indicando que o conteúdo do input está inválido é muito genérica, no Firefox por exemplo a mensagem exibida é &lt;em&gt;"Por favor, satisfaça o formato requisitado"&lt;/em&gt;.
+Existe uma forma de modificar essa mensagem via javascript, através do método &lt;strong&gt;setCustomValidity&lt;/strong&gt; aplicado no evento &lt;strong&gt;oninvalid&lt;/strong&gt; do input. Por exemplo, vamos imaginar um input que irá receber uma senha e essa senha pode conter qualquer tipo de caracter, porém, deverá ter um tamanho minímo de 8 caracteres.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;senha&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;oninvalid&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;this.setCustomValidity(&amp;#39;No m&amp;amp;iacute;nimo 8 caracteres&amp;#39;)&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;oninput&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;this.setCustomValidity(&amp;#39;&amp;#39;)&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;password&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;senha&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;pattern&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;.{8,}&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;required&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note que foi necessário manipular o &lt;em&gt;CustomValidity&lt;/em&gt; setando uma string vazia no evento &lt;strong&gt;oninput&lt;/strong&gt; do input, isso porque, ao setar o CustomValidity com algum valor, o html interpreta que o input está inválido e não muda esse estado mesmo alterando o conteúdo para algo válido.
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/4wfmphhj/embedded/result,html" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.w3schools.com/tags/att_input_pattern.asp"&gt;Input Pattern - W3Schools&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://www.the-art-of-web.com/html/html5-form-validation/"&gt;Html5 form validation - Art of Web&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message"&gt;Set Custom Validation Message - Stackoverflow&lt;/a&gt; &lt;br /&gt;
+&lt;a href="http://www.w3schools.com/css/css_pseudo_elements.asp"&gt;CSS Pseudo Elements&lt;/a&gt;&lt;/p&gt;</summary><category term="html"></category><category term="forms"></category><category term="javascript"></category></entry></feed>

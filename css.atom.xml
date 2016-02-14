@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.codeforcloud.info/" rel="alternate"></link><link href="http://www.codeforcloud.info/css.atom.xml" rel="self"></link><id>http://www.codeforcloud.info/</id><updated>2014-11-21T00:00:00-02:00</updated><entry><title>Arredondando bordas com CSS3</title><link href="http://www.codeforcloud.info/2014/11/21/Arredondando-bordas-com-css3/" rel="alternate"></link><updated>2014-11-21T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-21:2014/11/21/Arredondando-bordas-com-css3/</id><summary type="html">&lt;p&gt;Uma das hypes atuais da web é o uso massivo de imagens redondas, principalmente em avatares. Google, Facebook, Instagram e iOS, são só alguns exemplos de grandes nomes do design que aderiram a essa tendencia. Mas calma, se você quer pegar carona nessa onda, você não precisa ficar editando imagem por imagem do seu site.&lt;/p&gt;
+
+
+&lt;h3&gt;Então "Comofas"?&lt;/h3&gt;
+&lt;p&gt;Com o &lt;strong&gt;CSS3&lt;/strong&gt;, conseguir esse efeito é &lt;em&gt;moleza&lt;/em&gt;, basta utilizar a propriedades &lt;strong&gt;border-radius&lt;/strong&gt;. Essa propriedade recebe como valor uma porcentagem ou uma medida em pixels, que determina quanto a borda do elemento deverá ser arredondada.&lt;/p&gt;
+&lt;h3&gt;De Quadrado para Circulo&lt;/h3&gt;
+&lt;p&gt;Transformar uma imagem quadrada em uma imagem redonda é muito simples, basta determinar sua propriedade &lt;em&gt;border-radius&lt;/em&gt; com 50%.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.avatar&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora, qualquer elemento html (de preferencia quadrado) que seja da classe &lt;strong&gt;avatar&lt;/strong&gt;, será transformado em um circulo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;img&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;avatar&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;img/photo.jpg&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja o resultado com uma imagem aleatória&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/8/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h3&gt;Arredondando cantos&lt;/h3&gt;
+&lt;p&gt;Se a sua intenção não for criar circulos, você pode diminuir a porcentagem do raio (radius) ou trabalhar com pixels. Você pode também arredondar somente cantos específicos de um elemento. Assim como a grande maioria das propriedades do CSS, a propriedade &lt;em&gt;border-radius&lt;/em&gt; consiste em um conjunto de popriedades especificas para cada canto de um elemento, como por exemplo a propriedade &lt;strong&gt;border-top-left-radius&lt;/strong&gt;.
+Para arredondar somente os cantos inferiores de um elemento, podemos fazer da seguinte forma.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.inferior&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border-bottom&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;left&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="nb"&gt;border-bottom&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;right&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;ou assim&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.inferior&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt; &lt;span class="m"&gt;30px&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Veja esse exemplo com a mesma imagem aleatória anterior&lt;/p&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/3/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+
+&lt;h3&gt;É Cross-Browser?&lt;/h3&gt;
+&lt;p&gt;Realizei testes tanto com o Firefox (gecko) como com Chrome (webkit) e não tive problemas, o IE 9 (trident) também já está compativel, mas por garantia e compatibilidade com versões antigas de outros browsers, você pode usar as propriedades especificas de cada motor de renderização&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nc"&gt;.seletor&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;webkit&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;moz&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="nb"&gt;border&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;radius&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;50%&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://msdn.microsoft.com/pt-br/library/gg589503%28v=vs.85%29.aspx"&gt;Cantos arredondados no IE 9&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://css-tricks.com/almanac/properties/b/border-radius/"&gt;border-radius - CSS Tricks&lt;/a&gt;&lt;br /&gt;&lt;/p&gt;</summary><category term="css"></category><category term="front-end"></category><category term="html"></category></entry></feed>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Docker, por onde começar</title>
+
+            <link href="http://www.codeforcloud.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.codeforcloud.info/docker.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.codeforcloud.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="docker" />
+        <meta name="tags" contents="devops" />
+        <meta name="tags" contents="linux" />
+        <meta name="tags" contents="python" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.codeforcloud.info/2015/02/15/docker-por-onde-comecar/">
+	<meta property="og:title" content="Docker, por onde começar">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.codeforcloud.info/">
+	<meta property="article:published_time" content="2015-02-15 10:32:26-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.codeforcloud.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.codeforcloud.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Docker, por onde começar</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.codeforcloud.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Dom 15 fevereiro 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o <strong>Docker</strong>, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
+Arrisco dizer que, nos próximos anos, se o Docker não acabar com a virtualização, essa só irá existir em conjunto com o Docker.
+O projeto ainda está no começo mas já existem pessoas utilizando em produção.
+Entenda um pouco sobre o que é o Docker e como você pode começar a utilizar em seu dia a dia.</p>
+
+
+<h3>Docker</h3>
+<p>O Docker é uma plataforma open source (escrita em <strong>Go</strong>) que trabalha com o conceito de <em>containers</em>.
+A ideia do projeto é simples, se você precisa de uma stack com <strong>ubuntu</strong>, <strong>python</strong>, <strong>nginx</strong> e <strong>supervisor</strong> por exemplo, você pode colocar tudo isso em um container e deixar esse container pronto para <em>subir</em> a qualquer hora, sem que seja necessário instalar esses aplicativos novamente.
+Pensando dessa forma, o conceito pode se confundir com o conceito de virtualização, porém, o funcionamento é muito diferente.
+Enquanto que em uma máquina virtual, possuimos um S.O. completo e isolado, no Docker, aproveitamos o kernel do S.O. hospedeiro, fazendo com isso com que o processo seja muito mais rápido mas sem perder o isolamento dos arquivos e dos processos.</p>
+<p align="center">
+    <img src="/images/docker_vs_vm.png">
+</p>
+
+<p>Para que isso seja possível, o docker utiliza o <a href="https://linuxcontainers.org/">Linux Containers</a> para ter acesso aos recursos do S.O. e também utiliza o <a href="http://aufs.sourceforge.net/">AuFS</a> para controlar o sistema de arquivos.</p>
+<h3>Instalado o Docker</h3>
+<p>Chega de conversa fiada, vamos para a prática, afinal, <em>talk is cheap</em>.
+Para instalar o Docker no ubuntu, basta instalar o pacote <code>docker.io</code> através do <code>apt-get</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo apt-get install docker.io
+</pre></div>
+
+
+<p>Para confirmar se a instalação foi bem sucedida, utilize o comando <code>docker version</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker version
+Client version: 1.0.1
+Client API version: 1.12
+Go version <span class="o">(</span>client<span class="o">)</span>: go1.2.1
+Git commit <span class="o">(</span>client<span class="o">)</span>: 990021a
+Server version: 1.0.1
+Server API version: 1.12
+Go version <span class="o">(</span>server<span class="o">)</span>: go1.2.1
+Git commit <span class="o">(</span>server<span class="o">)</span>: 990021a
+</pre></div>
+
+
+<blockquote>
+<p>Para utilizar o Docker é necessário acesso de root.</p>
+</blockquote>
+<h3>Criando uma imagem de um container</h3>
+<p>Agora iremos criar uma imagem de um container do docker para aplicações <code>WSGI</code> com Python (<em>python2.7</em>, <em>pip</em> e <em>virtualenv</em>), Nginx, Gunicorn e Supervisor instalados.
+Esse container será baseado na imagem do <strong>Ubuntu</strong>.</p>
+<h4>Ubuntu</h4>
+<p>As imagens dos containers do docker são armazenadas no <strong>Docker Hub</strong> e podem ser baixadas através do comando <code>docker pull</code> (veremos mais sobre o <em>docker hub</em>).
+Para baixar a imagem do ubuntu, basta executar o comando a seguir.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker pull ubuntu:14.04
+</pre></div>
+
+
+<blockquote>
+<p>No comando acima, realizamos o download da imagem do ubuntu na <em>tag</em> 14.04.</p>
+</blockquote>
+<p>Para testar se o download da imagem foi bem sucedido, iremos executar uma instrução dentro do container do ubuntu, através do comando <code>docker run</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker run ubuntu:14.04 cat /etc/lsb-release
+<span class="nv">DISTRIB_ID</span><span class="o">=</span>Ubuntu
+<span class="nv">DISTRIB_RELEASE</span><span class="o">=</span>14.04
+<span class="nv">DISTRIB_CODENAME</span><span class="o">=</span>trusty
+<span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="s2">&quot;Ubuntu 14.04.1 LTS&quot;</span>
+</pre></div>
+
+
+<p>Essa instrução irá executar o comando <code>cat /etc/lsb-release</code> dentro do container do ubuntu.
+Se você conseguiu executar esse comando com sucesso, parabéns, você já está utilizando o Docker :).</p>
+<blockquote>
+<p>Se você tiver algum problema para executar o comando <code>docker pull</code> adicione ao final do arquivo <code>/etc/resolv.conf</code> a linha <code>nameserver 8.8.8.8</code>.</p>
+</blockquote>
+<h4>Fluxo de criação do container</h4>
+<p>Antes de prosseguirmos é importante entender o fluxo de criação dos containers.
+O Docker é muito semelhante ao <strong>GIT</strong> em termos de fluxo de trabalho.
+Por padrão o docker <strong>não</strong> efetiva os comandos que são executados em um container.
+Para que as alterações sejam efetivadas é necessário realizar um <code>commit</code> dessas alterações.
+Isso é excelente para realizar experimentos, pois, imagine que você pode acessar um container, instalar um aplicativo qualquer, realizar diversos teste e sair do container, desta forma as alterações feitas somente serão afetivadas se o comando <code>docker commit</code> for executado.</p>
+<p>Veremos isso na prática ao instalar nossa stack em nosso container.</p>
+<h4>Criando a Stack</h4>
+<p>Agora que já temos a imagem base para criar nosso container, podemos dar sequência.
+Como iremos instalar diversos aplicativos, faremos do modo mais simples, instalaremos pelo bash do container.
+Para iniciar o bash de um container, execute o comando <code>docker run -t -i IMAGEM /bin/bash</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker run -t -i ubuntu:14.04 /bin/bash
+root@4e0ba33ccad5:/#
+</pre></div>
+
+
+<p>Assim será iniciado o bash do container e neste ponto não tem muito segredo, basta instalar os aplicativos.
+Começaremos pelos aplicativos que são instalados através do <code>apt-get</code> (<em>python</em>, <em>pip</em> e <em>nginx</em>).</p>
+<div class="highlight"><pre><span></span>root@4e0ba33ccad5:/# apt-get update
+root@4e0ba33ccad5:/# apt-get install -y python python-pip nginx
+</pre></div>
+
+
+<p>Com o python e o pip instalado, agora podemos instalar o <em>virtualenv</em>, o <em>gunicorn</em> e o <em>supervisor</em>.</p>
+<div class="highlight"><pre><span></span>root@4e0ba33ccad5:/# pip install virtualenv supervisor gunicorn
+</pre></div>
+
+
+<p>Para sair do container use o comando <code>exit</code>.</p>
+<h4>Realizando commit da alterações</h4>
+<p>Para que essa alterações sejam efetivadas em nosso container (gerando assim uma nova imagem), devemos executar <em>commit</em>.
+O comando <code>docker commit</code> possui a seguinte sintaxe.</p>
+<div class="highlight"><pre><span></span>docker commit <span class="o">[</span>OPÇÕES<span class="o">]</span> CONTAINER <span class="o">[</span>REPOSITORIO<span class="o">]</span>
+</pre></div>
+
+
+<p>Porém, sabemos que o nome da imagem é <code>ubuntu:14.04</code> mas não sabemos a identificação do container que criamos.
+Para saber qual é a identificação do ultimo container criado, execute o comando <code>docker ps -l</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker ps -l
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+4e0ba33ccad5        ubuntu:14.04        /bin/bash           <span class="m">22</span> minutes ago      Exited <span class="o">(</span>0<span class="o">)</span> <span class="m">11</span> minutes ago                       focused_mayer
+</pre></div>
+
+
+<p>Segundo o resultado do comando <code>docker ps</code> o ID do nosso container é <code>4e0b</code> (só precisaremos dos 4 primeiros digitos).
+Sendo assim, para finalmente realizar o commit, utilizaremos o comando a seguir.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker commit 4e0b wsgi-stack
+</pre></div>
+
+
+<p>Com o comando acima, estamos criando uma nova imagem chamada <code>wsgi-stack</code> com o conteúdo das alterações que realizamos anteriormente.
+Para conferir se tudo funcinou corretamente, vamos executar o comando <code>python --version</code> em nosso novo container.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker run wsgi-stack python --version
+Python 2.7.6
+</pre></div>
+
+
+<p>Com isso nossa imagem <strong>wsgi-stack</strong> já está concluída e pronta para o uso, mas antes de efetivamente colocarmos uma aplicações para rodar nela, veremos uma forma mais fácil de criar imagens do docker, através do <strong>Dockerfile</strong>.</p>
+<h3>Dockerfile</h3>
+<p>Um <code>Dockerfile</code> é um script que automatiza a criação de imagens do docker.
+Podemos simplificar a criação da imagem <code>wsgi-stack</code> que criamos anteriormente com o seguinte <code>Dockerfile</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> ubuntu:14.04</span>
+
+<span class="k">MAINTAINER</span><span class="s"> Diego Garcia &lt;drgarcia1986@gmal.com&gt;</span>
+
+<span class="k">RUN</span> apt-get update
+<span class="k">RUN</span> apt-get install -y python python-pip nginx
+<span class="k">RUN</span> pip install virtualenv gunicorn supervisor
+</pre></div>
+
+
+<p>Para criar a imagem baseado no Dockerfile, basta executar o comando <code>docker build</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker build -t wsgi-stack .
+</pre></div>
+
+
+<blockquote>
+<p>O <code>.</code> (ponto) indica que o <code>Dockerfile</code> está no mesmo diretório onde o comando <code>docker build</code> está sendo executado.</p>
+</blockquote>
+<p>Basicamente o comando acima cria uma imagem chamada <code>wsgi-stack</code> baseada no <code>Dockerfile</code> que está presente no mesmo diretório.</p>
+<h4>Comandos do Dockerfile</h4>
+<p>O Dockerfile é uma ferramenta muito poderosa para a criação de imagens do docker.
+Veja alguns comandos que podem ser utilizados no Dockerfile.</p>
+<h5>FROM</h5>
+<p>Primeira instrução, define a imagem base.</p>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> ubuntu14:04</span>
+</pre></div>
+
+
+<h5>MAINTAINER</h5>
+<p>Especifica o autor da imagem.</p>
+<div class="highlight"><pre><span></span><span class="k">MAINTAINER</span><span class="s"> Foo foo@bar.com</span>
+</pre></div>
+
+
+<h5>RUN</h5>
+<p>Equivalente ao comando <code>docker run</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">RUN</span> apt-get install python
+</pre></div>
+
+
+<h5>ENV</h5>
+<p>Define uma variável de ambiente.</p>
+<div class="highlight"><pre><span></span><span class="k">ENV</span><span class="s"> PORT=8000</span>
+</pre></div>
+
+
+<h5>EXPOSE</h5>
+<p>Expõe portas.</p>
+<div class="highlight"><pre><span></span><span class="k">EXPOSE</span><span class="s"> 8000</span>
+</pre></div>
+
+
+<h5>ADD</h5>
+<p>Copia arquivos do host hospedeiro para dentro da imagem.</p>
+<div class="highlight"><pre><span></span><span class="k">ADD</span><span class="s"> foo.txt /bar/foo.txt</span>
+</pre></div>
+
+
+<h5>ENTRYPOINT</h5>
+<p>Permite que a imagem seja executada como uma aplicativo (a partir da linha de comando especificada).</p>
+<div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="s"> [&quot;python&quot;, &quot;app.py&quot;]</span>
+</pre></div>
+
+
+<h5>CMD</h5>
+<p>Comando que será executado quando a execução do container for acionada.</p>
+<div class="highlight"><pre><span></span><span class="k">CMD</span><span class="s"> [&quot;supervisord&quot;]</span>
+</pre></div>
+
+
+<h3>DockerHub</h3>
+<p>O DockerHub é uma espécie de <em>GitHub</em> do Docker.
+Nele você pode criar uma conta e armazenar suas imagens do Docker, assim como usufluir das imagens de outros usuários.
+Em nosso exemplo, utilizamos a imagem do <em>ubuntu</em> que está armazenada no DockerHub, através do comando <code>docker pull ubuntu</code> e através do <code>FROM ubuntu</code> do Dockerfile.
+Assim como no GitHub, o endereço das imagens é sempre <code>ususário/imagem</code> com exceção das imagens padrão (como é o caso da imagem do ubuntu).</p>
+<h4>Enviando uma imagem para o Docker Hub</h4>
+<p>Para enviarmos nossa imagem <code>wsgi-stack</code> para o DockerHub, primeiro é necessario <a href="https://hub.docker.com/account/signup/">criar uma conta</a> no serviço e depois fazer <em>login</em> no aplicativo do Docker.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker login
+Username: drgarcia1986
+Password:
+Email: drgarcia1986@gmail.com
+Login Succeeded
+</pre></div>
+
+
+<p>Agora para enviar a imagem para o DockerHub, basta utilizar o comando <code>docker push [IMAGEM]</code>, porém, o nome da imagem deve serguir o padrão <code>user/image</code> e nossa imagem está com o nome de <code>wsgi-stack</code>, para resolver essa questão, podemos criar uma <code>tag</code> da imagem com o nome no padrão esperado pelo Docker Hub.</p>
+<div class="highlight"><pre><span></span>user@machine:~$ sudo docker tag wsgi-stack drgarcia1986/wsgi-stack
+</pre></div>
+
+
+<p>E finalmente enviar nossa imagem para o DockerHub.</p>
+<div class="highlight"><pre><span></span>user@machine~$ sudo docker push drgarcia1986/wsgi-stack
+</pre></div>
+
+
+<p>Pronto, agora sempre que for preciso um docker com <em>python2.7</em>, <em>pip</em>, <em>virtualenv</em>, <em>nginx</em>, <em>supervisor</em> e <em>gunicorn</em>, basta fazer um pull da imagem <em>drgarcia1986/wsgi-stack</em>.</p>
+<div class="highlight"><pre><span></span>user@machine~$ sudo docker pull drgarcia1986/wsgi-stack
+</pre></div>
+
+
+<p>Em uma segunda parte desse artigo veremos como executar uma aplicação web dentro de um conteiner e como automatizar ainda mais a criação de imagens do Docker através do ~Fig~ <strong>docker compose</strong>.</p>
+<p><strong>Referências</strong><br>
+<a href="https://www.docker.com/">Site Oficial</a><br>
+<a href="http://docs.docker.com/">Documentação oficial</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.codeforcloud.info/tag/docker.html">docker</a>, <a href="http://www.codeforcloud.info/tag/devops.html">devops</a>, <a href="http://www.codeforcloud.info/tag/linux.html">linux</a>, <a href="http://www.codeforcloud.info/tag/python.html">python</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2015/02/15/docker-por-onde-comecar/';
+                var disqus_url = 'http://www.codeforcloud.info/2015/02/15/docker-por-onde-comecar/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.codeforcloud.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.codeforcloud.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.codeforcloud.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

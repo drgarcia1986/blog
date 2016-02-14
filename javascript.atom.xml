@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.codeforcloud.info/" rel="alternate"></link><link href="http://www.codeforcloud.info/javascript.atom.xml" rel="self"></link><id>http://www.codeforcloud.info/</id><updated>2014-11-20T00:00:00-02:00</updated><entry><title>String Format no JavaScript</title><link href="http://www.codeforcloud.info/2014/11/20/String-Format-No-Javascript/" rel="alternate"></link><updated>2014-11-20T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-11-20:2014/11/20/String-Format-No-Javascript/</id><summary type="html">&lt;p&gt;Nessa minha recente aproximação com o &lt;strong&gt;JavaScript&lt;/strong&gt;, a primeira coisa que senti falta foi de um método do tipo &lt;em&gt;Format&lt;/em&gt; para trabalhar com strings.&lt;/p&gt;
+
+
+&lt;h3&gt;Decepção&lt;/h3&gt;
+&lt;p&gt;Confesso que foi uma triste surpresa saber que nativamente o JavaScript não possui um método para essa finalidade. Nesse momento me imaginei fazendo esse tipo de concatenação:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;texto&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Olá &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;nome&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;, seja bem vindo ao site &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;site&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;\nVocê é realmente &amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;nome&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;?&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Esperança&lt;/h3&gt;
+&lt;p&gt;Da mesma forma que fui surpreendido negativamente, também tive uma ótima surpresa ao descobrir que o JavaScript permite &lt;em&gt;tunar&lt;/em&gt; seus objetos, incluido novas propriedades e novos métodos, graças a propriedade &lt;strong&gt;prototype&lt;/strong&gt;. Com isso o céu é o limite.&lt;/p&gt;
+&lt;h3&gt;Solução&lt;/h3&gt;
+&lt;p&gt;O seguinte código cria um método chamado &lt;strong&gt;format&lt;/strong&gt; no prototype dos objetos &lt;strong&gt;Strings&lt;/strong&gt;, tornando esse método disponível para qualquer string do código:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nb"&gt;String&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prototype&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nb"&gt;String&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prototype&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;length&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;regexp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="nb"&gt;RegExp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;\\{&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;\\}&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;gi&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+            &lt;span class="nx"&gt;formatted&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;regexp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;formatted&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ao colocar esse código no ~~head do html na tag script~~ início do seu arquivo &lt;em&gt;JS&lt;/em&gt;, você será capaz de montar o texto do primeiro exemplo da seguinte forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;texto&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Olá {0}, seja bem vindo ao site {1}\nVocê é realmente {0}?&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;nome&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;site&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com certeza mais elegante e mais aderente a outras linguagens, como por exemplo o Python.&lt;/p&gt;
+&lt;h3&gt;Explicação&lt;/h3&gt;
+&lt;p&gt;Neste código mágico primeiro verificamos se a propriedade &lt;em&gt;format&lt;/em&gt; do prototype de String está nula, caso esteja, atribuimos a ela um método que basicamente recupera o valor do objeto com o &lt;strong&gt;this&lt;/strong&gt; (no caso, o conteúdo da string) e executa um for em cada argumento passado para esse método, esse &lt;em&gt;for&lt;/em&gt; substitui todas as ocorrências de &lt;em&gt;{N}&lt;/em&gt;, pelo valor do argumento em seu determinado índice. Por exemplo, o resultado deste código:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Seja bem vindo {1}, {0}.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Diego&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Garcia&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Será:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Seja bem vindo Garcia, Diego.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Possibilidade&lt;/h3&gt;
+&lt;p&gt;As possibilidades com o uso do prototype são infinitas, comparando a outras linguagens, o prototype nos permite criar &lt;strong&gt;class helpers&lt;/strong&gt; em JavaScript, o que por si só, já é incrivel.&lt;/p&gt;
+&lt;h4&gt;Referências&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.w3schools.com/jsref/jsref_prototype_string.asp"&gt;Prototype String - W3Schools&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format"&gt;JavaScript equivalent to Printf -  StackOverFlow&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://www.codeproject.com/Tips/59262/JavaScript-date-helper-class"&gt;Date Helper - CodeProject&lt;/a&gt;&lt;br /&gt;&lt;/p&gt;</summary><category term="prototype"></category><category term="javascript"></category></entry></feed>

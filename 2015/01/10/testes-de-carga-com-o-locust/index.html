@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Testes de carga com o Locust</title>
+
+            <link href="http://www.codeforcloud.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.codeforcloud.info/python.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.codeforcloud.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="python" />
+        <meta name="tags" contents="tests" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.codeforcloud.info/2015/01/10/testes-de-carga-com-o-locust/">
+	<meta property="og:title" content="Testes de carga com o Locust">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.codeforcloud.info/">
+	<meta property="article:published_time" content="2015-01-10 18:45:15-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.codeforcloud.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.codeforcloud.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Testes de carga com o Locust</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.codeforcloud.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Sáb 10 janeiro 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra <em>complicado</em> para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.</p>
+
+
+<h2>Locust</h2>
+<p>O Locust é uma ferramenta open source escrita em python para testes de carga em aplicações web (independente da técnologia). A principal caracteristica do Locust é a forma como são escritos os testes, simples códigos python. Com poucas linhas de código é possível escrever testes de carga que vão realmente colocar sua aplicação em um campo de batalha.</p>
+<h3>Instalação</h3>
+<p>Para quem usa Python a facilidade de uso já começa na instalação, basta utilizar o comando <code>pip install locustio</code> e a instalação está feita.
+Para instalar o Locust em um ambiente unix com <em>virtualenv</em>, basta criar o virtualenv:</p>
+<div class="highlight"><pre><span></span>user@machine:~/locust$ virtualenv venv
+New python executable in venv/bin/python
+Installing setuptools, pip...done.
+</pre></div>
+
+
+<p>Ativar o virtualenv</p>
+<div class="highlight"><pre><span></span>user@machine:~/locust$ <span class="nb">source</span> venv/bin/activate
+<span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$
+</pre></div>
+
+
+<p>E instalar o Locust</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ pip install locustio
+</pre></div>
+
+
+<p>Para confirmar se o Locust está instalado, use o comando <code>locust</code> com a opção <code>-V</code></p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ locust -V
+<span class="o">[</span>2015-01-08 22:59:28,251<span class="o">]</span> machine/INFO/stdout: Locust 0.7.2
+</pre></div>
+
+
+<blockquote>
+<p>Não se preocupe se aparecerem mensagens de <em>warning</em> alertando sobre a ausência do <em>zmq</em>, a ausência desse pacote não afeta nossa demostração.</p>
+</blockquote>
+<h3>Aplicação para testes</h3>
+<p>Para demonstrar a utilização do Locust, vamos criar um simples webservice que realiza conversões de tempo (por ex. <em>hora para segundo</em>).</p>
+<p>Na criação desse webservice, utilizaremos o <strong>Flask</strong> por ser um dos frameworks mais simples e utilizados atualmente. Como o Locust utiliza o Flask internamente, ele já está instalado em nosso virtualenv.</p>
+<blockquote>
+<p>Como o foco do post não é falar do <em>Flask</em>, não entrarei em detalhes do framework, se você não está familiarizado com ele, recomendo a leitura deste <a href="pythonclub.com.br/what-the-flask-pt-1-introducao-ao-desenvolvimento-web-com-python">excelente artigo</a> do Bruno Rocha.</p>
+</blockquote>
+<p>Crie um arquivo chamado <strong>converter.py</strong> com o seguinte código:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+
+<span class="n">converter</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DH&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span>     <span class="c1"># day to hours</span>
+             <span class="s1">&#39;HM&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">h</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>     <span class="c1"># hour to minutes</span>
+             <span class="s1">&#39;MS&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>     <span class="c1"># minute to seconds</span>
+             <span class="s1">&#39;DM&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">1440</span><span class="p">,</span>   <span class="c1"># day to minutes</span>
+             <span class="s1">&#39;DS&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">86400</span><span class="p">,</span>  <span class="c1"># day to seconds</span>
+             <span class="s1">&#39;HS&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">h</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">}</span>   <span class="c1"># hour to seconds</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&lt;rule&gt;/&lt;int:value&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">conversion</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">converter</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">upper</span><span class="p">()](</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Rule for conversion not found&quot;</span><span class="p">,</span> <span class="mi">404</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Para testar essa aplicação basta inicia-la</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ python converter.py
+ * Running on http://127.0.0.1:5000/
+</pre></div>
+
+
+<p>E realizar uma requisição</p>
+<div class="highlight"><pre><span></span>curl http://127.0.0.1:5000/hm/3
+180
+</pre></div>
+
+
+<h3>Criando as <em>Locust Tasks</em></h3>
+<p>Agora que já temos o que testar, vamos finalmente escrever nosso script Locust. Como eu disse anteriormente, os scripts Locust são scripts python, sem nenhum segredo.</p>
+<p>Os testes são baseados em <strong>Tasks</strong> que são criadas em uma classe que herda da classe <code>TaskSet</code> do Locust. Na classe <em>TaskSet</em> o que determina se um método é uma <em>task</em> é a presença do decorator <code>@task</code>.</p>
+<p>O Locust trabalha com o conceito de requests baseados em clientes com caracteristicas especificas. O principal atributo das classes de cliente <em>Locust</em> é o atributo <code>task_set</code>, que recebe a classe onde as tasks de teste estão especificadas. Como o foco é o teste de aplicações web, o protocolo em questão é o protocolo <strong>HTTP</strong>, sendo assim, a classe base para criação desses <em>clientes</em> é a classe <code>HttpLocust</code>.</p>
+<p>Não se assuste, como estamos falando de <strong>Python</strong>, a explicação é praticamente maior que o código :).</p>
+<p>Para testar alguns métodos de nosso webservice, crie um arquivo chamado <strong>locust_script.py</strong> com o código a seguir.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
+
+<span class="k">class</span> <span class="nc">ConverterTasks</span><span class="p">(</span><span class="n">TaskSet</span><span class="p">):</span>
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">day_to_hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dh/5&#39;</span><span class="p">)</span>
+
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">day_to_minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dm/2&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ApiUser</span><span class="p">(</span><span class="n">HttpLocust</span><span class="p">):</span>
+    <span class="n">task_set</span> <span class="o">=</span> <span class="n">ConverterTasks</span>
+    <span class="n">min_wait</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">max_wait</span> <span class="o">=</span> <span class="mi">3000</span>
+</pre></div>
+
+
+<p>No código acima, criamos a classe <code>ConverterTasks</code> onde especificamos nossas tasks para os testes através do decorator <code>@task</code> e a classe <code>ApiUser</code> onde especificamos o nosso cliente Locust do tipo <code>HttpLocust</code>, preenchendo o atributo <code>task_set</code> com a classe <code>ConverterTask</code>.</p>
+<p>Como nosso cliente Locust é do tipo <strong>HttpLocust</strong>, foi possível utilizar o objeto <code>self.client</code> em nosso <strong>task_set</strong>. Note que o objeto <em>self.client</em> da classe <em>ConverterTasks</em> consiste em um cliente http.</p>
+<p>Os atributos <code>min_wait</code> e <code>max_wait</code> especificam o tempo mínimo e máximo em milisegundos que o teste deve aguardar entre a execução de uma task e outra. O valor padrão desses atributos é <em>1000</em> (1 segundo).</p>
+<h3>Executando os testes</h3>
+<p>Com o script locust escrito, é chegada a hora da mágica, vamos finalmente ver o Locust em ação. Se certifique que seu webservice está no ar e inicie seu script Locust com o seguinte comando:</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ locust -f locust_script.py –H http://127.0.0.1:5000
+</pre></div>
+
+
+<p>A opção <code>-f</code> específica o arquivo com script Locust e a opção <code>-H</code> específica o endereço do webservice que será testado.
+Ao executar esse comando, o Locust será iniciado na porta <strong>8089</strong> (porta padrão que pode ser alterada através da opção <code>-P</code>).</p>
+<p>Ao abrir no browser a url http://127.0.0.1:8089 será apresentada a seguinte tela:</p>
+<p><img alt="Tela inicial" src="/images/locust_inicial.png" /></p>
+<p>O campo <strong>Number of users to simulate</strong> é referente a quantidade de usuários simultâneos que serão utilizados para o teste, já o campo <strong>Hatch rate</strong> é referente a quantidade de usuários que serão adicionados ao teste por segundo (até atingir o numéro de usuários específicado na opção anterior). Específique as opções anteriores e clique em <strong>Start swarming</strong> para que os testes sejam iniciados e seja apresentada a seguinte tela.</p>
+<p><img alt="Testes" src="/images/locust.png" /></p>
+<p>Talvez as informações mais importantes apresentadas nessa tela é o <strong>RPS</strong> (request per seconds) e os <strong>failures</strong>.
+Note que os resultados são apresentados por cada <em>Task</em> e são totalizados no final da listagem.</p>
+<h3>Definindo <em>peso</em> para os teste</h3>
+<p>É possível determinar o <em>peso</em> de uma <em>task</em> através do parâmetro opcional <strong>weight</strong> do decarator <code>@task</code>. Por exemplo, imagine que no cenário real são mais requisições para conversão de <em>dias para minutos</em> do que de <em>dias para horas</em>, sendo assim nossos testes devem seguir essa mesma lógica.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
+
+<span class="k">class</span> <span class="nc">ConverterTasks</span><span class="p">(</span><span class="n">TaskSet</span><span class="p">):</span>
+    <span class="nd">@task</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">day_to_hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dh/5&#39;</span><span class="p">)</span>
+
+    <span class="nd">@task</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">day_to_minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dm/2&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ApiUser</span><span class="p">(</span><span class="n">HttpLocust</span><span class="p">):</span>
+    <span class="n">task_set</span> <span class="o">=</span> <span class="n">ConverterTasks</span>
+    <span class="n">min_wait</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">max_wait</span> <span class="o">=</span> <span class="mi">3000</span>
+</pre></div>
+
+
+<p>Da forma como foi especificado acima, para cada requisição de conversão de <em>dia para horas</em>, serão executadas duas de <em>dia para minutos</em>.</p>
+<h3>Utilizando outros Verbos HTTP</h3>
+<p>Nesse nosso exemplo só utilizamos o método http <em>GET</em>, até mesmo porque nosso webservice só possui métodos GET, porém, é possível utilizar os outros verbos HTTP, por exemplo:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
+
+<span class="k">class</span> <span class="nc">RegistersTasks</span><span class="p">(</span><span class="n">TaskSet</span><span class="p">):</span>
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/person&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Foo&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;foo@bar.net&#39;</span><span class="p">})</span>
+
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">create_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/group&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Bar&#39;</span><span class="p">})</span>
+
+<span class="k">class</span> <span class="nc">WebsiteUser</span><span class="p">(</span><span class="n">HttpLocust</span><span class="p">):</span>
+    <span class="n">task_set</span> <span class="o">=</span> <span class="n">RegistersTasks</span>
+    <span class="n">min_wait</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">max_wait</span> <span class="o">=</span> <span class="mi">3000</span>
+</pre></div>
+
+
+<p>O cliente HTTP presente no objeto <code>self.client</code> é baseado na biblioteca <a href="http://docs.python-requests.org/en/latest/">Requests</a>, sendo assim, os métodos http (GET, POST, PUT, DELETE, OPTIONS) estão disponiveis.</p>
+<h3>Testando com valores dinámicos</h3>
+<p>No teste do conversor de tempo, utilizamos valores fixos, porém, para se apróximar mais da realidade, o ideal seria testar com valores aleatórios. Como estamos falando de código Python, isso é muito simples, bastar alterar de:</p>
+<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dh/5&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>para:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+
+<span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dh/</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Mas isso geraria um problema, pois o Locust agrupa o relatório de testes por url, como estamos realizando até 10 chamadas diferentes para o mesmo recurso, teriamos até 10 chamadas diferentes sendo listas e contabilizadas separadamente.</p>
+<p><img alt="Random" src="/images/locust_random.png" /></p>
+<p>Para resolver esse problema, podemos nomear os requests independente da url, atráves do parâmetro <code>name</code> dos métodos do client HTTP. Sendo assim nosso código poderia ficar da seguinte forma:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+<span class="k">class</span> <span class="nc">ConverterTasks</span><span class="p">(</span><span class="n">TaskSet</span><span class="p">):</span>
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">day_to_hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dh/</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/dh/[int]&#39;</span><span class="p">)</span>
+
+    <span class="nd">@task</span>
+    <span class="k">def</span> <span class="nf">day_to_minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/dm/</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/dm/[int]&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ApiUser</span><span class="p">(</span><span class="n">HttpLocust</span><span class="p">):</span>
+    <span class="n">task_set</span> <span class="o">=</span> <span class="n">ConverterTasks</span>
+    <span class="n">min_wait</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">max_wait</span> <span class="o">=</span> <span class="mi">3000</span>
+</pre></div>
+
+
+<p>Com isso o relatório volta a ser apresentado da maneira esperada.</p>
+<p><img alt="nomeadas" src="/images/locust_name.png" /></p>
+<h3>Sessão de usuário</h3>
+<p>O cliente http da classe <code>HttpLocust</code> preserva os cookies entre os requests, possibilitando realizar logins e consumir métodos remotos que dependem de uma sessão de usuário ativa.</p>
+<p>Para validar esse conceito, criaremos uma aplicação simples que possui login de usuário e um recurso protegido pela sessão. Somente o necessário para ver o Locust em ação.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">abort</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a7b05c4e06fe0502af4a3d42dd41327b&#39;</span>
+
+<span class="n">users</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;john&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;mypass&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Lee&#39;</span><span class="p">},</span>
+         <span class="s1">&#39;bob&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;secret&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Robert Brown&#39;</span><span class="p">}}</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">users</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;User not found&#39;</span><span class="p">,</span> <span class="mi">404</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="s1">&#39;Wrong password&#39;</span><span class="p">,</span> <span class="mi">401</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># GET</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt;</span>
+<span class="s1">                &lt;p&gt;User &lt;input type=text name=username&gt;&lt;/p&gt;</span>
+<span class="s1">                &lt;p&gt;Pass &lt;input type=password name=password&gt;&lt;/p&gt;</span>
+<span class="s1">                &lt;p&gt;&lt;input type=submit value=SignIn&gt;&lt;/p&gt;</span>
+<span class="s1">           &lt;/form&gt;</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s1">&#39;user&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            &lt;h1&gt;Welcome </span><span class="si">%s</span><span class="s1">&lt;/h1&gt;</span>
+<span class="s1">            &lt;p&gt;For logout click &lt;a href=</span><span class="si">%s</span><span class="s1">&gt;here&lt;/a&gt;&lt;/p&gt;</span>
+<span class="s1">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;logout&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        &lt;h1&gt;Flask with session :)&lt;/h1&gt;</span>
+<span class="s1">        &lt;p&gt;Click &lt;a href=</span><span class="si">%s</span><span class="s1">&gt;here&lt;/a&gt; to login page&lt;/p&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span> <span class="o">%</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>A aplicação representada no código acima consiste em uma página inicial (<code>/</code>), uma página de login (<code>/login</code>), uma página de logout (<code>/logout</code>) e uma página home do usuário (<code>/home</code>) que só está acessivel para usuários logados. Obviamente esse é só um exemplo didático.</p>
+<p>Se criarmos um script Locust para testar essa aplicação e nele não realizarmos o login do usuário, teriamos uma série de falhas para consumir o método remoto <code>/home</code>.</p>
+<p><img alt="401" src="/images/locust_session_fail.png" /></p>
+<p>Porém a classe <code>TaskSet</code> do Locust possui o método <code>on_start</code> que consiste no método que será executado (apenas uma vez) antes do cliente Locust iniciar as tasks. Será nele que iremos realizar o <em>login</em> do usuário.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
+
+
+<span class="k">class</span> <span class="nc">SessionTasks</span><span class="p">(</span><span class="n">TaskSet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;john&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;mypass&#39;</span><span class="p">})</span>
+
+    <span class="nd">@task</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+
+    <span class="nd">@task</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">WebsiteUser</span><span class="p">(</span><span class="n">HttpLocust</span><span class="p">):</span>
+    <span class="n">task_set</span> <span class="o">=</span> <span class="n">SessionTasks</span>
+    <span class="n">min_wai</span><span class="o">=</span><span class="mi">1000</span>
+    <span class="n">max_wait</span><span class="o">=</span><span class="mi">3000</span>
+</pre></div>
+
+
+<p>Como estamos realizando o login do usuário sempre que o cliente Locust inicia suas <em>tasks</em>, os cookies de sessão já estarão armazenados nos controles do objeto <code>self.client</code>, com isso, é possível testar até mesmo os métodos que dependem de autenticação para serem consumidos.</p>
+<p><img alt="session" src="/images/locust_session_success.png" /></p>
+<h3>Escalando os testes</h3>
+<p>O Locust é baseado em eventos, graças a isso é possível simular milhares de usuários concorrentes na mesma máquinas, porém em alguns casos esse numero não é o suficiente. Pensando nessa necessidade, o Locust possibilita trabalhar de forma distribuida, através do conceito de <strong>Master</strong> e <strong>Slave</strong>.</p>
+<blockquote>
+<p>Segundo a documentação do Locust, recomenda-se instalar a biblioteca <a href="http://zeromq.github.io/pyzmq/index.html">ZeroMQ</a> para melhorar o desempenho dos testes distribuidos. Essa é a razão do <em>warning</em> no momento da execução.</p>
+</blockquote>
+<p>Para iniciar uma instância <em>master</em> do Locust, basta utilizar o parâmetro <code>--master</code>.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ locust -f locust_script.py -H http://127.0.0.1:5000 --master
+</pre></div>
+
+
+<p>Essa instancia do Locust não irá simular nenhum cliente para teste, apenas irá disponibilizar a interface web com as estatisticas dos testes realizados e irá aguardar a conexão dos <em>slaves</em>, poís esses serão os responsáveis pela realização dos testes.</p>
+<p>Agora, para iniciar uma instância <em>slave</em> do Locust, são utilizados dois parâmetros, o <code>--slave</code> que determina que essa instância é um slave e o parâmetro <code>--master-host</code> com a localização do <em>master</em>.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine2:~/locust$ locust -f locust_script.py --slave --master-host<span class="o">=</span>192.168.0.15
+</pre></div>
+
+
+<blockquote>
+<p>Tanto a máquina <strong>master</strong> quanto as máquinas <strong>slave</strong> precisam ter o Locust instalado e possuir uma cópia do script de testes que será executado de forma distribuida.</p>
+</blockquote>
+<p>Com as instâncias slaves iniciadas, basta acessar no browser o Locust (da máquina <em>master</em>) e ver os testes em ação.</p>
+<p><img alt="distribuido" src="/images/locust_distributed.png" /></p>
+<p><strong>Referências</strong><br>
+<a href="http://locust.io/">Site Oficial</a><br>
+<a href="http://docs.locust.io/en/latest/index.html">Documentação</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.codeforcloud.info/tag/python.html">python</a>, <a href="http://www.codeforcloud.info/tag/tests.html">tests</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2015/01/10/testes-de-carga-com-o-locust/';
+                var disqus_url = 'http://www.codeforcloud.info/2015/01/10/testes-de-carga-com-o-locust/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.codeforcloud.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.codeforcloud.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.codeforcloud.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

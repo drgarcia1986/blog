@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.codeforcloud.info/" rel="alternate"></link><link href="http://www.codeforcloud.info/curl.atom.xml" rel="self"></link><id>http://www.codeforcloud.info/</id><updated>2014-12-13T01:04:33-02:00</updated><entry><title>Use o cURL</title><link href="http://www.codeforcloud.info/2014/12/13/use-o-curl/" rel="alternate"></link><updated>2014-12-13T01:04:33-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.codeforcloud.info,2014-12-13:2014/12/13/use-o-curl/</id><summary type="html">&lt;p&gt;O &lt;strong&gt;cURL&lt;/strong&gt; é uma poderosa ferramenta de linha de comando open source utilizada basicamente para transferir dados pela sintaxe de chamadas baseadas em URL.
+Muito popular no mundo Unix, o cURL já vem por padrão na maioria das distribuições linux, porém, existem também versões para windows. Apesar da utilização principal do cURL ser voltada para realizar requisições &lt;em&gt;HTTP&lt;/em&gt;, o que poucos sabem é que ele também funciona para outros protocolos como por exemplo &lt;em&gt;FTP&lt;/em&gt;, &lt;em&gt;IMAP&lt;/em&gt;, &lt;em&gt;POP3&lt;/em&gt;, etc.&lt;/p&gt;
+
+
+&lt;p&gt;Mesmo que muitos torçam o nariz para a linha de comando, ficar ninja no cURL vai lhe ajudar (e muito) em seu dia a dia, principalmente se você é um desenvolvedor de APIs.
+Veja o básico para começar a trabalhar com ele.&lt;/p&gt;
+&lt;h4&gt;Sintaxe Padrão&lt;/h4&gt;
+&lt;p&gt;A sintaxe padrão do cURL é a seguinte&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl [parâmetros] [url]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para requisições simples, não é necessário nenhum parâmetro, somente a url de destino.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl http://localhost/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Definindo o verbo HTTP&lt;/h4&gt;
+&lt;p&gt;Por padrão, uma requisição simples no cURL é feita implicitamente através do verbo &lt;strong&gt;GET&lt;/strong&gt;, mas é possível alterar o verbo HTTP da requisição através da opção &lt;code&gt;-X&lt;/code&gt;. Sendo assim, para realizar uma chamada com o verbo &lt;strong&gt;DELETE&lt;/strong&gt; por exemplo, basta fazer desta forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X DELETE http://localhost/person/foo
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Enviando corpo na requisição&lt;/h4&gt;
+&lt;p&gt;Principalmente em métodos &lt;em&gt;POST&lt;/em&gt; e &lt;em&gt;PUT&lt;/em&gt; é natural transmitir na requisição algum conteúdo no corpo, para fazer isso no cURL basta utilizar a opção &lt;code&gt;-d&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X POST -d &amp;#39;name=Fulano&amp;amp;email=fulano@foo.bar&amp;#39; http://localhost:8888/person/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Alterando os cabeçalhos da requisição&lt;/h3&gt;
+&lt;p&gt;Geralmente é necessário especificar alguma informação no cabeçalho da requisição, como por exemplo o &lt;em&gt;Authorization&lt;/em&gt;, &lt;em&gt;Content-Type&lt;/em&gt;, etc. Para isso, utilize a opção &lt;code&gt;-H&lt;/code&gt; em cada item de cabeçalho adicionado.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -X POST -H &amp;#39;Content-Type: application/json&amp;#39; -d &amp;#39;{&amp;quot;name&amp;quot;: &amp;quot;Fulano&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;fulano@foo.bar&amp;quot;}&amp;#39; http://localhost:8888/person/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Salvando a resposta em arquivo&lt;/h3&gt;
+&lt;p&gt;É muito comum realizar requisições para pegar um conteúdo que deverá ser salvo em um arquivo, por exemplo, baixar configurações, credenciais e os famosos &lt;em&gt;dotfiles&lt;/em&gt;. Existem duas formas de se fazer isso, uma é direcionando a saída do curl para um arquivo através do &lt;code&gt;&amp;gt;&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl http://mydotfiles.net/vimrc &amp;gt; ~/.vimrc
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ou através da opção &lt;code&gt;-o&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -o ~/.vimrc http://mydotfiles.net/vimrc
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Exibindo o cabeçalho de resposta&lt;/h4&gt;
+&lt;p&gt;O cURL por padrão exibe somente o conteúdo do corpo da resposta, porém, muitas vezes (para não dizer todas), é necessário visualizar os cabeçalhos de retorno, como por exemplo o &lt;em&gt;status code&lt;/em&gt;. Nesses casos utilize a opção &lt;code&gt;-i&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;curl -i http://localhost:8888/person
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Depois que comecei a usar o &lt;strong&gt;cURL&lt;/strong&gt;, nunca mais usei nenhum tipo de client HTTP para realizar testes em minhas APIs e sinto que essa troca me tornou mais produtivo e mais profissional.
+Como o cURL é praticamente um padrão, me sinto confortavel em usa-lo até para registrar o uso de APIs em manuais e exemplos.&lt;/p&gt;
+&lt;p&gt;Para saber mais comandos, você pode usar tanto o help &lt;code&gt;curl --help&lt;/code&gt; quanto o manual &lt;code&gt;curl --man&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="http://curl.haxx.se/"&gt;Site oficial&lt;/a&gt;&lt;/p&gt;</summary></entry></feed>

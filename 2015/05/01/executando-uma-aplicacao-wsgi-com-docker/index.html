@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Executando uma aplicação WSGI com Docker</title>
+
+            <link href="http://www.codeforcloud.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.codeforcloud.info/docker.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.codeforcloud.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.codeforcloud.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="docker" />
+        <meta name="tags" contents="devops" />
+        <meta name="tags" contents="linux" />
+        <meta name="tags" contents="python" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.codeforcloud.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/">
+	<meta property="og:title" content="Executando uma aplicação WSGI com Docker">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.codeforcloud.info/">
+	<meta property="article:published_time" content="2015-05-01 11:05:00-03:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.codeforcloud.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.codeforcloud.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Executando uma aplicação WSGI com Docker</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.codeforcloud.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Sex 01 maio 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
+Veremos nesse post uma <em>receita de bolo</em> de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.</p>
+
+
+<blockquote>
+<p>Esse post é a continuação do post <a href="/docker-por-onde-comecar.html">Docker, por onde começar</a>, recomendo que faça a leitura do post inicial (caso ainda não tenha feito) antes de prosseguir.</p>
+</blockquote>
+<h3>A aplicação de exemplo</h3>
+<p>A idéia aqui não é criar uma aplicação complexa e perder tempo explicando como essa aplicação funciona, mas sim, criar uma estrutura que pode servir de molde para outras aplicações que irão rodar em containers (ou não).
+Sendo assim, iremos criar a estrutura básica de uma aplicação que poderá ser usada como base para qualquer outra aplicação, independente do Framework, desde que tenha suporte a WSGI.</p>
+<h4>O arquivo RUN.py</h4>
+<p>O que vai realmente importar para o nosso exemplo é o arquivo <code>run.py</code>, nele iremos carregar e disponibilizar o <code>wsgi</code> do nosso app.
+Basicamente esse será o arquivo que deverá ser chamado quando quisermos colocar nossa aplicação no ar.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">my_app</span> <span class="kn">import</span> <span class="n">app</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>O arquivo <code>run.py</code> é genérico, ou seja, funciona tanto para aplicações flask, bottle, falcon, etc.
+Por exemplo, se estivessemos criando uma aplicação Flask, bastaria ter o seguinte código no arquivo <code>my_app.py</code> (ou <code>my_app/__init__.py</code>).</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello from docker!&#39;</span>
+</pre></div>
+
+
+<p>Já uma aplicação bottle, poderia ser dessa maneira.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bottle</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello from docker!&#39;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">bottle</span><span class="o">.</span><span class="n">default_app</span><span class="p">()</span>
+</pre></div>
+
+
+<p>E assim por diante.
+Como falei anteriormente, a idéia é não se aprofundar na aplicação, mas sim na arquitetura.</p>
+<h4>Gunicorn</h4>
+<p>O <a href="http://gunicorn.org/">Gunicorn</a> é um servidor HTTP dedicado que serve aplicações WSGI, como é o caso de aplicações desenvolvidas com <em>Flask</em>, <em>Django</em>, <em>Bootle</em>, etc.
+Com o gunicorn é possível por exemplo executar uma aplicação wsgi com diversos <code>workers</code> fazendo assim com que as requisições sejam divididas entre eles e como consequência, tornar a aplicação <em>mais robusta</em>.
+Utilizaremos o Gunicorn para controlar a instancia de nossa aplicação, com a seguinte <em>command line</em>.</p>
+<div class="highlight"><pre><span></span>gunicorn -b 0.0.0.0:8000 -w <span class="m">4</span> run:app
+</pre></div>
+
+
+<p>Com o comando acima, estamos liberando o acesso externo para a aplicação, estamos rodando a aplicação com 4 <code>workers</code> e finalmente estamos definindo que o objeto WSGI que deverá ser executado é o objeto <code>app</code> que se encontra no scritp <code>run.py</code>.</p>
+<blockquote>
+<p>Outra opção ao Gunicorn é o <a href="https://uwsgi-docs.readthedocs.org/en/latest/">uWSGI</a>.</p>
+</blockquote>
+<h4>Supervisor</h4>
+<p>O <a href="http://supervisord.org/">Supervisor</a> é um sistema de que monitora e controla processos unix.
+O Supervisor garante que caso nossa aplicação finalize devido a alguma falha, ele se encarregará de subir novamente o processo, assim como subir o processo da aplicação caso o sistema operacional seja reiniciado.
+Utilizaremos o Supervisor para controlar nosso processo do <em>Gunicorn</em>, com as seguintes configurações.</p>
+<div class="highlight"><pre><span></span><span class="k">[supervisord]</span>
+<span class="na">nodaemon</span> <span class="o">=</span> <span class="s">true</span>
+
+<span class="k">[program:my_app]</span>
+<span class="na">command</span> <span class="o">=</span> <span class="s">gunicorn -b 0.0.0.0:8000 -w 4 run:app</span>
+<span class="na">directory</span> <span class="o">=</span> <span class="s">/my_app/</span>
+<span class="na">autostart</span><span class="o">=</span> <span class="s">true</span>
+<span class="na">autorestart</span> <span class="o">=</span> <span class="s">true</span>
+<span class="na">stdout_logfile</span> <span class="o">=</span> <span class="s">/my_app/logs/supervisor.log</span>
+<span class="na">redirect_stderr</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+
+
+<p>Basicamente estamos definindo a <em>command line</em> de nossa aplicação e redirecionando a saída padrão e a saída de erro para um arquivo de log.</p>
+<h3>Conteinerizando a aplicação</h3>
+<p>Finalmente iremos colocar tudo isso dentro de uma imagem do Docker e executar como um container.
+Veja um exemplo de como a estrutura do projeto pode ficar.</p>
+<div class="highlight"><pre><span></span>├── my_app
+│   └── __init__.py
+├── requirements.txt
+├── run.py
+└── supervisord.conf
+</pre></div>
+
+
+<blockquote>
+<p>Não esqueça de criar o <code>requirements.txt</code> com as dependências do seu projeto :)</p>
+</blockquote>
+<p>Para a mágica acontecer, iremos criar nosso <code>Dockerfile</code> na raiz do diretório do projeto.</p>
+<h4>Dockerfile</h4>
+<p>O intuito do Dockerfile será criar uma imagem do Docker com toda a stack que iremos utilizar no projeto, o código fonte da aplicação e uma configuração básica de execução, para que seja possível fácilmente executar a aplicação a partir de um container dessa imagem.</p>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> python:2.7</span>
+
+<span class="k">MAINTAINER</span><span class="s"> Diego Garcia &lt;drgarcia1986@gmail.com&gt;</span>
+
+<span class="k">ADD</span><span class="s"> . /my_app</span>
+<span class="k">ADD</span><span class="s"> supervisord.conf /etc/supervisor/conf.d/my_app.conf</span>
+
+<span class="k">WORKDIR</span><span class="s"> /my_app</span>
+
+<span class="k">RUN</span> pip install supervisor gunicorn
+<span class="k">RUN</span> pip install -r requirements.txt
+
+<span class="k">RUN</span> mkdir logs
+<span class="k">RUN</span> touch logs/supervisor.log
+
+<span class="k">EXPOSE</span><span class="s"> 8000</span>
+
+<span class="k">CMD</span><span class="s"> [&quot;supervisord&quot;]</span>
+</pre></div>
+
+
+<blockquote>
+<p>Já existem as imagens do Python no repostórios padrão do <a href="https://hub.docker.com/">DockerHub</a> :)</p>
+</blockquote>
+<p>Pronto, já temos tudo que precisamos para containerizar nossa aplicação, sendo assim, <code>It's party time!</code>.</p>
+<h3>Executando a aplicação via container</h3>
+<h4>Criar</h4>
+<p>Estrutura pronta e Dockerfile pronto, agora é a vez de criar a imagem docker da nossa aplicação, para isso, usaremos o comando <code>docker build</code>.</p>
+<div class="highlight"><pre><span></span>sudo docker build -t my_app .
+</pre></div>
+
+
+<h4>Executar</h4>
+<p>Após o processo de criação da imagem, basta usar o comando <code>docker run</code> para executar o container.</p>
+<div class="highlight"><pre><span></span>sudo docker run -d -p 8000:8000 my_app
+</pre></div>
+
+
+<blockquote>
+<p>A opção <code>-d</code> está dizendo ao comando que queremos executar o container em background, enquanto que a opção <code>-p</code> faz o mapeamento da porta 8000 do container com a porta 8000 local.
+Você pode dar um nome para o container, para isso basta utilizar a opção <code>--name</code>.</p>
+</blockquote>
+<p>Com isso nossa aplicação finalmente está no ar em <code>127.0.0.1:8000</code>.</p>
+<h4>Listar</h4>
+<p>Para listar o containers que estão em execução, utilize o comando <code>docker ps</code>.</p>
+<div class="highlight"><pre><span></span>sudo docker ps
+</pre></div>
+
+
+<h4>Parar</h4>
+<p>E por fim, para parar a execução de um container, existe o comando <code>docker stop</code> que espera como parametro o <em>ID</em> (que pode ser obtido através do comando <code>docker ps</code>) ou nome do container.</p>
+<div class="highlight"><pre><span></span>sudo docker stop 80febff98649
+</pre></div>
+
+
+<h3>Conclusão</h3>
+<p>Vimos de uma forma simples e prática como criar um flow de conteinerização de aplicações python wsgi que pode ser reaproveitado sempre que necessário afim de agilizar bastante o processo de configuração e execução da aplicação.
+Em um próximo post veremos um pouco sobre o <strong>docker compose</strong> e como fazer o deploy de nossos containers na nuvem.</p>
+<p><strong>Referências</strong><br>
+<a href="https://www.docker.com/">Site Oficial</a><br>
+<a href="http://docs.docker.com/">Documentação oficial</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.codeforcloud.info/tag/docker.html">docker</a>, <a href="http://www.codeforcloud.info/tag/devops.html">devops</a>, <a href="http://www.codeforcloud.info/tag/linux.html">linux</a>, <a href="http://www.codeforcloud.info/tag/python.html">python</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2015/05/01/executando-uma-aplicacao-wsgi-com-docker/';
+                var disqus_url = 'http://www.codeforcloud.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.codeforcloud.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.codeforcloud.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.codeforcloud.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
