@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Publicando seu Hello World no Heroku</title>
+
+            <link href="http://www.diego-garcia.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.diego-garcia.info/heroku.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.diego-garcia.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="web" />
+        <meta name="tags" contents="heroku" />
+        <meta name="tags" contents="flask" />
+        <meta name="tags" contents="git" />
+        <meta name="tags" contents="deploy" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.diego-garcia.info/2015/01/25/publicando-seu-hello-world-no-heroku/">
+	<meta property="og:title" content="Publicando seu Hello World no Heroku">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.diego-garcia.info/">
+	<meta property="article:published_time" content="2015-01-25 11:30:00-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.diego-garcia.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.diego-garcia.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Publicando seu Hello World no Heroku</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.diego-garcia.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Sun 25 January 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>O que é uma aplicação web se ela não está efetivamente na web? Não precisa ser efetivamente uma aplicação de produção, as vezes precisamos validar protótipos, compartilhar ferramentas online ou até mesmo publicar uma aplicação pela satisfação de publicar. Para isso não é necessário se preocupar com infraestrutura ou gastar dinheiro em aluguel de servidores. Existem diversas opções gratuitas e simples para isso, uma delas é o <strong>Heroku</strong>.</p>
+
+
+<h2>Heroku</h2>
+<p>O Heroku é uma das opção mais populares de <a href="http://pt.wikipedia.org/wiki/Plataforma_como_servi%C3%A7o">plataforma como serviço</a> que suporta app escritos em diversas linguagens, dentre elas, <strong>Python</strong>. Nele existem <a href="https://www.heroku.com/pricing">planos pagos e gratuitos</a> de acordo com o uso do serviço.
+Para conhecer um pouco do processo de <em>deploy</em> do heroku, criaremos um simples <strong>Hello World</strong> utilizando <strong>Flask</strong>.</p>
+<h3>O que você irá precisar?</h3>
+<h4>Uma conta no Heroku</h4>
+<p>Não se preocupe, você pode criar uma conta gratuita e usufruir do serviço sem problemas. Entre no <a href="https://signup.heroku.com/"><em>Sign up</em></a> e crie uma conta informando seu nome e seu e-mail.</p>
+<h4>Git</h4>
+<p>O Heroku utiliza o Git para realizar o deploy dos app. Você verá mais adianta que um simples <code>git push</code> é o suficiente para enviarmos nosso app para o heroku.</p>
+<h4>Python, Pip, VirtualEnv</h4>
+<p>Bem, você vai criar sua aplicação em python não? Além da boa organização e isolamento para seu ambiente proporcionado pelo <strong>virtualenv</strong>, manter seu app em um virtualenv proporciona algumas praticidades.</p>
+<h3>Instalando o Toolbet</h3>
+<p>O <strong>Toolbet</strong> é uma poderosa ferramenta de linha de comando do heroku. É através dela que iremos criar nosso app no heroku.
+No ubuntu (ou outras distribuições baseadas no debian) para instalar não poderia ser diferente, basta usar o todo poderoso <code>apt-get</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~/$ sudo apt-get install heroku
+</pre></div>
+
+
+<blockquote>
+<p>Se você estiver usando outro sistema operacional, você pode baixar o instalador direto do <a href="https://toolbelt.heroku.com/">site oficial</a>.</p>
+</blockquote>
+<p>Após a instalação, faça o login no heroku através do toolbet para se certificar que tudo deu certo.</p>
+<div class="highlight"><pre><span></span>user@machine:~/$ heroku login
+Enter your Heroku credentials.
+Email: your@email.com
+Password <span class="o">(</span>typing will be hidden<span class="o">)</span>:
+Authentication successful.
+</pre></div>
+
+
+<h3>Preparando o App</h3>
+<p>Iremos agora criar nosso app que será compartilhado com o mundo. Nesse processo não tera nada de anormal, apenas a criação de uma aplicação web como qualquer outra.
+Criaremos um diretório chamado <code>heroku_hello_world</code>.</p>
+<div class="highlight"><pre><span></span>user@machine:~/$ mkdir heroku_hello_world
+user@machine:~/$ <span class="nb">cd</span> heroku_hello_world
+user@machine:~/heroku_hello_world$
+</pre></div>
+
+
+<p>Nele iremos criar um <code>virtualenv</code> e ativa-lo.</p>
+<div class="highlight"><pre><span></span>user@machine:~/heroku_hello_world$ virtualenv venv
+New python executable in venv/bin/python
+Installing setuptools, pip...done.
+user@machine:~/heroku_hello_world$ <span class="nb">source</span> venv/bin/activate
+<span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$
+</pre></div>
+
+
+<p>Como disse anteriormente, iremos fazer o deploy de um simples <strong>Hello World</strong>. A intenção aqui é ter um <strong>how-to</strong> de como fazer o deploy de um app simples no heroku. Sendo assim, o <strong>Flask</strong> é uma excelente opção para isso. Para instalar o Flask em nosso virtualenv, use o <code>pip</code>.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ pip install flask
+</pre></div>
+
+
+<p>E finalmente vamos criar nosso <em>Hello World</em> no arquivo <code>hello.py</code>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;&lt;h1&gt;Hello World&lt;/hi&gt;&quot;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">))</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Um detalhe importante fica por conta da variável <code>port</code>. No heroku não é possível subir o app na porta 5000 (porta default do Flask), mas o heroku seta a variável de ambiente <code>PORT</code> em seu ambiente, definindo em qual porta a aplicação deve rodar. Da maneira como está implementado nosso app, iremos conseguir rodar tanto no heroku como localmente (através da porta 5000).</p>
+<p>O heroku precisa conhecer as dependências de nosso app para que, no momento do deploy ele construa o ambiente de forma correta. Seguindo o padrão, o heroku procura pelas dependências através do arquivo <code>requirements.txt</code>. Como já isolamos nosso app em um virtualenv, basta utilizar o <code>pip freeze</code> para listar os packages instalados e direcionar a saida desse comando para o arquivo <em>requirements.txt</em></p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ pip freeze &gt; requirements.txt
+</pre></div>
+
+
+<h3>Preparando o Deploy</h3>
+<p>Iremos criar agora o arquivo <code>Procfile</code>, onde será escrito o comando que o heroku deverá usar para executar nosso app, basicamente o mesmo comando que utilizaríamos para rodar a aplicação localmente. Esse arquivo (assim como o <em>requirements.txt</em>) deverá estar na raiz da aplicação.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ <span class="nb">echo</span> <span class="s2">&quot;web: python hello.py&quot;</span> &gt; Procfile
+</pre></div>
+
+
+<p>Agora que já possuímos todos os arquivos necessários, iremos iniciar o processo efetivo de deploy da aplicação. Como disse anteriormente, o heroku utiliza o git, sendo assim, nossa aplicação deverá estar em um repositório. Para isso, basta criar um repositório no diretório atual através do comando <code>git init</code>.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ git init
+Initialized empty Git repository in /home/user/heroku_hello_world/.git/
+</pre></div>
+
+
+<p>Para não <em>sujar</em> nosso repositório com arquivos desnecessários como por exemplo o virtualenv, crie um arquivo chamado <code>.gitignore</code> na raiz do repositório e nele iremos determinar quais arquivos o git deve ignorar.</p>
+<div class="highlight"><pre><span></span>*.pyc
+venv
+</pre></div>
+
+
+<p>Vamos adicionar e commitar nossos arquivos nesse repositório através dos comandos <code>git add .</code> para adicionar todos os arquivos e <code>git commit</code> para criar nosso commit inicial.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ git add .
+<span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ git commit -m <span class="s1">&#39;initial commit&#39;</span>
+<span class="o">[</span>master <span class="o">(</span>root-commit<span class="o">)</span> 33f63b5<span class="o">]</span> initial commit
+ <span class="m">4</span> files changed, <span class="m">25</span> insertions<span class="o">(</span>+<span class="o">)</span>
+ create mode <span class="m">100644</span> .gitignore
+ create mode <span class="m">100644</span> Procfile
+ create mode <span class="m">100644</span> hello.py
+ create mode <span class="m">100644</span> requirements.txt
+<span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$
+</pre></div>
+
+
+<p>Agora vamos criar nosso app no heroku através do commando <code>heroku apps:create [nome do app]</code>. O nome da aplicação deverá ser único, pois o heroku utiliza o nome da aplicação para compor a url.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ heroku apps:create dg-hello-world
+Creating dg-hello-world... <span class="k">done</span>, stack is cedar-14
+https://dg-hello-world.herokuapp.com/ <span class="p">|</span> https://git.heroku.com/dg-hello-world.git
+Git remote heroku added
+</pre></div>
+
+
+<blockquote>
+<p>É importante ter realizado o login no heroku através do toolbet antes.</p>
+</blockquote>
+<p>No resultado do comando <code>heroku apps:create</code> já são apresentadas duas das coisas mais importantes para nosso app, a url de acesso e repositório git onde deverá ser enviada nossa aplicação.</p>
+<blockquote>
+<p>Se você executou esse comando no mesmo diretório onde criou seu repositório do git, o heroku já cria o apontamento para o repositório remoto com o nome de <code>heroku</code>, não sendo necessário utilizar o comando <code>git remote add</code>.</p>
+</blockquote>
+<p>Basicamente a url será no padrão <code>https://[nome do app].herokuapp.com/</code>.</p>
+<h3>Efetivando o Deploy</h3>
+<p>Finalmente iremos realizar o deploy de nossa aplicação. Todos os passos anteriores foram passos preparatórios, o que significa que basta executá-los uma vez. Daqui em diante, para fazer o deploy de nosso app, basta enviar os commits do repositório local, para o repositório do heroku, através do comando <code>git push heroku master</code>.</p>
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/heroku_hello_world$ git push heroku master
+</pre></div>
+
+
+<p>E pronto, basta agora acessar a url do seu app (no caso desse exemplo foi <a href="https://dg-hello-world.herokuapp.com/">https://dg-hello-world.herokuapp.com/</a>) e compartilhar com seus amigos =].</p>
+<p><strong>Referências</strong><br \>
+<a href="https://devcenter.heroku.com/articles/getting-started-with-python">(Heroku) Getting Started With Python</a><br />
+<a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Deployment on the Heroku Cloud</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.diego-garcia.info/tag/web.html">web</a>, <a href="http://www.diego-garcia.info/tag/heroku.html">heroku</a>, <a href="http://www.diego-garcia.info/tag/flask.html">flask</a>, <a href="http://www.diego-garcia.info/tag/git.html">git</a>, <a href="http://www.diego-garcia.info/tag/deploy.html">deploy</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2015/01/25/publicando-seu-hello-world-no-heroku/';
+                var disqus_url = 'http://www.diego-garcia.info/2015/01/25/publicando-seu-hello-world-no-heroku/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.diego-garcia.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.diego-garcia.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.diego-garcia.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

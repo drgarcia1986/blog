@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/heroku.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2015-01-25T11:30:00-02:00</updated><entry><title>Publicando seu Hello World no Heroku</title><link href="http://www.diego-garcia.info/2015/01/25/publicando-seu-hello-world-no-heroku/" rel="alternate"></link><updated>2015-01-25T11:30:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-25:2015/01/25/publicando-seu-hello-world-no-heroku/</id><summary type="html">&lt;p&gt;O que é uma aplicação web se ela não está efetivamente na web? Não precisa ser efetivamente uma aplicação de produção, as vezes precisamos validar protótipos, compartilhar ferramentas online ou até mesmo publicar uma aplicação pela satisfação de publicar. Para isso não é necessário se preocupar com infraestrutura ou gastar dinheiro em aluguel de servidores. Existem diversas opções gratuitas e simples para isso, uma delas é o &lt;strong&gt;Heroku&lt;/strong&gt;.&lt;/p&gt;
+
+
+&lt;h2&gt;Heroku&lt;/h2&gt;
+&lt;p&gt;O Heroku é uma das opção mais populares de &lt;a href="http://pt.wikipedia.org/wiki/Plataforma_como_servi%C3%A7o"&gt;plataforma como serviço&lt;/a&gt; que suporta app escritos em diversas linguagens, dentre elas, &lt;strong&gt;Python&lt;/strong&gt;. Nele existem &lt;a href="https://www.heroku.com/pricing"&gt;planos pagos e gratuitos&lt;/a&gt; de acordo com o uso do serviço.
+Para conhecer um pouco do processo de &lt;em&gt;deploy&lt;/em&gt; do heroku, criaremos um simples &lt;strong&gt;Hello World&lt;/strong&gt; utilizando &lt;strong&gt;Flask&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;O que você irá precisar?&lt;/h3&gt;
+&lt;h4&gt;Uma conta no Heroku&lt;/h4&gt;
+&lt;p&gt;Não se preocupe, você pode criar uma conta gratuita e usufruir do serviço sem problemas. Entre no &lt;a href="https://signup.heroku.com/"&gt;&lt;em&gt;Sign up&lt;/em&gt;&lt;/a&gt; e crie uma conta informando seu nome e seu e-mail.&lt;/p&gt;
+&lt;h4&gt;Git&lt;/h4&gt;
+&lt;p&gt;O Heroku utiliza o Git para realizar o deploy dos app. Você verá mais adianta que um simples &lt;code&gt;git push&lt;/code&gt; é o suficiente para enviarmos nosso app para o heroku.&lt;/p&gt;
+&lt;h4&gt;Python, Pip, VirtualEnv&lt;/h4&gt;
+&lt;p&gt;Bem, você vai criar sua aplicação em python não? Além da boa organização e isolamento para seu ambiente proporcionado pelo &lt;strong&gt;virtualenv&lt;/strong&gt;, manter seu app em um virtualenv proporciona algumas praticidades.&lt;/p&gt;
+&lt;h3&gt;Instalando o Toolbet&lt;/h3&gt;
+&lt;p&gt;O &lt;strong&gt;Toolbet&lt;/strong&gt; é uma poderosa ferramenta de linha de comando do heroku. É através dela que iremos criar nosso app no heroku.
+No ubuntu (ou outras distribuições baseadas no debian) para instalar não poderia ser diferente, basta usar o todo poderoso &lt;code&gt;apt-get&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ sudo apt-get install heroku
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Se você estiver usando outro sistema operacional, você pode baixar o instalador direto do &lt;a href="https://toolbelt.heroku.com/"&gt;site oficial&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Após a instalação, faça o login no heroku através do toolbet para se certificar que tudo deu certo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ heroku login
+Enter your Heroku credentials.
+Email: your@email.com
+Password &lt;span class="o"&gt;(&lt;/span&gt;typing will be hidden&lt;span class="o"&gt;)&lt;/span&gt;:
+Authentication successful.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Preparando o App&lt;/h3&gt;
+&lt;p&gt;Iremos agora criar nosso app que será compartilhado com o mundo. Nesse processo não tera nada de anormal, apenas a criação de uma aplicação web como qualquer outra.
+Criaremos um diretório chamado &lt;code&gt;heroku_hello_world&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ mkdir heroku_hello_world
+user@machine:~/$ &lt;span class="nb"&gt;cd&lt;/span&gt; heroku_hello_world
+user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Nele iremos criar um &lt;code&gt;virtualenv&lt;/code&gt; e ativa-lo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/heroku_hello_world$ virtualenv venv
+New python executable in venv/bin/python
+Installing setuptools, pip...done.
+user@machine:~/heroku_hello_world$ &lt;span class="nb"&gt;source&lt;/span&gt; venv/bin/activate
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Como disse anteriormente, iremos fazer o deploy de um simples &lt;strong&gt;Hello World&lt;/strong&gt;. A intenção aqui é ter um &lt;strong&gt;how-to&lt;/strong&gt; de como fazer o deploy de um app simples no heroku. Sendo assim, o &lt;strong&gt;Flask&lt;/strong&gt; é uma excelente opção para isso. Para instalar o Flask em nosso virtualenv, use o &lt;code&gt;pip&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ pip install flask
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E finalmente vamos criar nosso &lt;em&gt;Hello World&lt;/em&gt; no arquivo &lt;code&gt;hello.py&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;h1&amp;gt;Hello World&amp;lt;/hi&amp;gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;PORT&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;0.0.0.0&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Um detalhe importante fica por conta da variável &lt;code&gt;port&lt;/code&gt;. No heroku não é possível subir o app na porta 5000 (porta default do Flask), mas o heroku seta a variável de ambiente &lt;code&gt;PORT&lt;/code&gt; em seu ambiente, definindo em qual porta a aplicação deve rodar. Da maneira como está implementado nosso app, iremos conseguir rodar tanto no heroku como localmente (através da porta 5000).&lt;/p&gt;
+&lt;p&gt;O heroku precisa conhecer as dependências de nosso app para que, no momento do deploy ele construa o ambiente de forma correta. Seguindo o padrão, o heroku procura pelas dependências através do arquivo &lt;code&gt;requirements.txt&lt;/code&gt;. Como já isolamos nosso app em um virtualenv, basta utilizar o &lt;code&gt;pip freeze&lt;/code&gt; para listar os packages instalados e direcionar a saida desse comando para o arquivo &lt;em&gt;requirements.txt&lt;/em&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ pip freeze &amp;gt; requirements.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Preparando o Deploy&lt;/h3&gt;
+&lt;p&gt;Iremos criar agora o arquivo &lt;code&gt;Procfile&lt;/code&gt;, onde será escrito o comando que o heroku deverá usar para executar nosso app, basicamente o mesmo comando que utilizaríamos para rodar a aplicação localmente. Esse arquivo (assim como o &lt;em&gt;requirements.txt&lt;/em&gt;) deverá estar na raiz da aplicação.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;web: python hello.py&amp;quot;&lt;/span&gt; &amp;gt; Procfile
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora que já possuímos todos os arquivos necessários, iremos iniciar o processo efetivo de deploy da aplicação. Como disse anteriormente, o heroku utiliza o git, sendo assim, nossa aplicação deverá estar em um repositório. Para isso, basta criar um repositório no diretório atual através do comando &lt;code&gt;git init&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git init
+Initialized empty Git repository in /home/user/heroku_hello_world/.git/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para não &lt;em&gt;sujar&lt;/em&gt; nosso repositório com arquivos desnecessários como por exemplo o virtualenv, crie um arquivo chamado &lt;code&gt;.gitignore&lt;/code&gt; na raiz do repositório e nele iremos determinar quais arquivos o git deve ignorar.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;*.pyc
+venv
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Vamos adicionar e commitar nossos arquivos nesse repositório através dos comandos &lt;code&gt;git add .&lt;/code&gt; para adicionar todos os arquivos e &lt;code&gt;git commit&lt;/code&gt; para criar nosso commit inicial.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git add .
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git commit -m &lt;span class="s1"&gt;&amp;#39;initial commit&amp;#39;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;master &lt;span class="o"&gt;(&lt;/span&gt;root-commit&lt;span class="o"&gt;)&lt;/span&gt; 33f63b5&lt;span class="o"&gt;]&lt;/span&gt; initial commit
+ &lt;span class="m"&gt;4&lt;/span&gt; files changed, &lt;span class="m"&gt;25&lt;/span&gt; insertions&lt;span class="o"&gt;(&lt;/span&gt;+&lt;span class="o"&gt;)&lt;/span&gt;
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; .gitignore
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; Procfile
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; hello.py
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; requirements.txt
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora vamos criar nosso app no heroku através do commando &lt;code&gt;heroku apps:create [nome do app]&lt;/code&gt;. O nome da aplicação deverá ser único, pois o heroku utiliza o nome da aplicação para compor a url.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ heroku apps:create dg-hello-world
+Creating dg-hello-world... &lt;span class="k"&gt;done&lt;/span&gt;, stack is cedar-14
+https://dg-hello-world.herokuapp.com/ &lt;span class="p"&gt;|&lt;/span&gt; https://git.heroku.com/dg-hello-world.git
+Git remote heroku added
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;É importante ter realizado o login no heroku através do toolbet antes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;No resultado do comando &lt;code&gt;heroku apps:create&lt;/code&gt; já são apresentadas duas das coisas mais importantes para nosso app, a url de acesso e repositório git onde deverá ser enviada nossa aplicação.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Se você executou esse comando no mesmo diretório onde criou seu repositório do git, o heroku já cria o apontamento para o repositório remoto com o nome de &lt;code&gt;heroku&lt;/code&gt;, não sendo necessário utilizar o comando &lt;code&gt;git remote add&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Basicamente a url será no padrão &lt;code&gt;https://[nome do app].herokuapp.com/&lt;/code&gt;.&lt;/p&gt;
+&lt;h3&gt;Efetivando o Deploy&lt;/h3&gt;
+&lt;p&gt;Finalmente iremos realizar o deploy de nossa aplicação. Todos os passos anteriores foram passos preparatórios, o que significa que basta executá-los uma vez. Daqui em diante, para fazer o deploy de nosso app, basta enviar os commits do repositório local, para o repositório do heroku, através do comando &lt;code&gt;git push heroku master&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git push heroku master
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E pronto, basta agora acessar a url do seu app (no caso desse exemplo foi &lt;a href="https://dg-hello-world.herokuapp.com/"&gt;https://dg-hello-world.herokuapp.com/&lt;/a&gt;) e compartilhar com seus amigos =].&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br \&gt;
+&lt;a href="https://devcenter.heroku.com/articles/getting-started-with-python"&gt;(Heroku) Getting Started With Python&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud"&gt;Deployment on the Heroku Cloud&lt;/a&gt;&lt;/p&gt;</summary><category term="web"></category><category term="heroku"></category><category term="flask"></category><category term="git"></category><category term="deploy"></category></entry></feed>

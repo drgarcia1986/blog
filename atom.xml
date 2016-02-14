@@ -96,7 +96,180 @@ No Jekyll bastava o comando &lt;code&gt;rake deploy&lt;/code&gt; e a mágica aco
 
 &lt;p&gt;Como decidi usar um tema novo (e não portar o que estava utilizando no jekyll) o resto foram ajustes simples.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
-&lt;a href="http://blog.getpelican.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pelican"></category></entry><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://www.diego-garcia.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-05-01:2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+&lt;a href="http://blog.getpelican.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pelican"></category></entry><entry><title>A armadilha dos argumentos com valores padrão</title><link href="http://www.diego-garcia.info/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/" rel="alternate"></link><updated>2015-06-07T11:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-06-07:2015/06/07/a-armadilha-dos-argumentos-com-valores-default/</id><summary type="html">&lt;p&gt;Algo muito comum em várias linguagens de programação é a possibilidade de definir &lt;em&gt;valores default&lt;/em&gt; (valores padrão) para argumentos de funções e métodos, tornando a utilização desses opcional.
+Isso é ótimo, principalmente para manter retrocompatibilidade, porém, o python possui uma pequena armadilha que caso passe despercebida, pode causar sérios problemas, muitas vezes difíceis de serem detectados.
+Essa armadilha ocorre quando usamos valores de tipos &lt;code&gt;mutáveis&lt;/code&gt; como valor default de argumentos.&lt;/p&gt;
+
+
+&lt;h3&gt;O que são tipos mutáveis e imutáveis?&lt;/h3&gt;
+&lt;p&gt;Segundo a &lt;a href="https://docs.python.org/3.4/reference/datamodel.html"&gt;documentação oficial do python&lt;/a&gt;, o valor de alguns objetos pode mudar, esses objetos que podem ter seu valor alterado após serem criados são chamados de mutáveis, enquanto que os objetos que não podem ter seus valores alterados após serem criados são chamados de imutáveis (simples assim).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Tipos mutáveis&lt;/strong&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Listas, Dicionários e tipos definidos pelo usuário.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Tipos imutáveis&lt;/strong&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Numeros, Strings e Tuplas.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Apesar de serem imutáveis, a utilização de um valor mutável (uma lista por exemplo) dentro de uma tupla, pode causar o efeito &lt;em&gt;&lt;a href="http://pythonclub.com.br/tuplas-mutantes-em-python.html"&gt;tuplas mutáveis&lt;/a&gt;&lt;/em&gt;, onde visualmente o valor da tupla é alterado, mas por trás dos panos o valor da tupla não muda, o que muda é o valor do objeto pelo qual a tupla está se referenciando.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;A armadilha&lt;/h3&gt;
+&lt;p&gt;Como disse no começo desse blogpost, é muito comum a utilização de valores default em agurmentos de funções e métodos, por essa razão, nos sentimos seguros em fazer algo desse tipo:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[]):&lt;/span&gt;
+    &lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Porém, levando esse exemplo em consideração, o que irá acontecer se invocarmos essa função 3 vezes?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Sim, o valor do argumento &lt;code&gt;my_list&lt;/code&gt; mudou em cada vez que executamos a função sem passar algum valor para ele.&lt;/p&gt;
+&lt;h3&gt;Por que isso acontece?&lt;/h3&gt;
+&lt;p&gt;Isso acontece porque o python processa os valores default de cada argumentos de uma função (ou método) quando essa for definida, após esse processamento o valor é atribuido ao objeto da função.
+Ou seja, por questões de optimização, seguindo nosso exemplo, o python não cria uma lista vazia para o argumento &lt;code&gt;my_list&lt;/code&gt; a cada vez que a função &lt;code&gt;my_function&lt;/code&gt; for invocada, ele reaproveita uma lista que foi criada no momento em que essa função foi importada.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;
+&lt;span class="p"&gt;([],)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="mi"&gt;140634243738080&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;
+&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="mi"&gt;140634243738080&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;
+&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="mi"&gt;140634243738080&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Note que a identificação do argumento (no caso &lt;code&gt;my_list&lt;/code&gt;) não muda, mesmo executando a função várias vezes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Outro exemplo seria utilizar o resultado de funções como valores default de argumentos, por exemplo, uma função com um argumento que recebe como default o valor de &lt;code&gt;datetime.now()&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;what_time_is_it&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strftime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;/%m/%Y %H:%M:%S&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O valor do argumento &lt;code&gt;dt&lt;/code&gt; sempre será o &lt;em&gt;datetime&lt;/em&gt; do momento em que o python carregou a função e não o &lt;em&gt;datetime&lt;/em&gt; de quando a função foi invocada.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;what_time_is_it&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="mo"&gt;07&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mo"&gt;06&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2015&lt;/span&gt; &lt;span class="mi"&gt;08&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;43&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;55&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;what_time_is_it&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="mo"&gt;07&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mo"&gt;06&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2015&lt;/span&gt; &lt;span class="mi"&gt;08&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;43&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;55&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Isso também acontece com classes?&lt;/h3&gt;
+&lt;p&gt;Sim e de uma forma ainda mais perigosa.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ListNumbers&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[]):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;show_numbers&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Assim como no caso das funções, no exemplo acima o argumento &lt;code&gt;numbers&lt;/code&gt; é definido no momento em que o python importa a classe, ou seja, a cada nova instância da classe &lt;code&gt;ListNumbers&lt;/code&gt;, será aproveitada a mesma lista no argumento &lt;code&gt;numbers&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ListNumbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ListNumbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show_numbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show_numbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show_numbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show_numbers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="n"&gt;list2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;
+&lt;span class="bp"&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Por que isso não acontece com Strings?&lt;/h3&gt;
+&lt;p&gt;Porque strings são &lt;code&gt;imutáveis&lt;/code&gt;, o que significa que a cada alteração de valor em uma variavel que armazena uma strings, o python cria uma nova instância para essa variável.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;140398402003832&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;140398402003872&lt;/span&gt;  &lt;span class="c1"&gt;# o penúltimo número muda :)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Em argumentos com valores default, não é diferente.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def my_function(my_str=&amp;#39;abc&amp;#39;):
+    my_str += &amp;#39;d&amp;#39;
+    print(my_str)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;No exemplo acima, sempre que for executado o &lt;code&gt;inplace add&lt;/code&gt; (&lt;code&gt;+=&lt;/code&gt;) será criada outra váriavel para &lt;code&gt;my_str&lt;/code&gt; sem alterar o valor default do argumento.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;abcd&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;abc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;abcd&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;func_defaults&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;abc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Como se proteger?&lt;/h3&gt;
+&lt;p&gt;A maneira mais simples de evitar esse tipo de surpresa é utilizar um &lt;a href="http://en.wikipedia.org/wiki/Sentinel_value"&gt;valor sentinela&lt;/a&gt; como por exemplo &lt;code&gt;None&lt;/code&gt;, nos argumentos opcionais que esperam tipos mutáveis:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;my_list&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;my_list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ou, para deixar o código ainda mais elegante, podemos simplificar a condicional com um simples &lt;code&gt;or&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;my_list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my_list&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_list&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Obrigado &lt;a href="http://pythonclub.com.br/author/bruno-cezar-rocha.html"&gt;Bruno Rocha&lt;/a&gt; pela sugestão.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Pronto, sem surpresas e sem armadilhas :).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Referências&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://shop.oreilly.com/product/0636920032519.do"&gt;Fluent Python (Mutable types as parameter defaults: bad idea)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://docs.quantifiedcode.com/python-anti-patterns/correctness/mutable_default_value_as_argument.html"&gt;Python Anti-Patterns (Using a mutable default value as an argument)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="python"></category><category term="anti-pattern"></category></entry><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://www.diego-garcia.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-05-01:2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
 Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
 Veremos nesse post uma &lt;em&gt;receita de bolo&lt;/em&gt; de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.&lt;/p&gt;
 
@@ -255,7 +428,217 @@ Você pode dar um nome para o container, para isso basta utilizar a opção &lt;
 Em um próximo post veremos um pouco sobre o &lt;strong&gt;docker compose&lt;/strong&gt; e como fazer o deploy de nossos containers na nuvem.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Docker, por onde começar</title><link href="http://www.diego-garcia.info/2015/02/15/docker-por-onde-comecar/" rel="alternate"></link><updated>2015-02-15T10:32:26-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:2015/02/15/docker-por-onde-comecar/</id><summary type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Debugging em python (sem IDE)</title><link href="http://www.diego-garcia.info/2015/02/15/debuggin-em-python-sem-ide/" rel="alternate"></link><updated>2015-02-15T22:30:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:2015/02/15/debuggin-em-python-sem-ide/</id><summary type="html">&lt;p&gt;Um dos principais motivos que ainda levam desenvolvedores Python a recorrerem a IDEs pesadas e que requerem instalação é o &lt;strong&gt;debugging&lt;/strong&gt;.
+Devs que vieram de linguagens como &lt;em&gt;DotNet&lt;/em&gt;, &lt;em&gt;Java&lt;/em&gt; e &lt;em&gt;Delphi&lt;/em&gt; por exemplo, estão acostumados a IDEs super pesadas e inchadas que no final das contas, além do debugging, só servem para drenar memória RAM.
+Brincadeiras a parte, não a motivos para você não dar uma chance ao &lt;strong&gt;VIM&lt;/strong&gt; ou ao &lt;strong&gt;Sublime&lt;/strong&gt;, pois para fazer debugging em scripts python, tudo que você precisa é o &lt;strong&gt;PDB&lt;/strong&gt;.&lt;/p&gt;
+
+
+&lt;h1&gt;PDB&lt;/h1&gt;
+&lt;p&gt;O &lt;code&gt;pdb&lt;/code&gt; é um módulo &lt;em&gt;buit-in&lt;/em&gt; que funciona como um console interativo, onde é posssível realizar debug de códigos python.
+Nele é possível fazer um &lt;em&gt;step-by-step&lt;/em&gt; do código, verificando o valor de variaveis, definindo breakpoints, manipulando valores, etc.
+É possível inclusive realizer &lt;em&gt;step-into&lt;/em&gt; em métodos. Ou seja, tudo que uma boa ferramenta de debug precisa ter.&lt;/p&gt;
+&lt;h2&gt;Comandos&lt;/h2&gt;
+&lt;p&gt;Antes de partirmos para prática, é importante conhecer alguns comandos básicos para já começar o uso do pdb de forma efetiva.&lt;/p&gt;
+&lt;p&gt;Durante o debugging, eventualmente seu script irá &lt;em&gt;estacionar&lt;/em&gt; em pontos de paradas, possívelmente definidos por você, neste momento, os comandos a seguir poderão ser utilizados.&lt;/p&gt;
+&lt;h3&gt;q (quit)&lt;/h3&gt;
+&lt;p&gt;Sai da execução do script.&lt;/p&gt;
+&lt;h3&gt;n (next)&lt;/h3&gt;
+&lt;p&gt;Avança para a próxima linha do script.&lt;/p&gt;
+&lt;h3&gt;p (print)&lt;/h3&gt;
+&lt;p&gt;Executa o comando &lt;code&gt;print&lt;/code&gt; do python, por exemplo:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;script&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;foo var&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;
+&lt;span class="s1"&gt;&amp;#39;foo var&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Vale ressaltar que no exemplo acima, não é necessário utilizar o comando &lt;code&gt;p&lt;/code&gt;, basta digitar o nome da variável e pressionar &lt;code&gt;enter&lt;/code&gt;, o efeito seria o mesmo.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;c (continue)&lt;/h3&gt;
+&lt;p&gt;Avança o debug até o próximo &lt;strong&gt;breakpoint&lt;/strong&gt; ou até ocorrer uma &lt;strong&gt;exception&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;l (list)&lt;/h3&gt;
+&lt;p&gt;Lista algumas linhas do código que estão em volta da linha atual.
+Por padrão serão apresentadas 11 linhas (5 acima e 5 abaixo).&lt;/p&gt;
+&lt;h3&gt;s (step into)&lt;/h3&gt;
+&lt;p&gt;Ao realizar a navegação através do comando &lt;code&gt;n&lt;/code&gt; o debug &lt;strong&gt;não&lt;/strong&gt; irá &lt;em&gt;entrar&lt;/em&gt; em métodos que possívelmente forem invocados.
+Para que o debug entre no método que está sendo invocado na linha corrente, basta trocar o comando &lt;code&gt;n&lt;/code&gt;, pelo comando &lt;code&gt;s&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;barz&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;
+&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;Call&lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;the_bar&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;r (return)&lt;/h3&gt;
+&lt;p&gt;Já o comando &lt;code&gt;r&lt;/code&gt; libera a execução do script até sair da função atual.&lt;/p&gt;
+&lt;h3&gt;b (breakpoint)&lt;/h3&gt;
+&lt;p&gt;Cria um breakpoint em uma determinada linha ou método, por exemplo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;script&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;
+&lt;span class="n"&gt;Breakpoint&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;script&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;No comando acima, setamos um breakpoint na linha 21 de nosso script.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;script&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;
+&lt;span class="n"&gt;Breakpoint&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;script&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;30&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Já no exemplo acima, setamos o breakpoint para o método &lt;code&gt;foo&lt;/code&gt;.
+O pdb informa qual linha ele setou o breakpoint, em nosso exemplo o método &lt;code&gt;foo&lt;/code&gt; está na linha 30 do script.&lt;/p&gt;
+&lt;h3&gt;a (arguments)&lt;/h3&gt;
+&lt;p&gt;O comando &lt;code&gt;a&lt;/code&gt; mostra os argumentos que foram passados para a função atual.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;barz&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;
+&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;Call&lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;the_bar&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;
+&lt;span class="n"&gt;the_bar&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;barz&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;ENTER&lt;/h3&gt;
+&lt;p&gt;Se você pressionar o &lt;code&gt;ENTER&lt;/code&gt; sem nenhum comando no pdb, ele irá repetir o último comando executado.&lt;/p&gt;
+&lt;h2&gt;Debug na prática&lt;/h2&gt;
+&lt;p&gt;Vamos utilizar um script python simples e didático como exemplo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+            &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;TypeError&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+
+    &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;
+
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;The End&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Esse script possui uma classe chamada &lt;code&gt;NumberList&lt;/code&gt; que armazena uma lista de numeros e retorna a soma deles.
+Além destas classe, esse script também realiza algumas operações como instanciar essa classe e realizar alguns testes de asserção.
+Salve esse script em um arquivo chamado &lt;code&gt;numbers.py&lt;/code&gt; para ser utilizado em nossos exemplos.&lt;/p&gt;
+&lt;h2&gt;Modos de uso do pdb&lt;/h2&gt;
+&lt;p&gt;Na prática o pdb se assemelha bastante ao prompt interativo do python, com a diferença dos caracteres identificadores.
+Enquanto que no prompt interativo do python o identificador é o &lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/code&gt;, no pdb o identificador é &lt;code&gt;(Pdb)&lt;/code&gt;.
+Existem algumas maneiras de usar o pdb, depende da forma como você pretende realizer o debug.&lt;/p&gt;
+&lt;h3&gt;pdb.py&lt;/h3&gt;
+&lt;p&gt;Uma delas é através da chamada do script &lt;code&gt;pdb.py&lt;/code&gt; passando como paramêtro o script para ser feito do debug, por exemplo:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;python -m pdb numbers.py
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Isso fará com que o pdb seja iniciado na primeira linha do script &lt;code&gt;numbers.py&lt;/code&gt;, no caso, a declaração da classe &lt;code&gt;NumberList()&lt;/code&gt;.
+Caso você execute o comando &lt;code&gt;n&lt;/code&gt;, a próxima linha será o &lt;code&gt;if "__main__" == __name__:&lt;/code&gt; e assim por diante.
+Utilizando desta maneira, você pode verificar linha a linha do script ou &lt;em&gt;setar&lt;/em&gt; um breakpoint assim que entrar no debug, por exemplo, se você quer criar um breakpoint na execução do método &lt;code&gt;sum()&lt;/code&gt; de uma instância da classe &lt;code&gt;NumberList()&lt;/code&gt;, basta executar o comando &lt;code&gt;b numbers.sum&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;venv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="nd"&gt;@machine&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~/&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pdb&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;23&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sum&lt;/span&gt;
+&lt;span class="n"&gt;Breakpoint&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ou para simplificar, também poderiamos setar o breakpoint pelo número da linha.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;venv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="nd"&gt;@machine&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~/&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pdb&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="mi"&gt;13&lt;/span&gt;
+&lt;span class="n"&gt;Breakpoint&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;pdb.set_trace()&lt;/h3&gt;
+&lt;p&gt;Outra forma é utilizando o método &lt;code&gt;set_trace()&lt;/code&gt; do pacote &lt;code&gt;pdb&lt;/code&gt;.
+Com o &lt;code&gt;pdb.set_trace()&lt;/code&gt; você pode definir onde será o seu breakpoint via código, por exemplo, faremos uma alteração em nosso script para setar um breakpoint no método &lt;code&gt;NumberList().sum()&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+            &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;TypeError&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pdb&lt;/span&gt;
+        &lt;span class="n"&gt;pdb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_trace&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+        &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
+
+&lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="sd"&gt;Resto do script omitido&lt;/span&gt;
+&lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Dessa forma, ao executar o script (sem a necessidade de ser via pdb) e passar pelo método &lt;code&gt;pdb.set_trace()&lt;/code&gt; será iniciado um prompt interativo do pdb.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;venv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="nd"&gt;@machine&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~/&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;ipdb&lt;/h2&gt;
+&lt;p&gt;Uma das desvantagens do prompt interativo do python é a falta de &lt;em&gt;syntax highlighting&lt;/em&gt; e &lt;em&gt;code completion&lt;/em&gt;, com o pdb não é diferente, porém, assim como podemos recorrer ao &lt;a href="http://ipython.org/"&gt;ipython&lt;/a&gt; para isso, também podemos utilizar o &lt;a href="https://github.com/gotcha/ipdb"&gt;ipdb&lt;/a&gt;.
+O &lt;code&gt;ipdb&lt;/code&gt; é uma espécie de wrapper para o pdb que faz uso das rotinas de debug do &lt;code&gt;IPython&lt;/code&gt;.
+A maneira de uso se assemelha bastante ao pdb, bastando trocar o pacote &lt;code&gt;pdb&lt;/code&gt; pelo pacote &lt;code&gt;ipdb&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;ipdb&lt;/span&gt;
+
+&lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;ipdb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_trace&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;bar&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;bar&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para instalar o ipdb basta utilizar o &lt;code&gt;pip&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pip install ipdb
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com certeza recomendo o uso do &lt;code&gt;ipdb&lt;/code&gt; principalmente por ser mais intuitivo.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br \&gt;
+&lt;a href="https://docs.python.org/2/library/pdb.html"&gt;Documentação Oficial&lt;/a&gt;&lt;br /&gt;
+&lt;a href="https://github.com/gotcha/ipdb"&gt;ipdb&lt;/a&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pdb"></category><category term="debugging"></category><category term="debug"></category></entry><entry><title>Docker, por onde começar</title><link href="http://www.diego-garcia.info/2015/02/15/docker-por-onde-comecar/" rel="alternate"></link><updated>2015-02-15T10:32:26-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:2015/02/15/docker-por-onde-comecar/</id><summary type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
 Arrisco dizer que, nos próximos anos, se o Docker não acabar com a virtualização, essa só irá existir em conjunto com o Docker.
 O projeto ainda está no começo mas já existem pessoas utilizando em produção.
 Entenda um pouco sobre o que é o Docker e como você pode começar a utilizar em seu dia a dia.&lt;/p&gt;
@@ -485,7 +868,142 @@ Login Succeeded
 &lt;p&gt;Em uma segunda parte desse artigo veremos como executar uma aplicação web dentro de um conteiner e como automatizar ainda mais a criação de imagens do Docker através do ~Fig~ &lt;strong&gt;docker compose&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Testes de carga com o Locust</title><link href="http://www.diego-garcia.info/2015/01/10/testes-de-carga-com-o-locust/" rel="alternate"></link><updated>2015-01-10T18:45:15-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-10:2015/01/10/testes-de-carga-com-o-locust/</id><summary type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Publicando seu Hello World no Heroku</title><link href="http://www.diego-garcia.info/2015/01/25/publicando-seu-hello-world-no-heroku/" rel="alternate"></link><updated>2015-01-25T11:30:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-25:2015/01/25/publicando-seu-hello-world-no-heroku/</id><summary type="html">&lt;p&gt;O que é uma aplicação web se ela não está efetivamente na web? Não precisa ser efetivamente uma aplicação de produção, as vezes precisamos validar protótipos, compartilhar ferramentas online ou até mesmo publicar uma aplicação pela satisfação de publicar. Para isso não é necessário se preocupar com infraestrutura ou gastar dinheiro em aluguel de servidores. Existem diversas opções gratuitas e simples para isso, uma delas é o &lt;strong&gt;Heroku&lt;/strong&gt;.&lt;/p&gt;
+
+
+&lt;h2&gt;Heroku&lt;/h2&gt;
+&lt;p&gt;O Heroku é uma das opção mais populares de &lt;a href="http://pt.wikipedia.org/wiki/Plataforma_como_servi%C3%A7o"&gt;plataforma como serviço&lt;/a&gt; que suporta app escritos em diversas linguagens, dentre elas, &lt;strong&gt;Python&lt;/strong&gt;. Nele existem &lt;a href="https://www.heroku.com/pricing"&gt;planos pagos e gratuitos&lt;/a&gt; de acordo com o uso do serviço.
+Para conhecer um pouco do processo de &lt;em&gt;deploy&lt;/em&gt; do heroku, criaremos um simples &lt;strong&gt;Hello World&lt;/strong&gt; utilizando &lt;strong&gt;Flask&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3&gt;O que você irá precisar?&lt;/h3&gt;
+&lt;h4&gt;Uma conta no Heroku&lt;/h4&gt;
+&lt;p&gt;Não se preocupe, você pode criar uma conta gratuita e usufruir do serviço sem problemas. Entre no &lt;a href="https://signup.heroku.com/"&gt;&lt;em&gt;Sign up&lt;/em&gt;&lt;/a&gt; e crie uma conta informando seu nome e seu e-mail.&lt;/p&gt;
+&lt;h4&gt;Git&lt;/h4&gt;
+&lt;p&gt;O Heroku utiliza o Git para realizar o deploy dos app. Você verá mais adianta que um simples &lt;code&gt;git push&lt;/code&gt; é o suficiente para enviarmos nosso app para o heroku.&lt;/p&gt;
+&lt;h4&gt;Python, Pip, VirtualEnv&lt;/h4&gt;
+&lt;p&gt;Bem, você vai criar sua aplicação em python não? Além da boa organização e isolamento para seu ambiente proporcionado pelo &lt;strong&gt;virtualenv&lt;/strong&gt;, manter seu app em um virtualenv proporciona algumas praticidades.&lt;/p&gt;
+&lt;h3&gt;Instalando o Toolbet&lt;/h3&gt;
+&lt;p&gt;O &lt;strong&gt;Toolbet&lt;/strong&gt; é uma poderosa ferramenta de linha de comando do heroku. É através dela que iremos criar nosso app no heroku.
+No ubuntu (ou outras distribuições baseadas no debian) para instalar não poderia ser diferente, basta usar o todo poderoso &lt;code&gt;apt-get&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ sudo apt-get install heroku
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Se você estiver usando outro sistema operacional, você pode baixar o instalador direto do &lt;a href="https://toolbelt.heroku.com/"&gt;site oficial&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Após a instalação, faça o login no heroku através do toolbet para se certificar que tudo deu certo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ heroku login
+Enter your Heroku credentials.
+Email: your@email.com
+Password &lt;span class="o"&gt;(&lt;/span&gt;typing will be hidden&lt;span class="o"&gt;)&lt;/span&gt;:
+Authentication successful.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Preparando o App&lt;/h3&gt;
+&lt;p&gt;Iremos agora criar nosso app que será compartilhado com o mundo. Nesse processo não tera nada de anormal, apenas a criação de uma aplicação web como qualquer outra.
+Criaremos um diretório chamado &lt;code&gt;heroku_hello_world&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/$ mkdir heroku_hello_world
+user@machine:~/$ &lt;span class="nb"&gt;cd&lt;/span&gt; heroku_hello_world
+user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Nele iremos criar um &lt;code&gt;virtualenv&lt;/code&gt; e ativa-lo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~/heroku_hello_world$ virtualenv venv
+New python executable in venv/bin/python
+Installing setuptools, pip...done.
+user@machine:~/heroku_hello_world$ &lt;span class="nb"&gt;source&lt;/span&gt; venv/bin/activate
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Como disse anteriormente, iremos fazer o deploy de um simples &lt;strong&gt;Hello World&lt;/strong&gt;. A intenção aqui é ter um &lt;strong&gt;how-to&lt;/strong&gt; de como fazer o deploy de um app simples no heroku. Sendo assim, o &lt;strong&gt;Flask&lt;/strong&gt; é uma excelente opção para isso. Para instalar o Flask em nosso virtualenv, use o &lt;code&gt;pip&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ pip install flask
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E finalmente vamos criar nosso &lt;em&gt;Hello World&lt;/em&gt; no arquivo &lt;code&gt;hello.py&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;index&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;h1&amp;gt;Hello World&amp;lt;/hi&amp;gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;PORT&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;0.0.0.0&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Um detalhe importante fica por conta da variável &lt;code&gt;port&lt;/code&gt;. No heroku não é possível subir o app na porta 5000 (porta default do Flask), mas o heroku seta a variável de ambiente &lt;code&gt;PORT&lt;/code&gt; em seu ambiente, definindo em qual porta a aplicação deve rodar. Da maneira como está implementado nosso app, iremos conseguir rodar tanto no heroku como localmente (através da porta 5000).&lt;/p&gt;
+&lt;p&gt;O heroku precisa conhecer as dependências de nosso app para que, no momento do deploy ele construa o ambiente de forma correta. Seguindo o padrão, o heroku procura pelas dependências através do arquivo &lt;code&gt;requirements.txt&lt;/code&gt;. Como já isolamos nosso app em um virtualenv, basta utilizar o &lt;code&gt;pip freeze&lt;/code&gt; para listar os packages instalados e direcionar a saida desse comando para o arquivo &lt;em&gt;requirements.txt&lt;/em&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ pip freeze &amp;gt; requirements.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Preparando o Deploy&lt;/h3&gt;
+&lt;p&gt;Iremos criar agora o arquivo &lt;code&gt;Procfile&lt;/code&gt;, onde será escrito o comando que o heroku deverá usar para executar nosso app, basicamente o mesmo comando que utilizaríamos para rodar a aplicação localmente. Esse arquivo (assim como o &lt;em&gt;requirements.txt&lt;/em&gt;) deverá estar na raiz da aplicação.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;web: python hello.py&amp;quot;&lt;/span&gt; &amp;gt; Procfile
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora que já possuímos todos os arquivos necessários, iremos iniciar o processo efetivo de deploy da aplicação. Como disse anteriormente, o heroku utiliza o git, sendo assim, nossa aplicação deverá estar em um repositório. Para isso, basta criar um repositório no diretório atual através do comando &lt;code&gt;git init&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git init
+Initialized empty Git repository in /home/user/heroku_hello_world/.git/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para não &lt;em&gt;sujar&lt;/em&gt; nosso repositório com arquivos desnecessários como por exemplo o virtualenv, crie um arquivo chamado &lt;code&gt;.gitignore&lt;/code&gt; na raiz do repositório e nele iremos determinar quais arquivos o git deve ignorar.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;*.pyc
+venv
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Vamos adicionar e commitar nossos arquivos nesse repositório através dos comandos &lt;code&gt;git add .&lt;/code&gt; para adicionar todos os arquivos e &lt;code&gt;git commit&lt;/code&gt; para criar nosso commit inicial.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git add .
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git commit -m &lt;span class="s1"&gt;&amp;#39;initial commit&amp;#39;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;master &lt;span class="o"&gt;(&lt;/span&gt;root-commit&lt;span class="o"&gt;)&lt;/span&gt; 33f63b5&lt;span class="o"&gt;]&lt;/span&gt; initial commit
+ &lt;span class="m"&gt;4&lt;/span&gt; files changed, &lt;span class="m"&gt;25&lt;/span&gt; insertions&lt;span class="o"&gt;(&lt;/span&gt;+&lt;span class="o"&gt;)&lt;/span&gt;
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; .gitignore
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; Procfile
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; hello.py
+ create mode &lt;span class="m"&gt;100644&lt;/span&gt; requirements.txt
+&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora vamos criar nosso app no heroku através do commando &lt;code&gt;heroku apps:create [nome do app]&lt;/code&gt;. O nome da aplicação deverá ser único, pois o heroku utiliza o nome da aplicação para compor a url.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ heroku apps:create dg-hello-world
+Creating dg-hello-world... &lt;span class="k"&gt;done&lt;/span&gt;, stack is cedar-14
+https://dg-hello-world.herokuapp.com/ &lt;span class="p"&gt;|&lt;/span&gt; https://git.heroku.com/dg-hello-world.git
+Git remote heroku added
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;É importante ter realizado o login no heroku através do toolbet antes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;No resultado do comando &lt;code&gt;heroku apps:create&lt;/code&gt; já são apresentadas duas das coisas mais importantes para nosso app, a url de acesso e repositório git onde deverá ser enviada nossa aplicação.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Se você executou esse comando no mesmo diretório onde criou seu repositório do git, o heroku já cria o apontamento para o repositório remoto com o nome de &lt;code&gt;heroku&lt;/code&gt;, não sendo necessário utilizar o comando &lt;code&gt;git remote add&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Basicamente a url será no padrão &lt;code&gt;https://[nome do app].herokuapp.com/&lt;/code&gt;.&lt;/p&gt;
+&lt;h3&gt;Efetivando o Deploy&lt;/h3&gt;
+&lt;p&gt;Finalmente iremos realizar o deploy de nossa aplicação. Todos os passos anteriores foram passos preparatórios, o que significa que basta executá-los uma vez. Daqui em diante, para fazer o deploy de nosso app, basta enviar os commits do repositório local, para o repositório do heroku, através do comando &lt;code&gt;git push heroku master&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/heroku_hello_world$ git push heroku master
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E pronto, basta agora acessar a url do seu app (no caso desse exemplo foi &lt;a href="https://dg-hello-world.herokuapp.com/"&gt;https://dg-hello-world.herokuapp.com/&lt;/a&gt;) e compartilhar com seus amigos =].&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br \&gt;
+&lt;a href="https://devcenter.heroku.com/articles/getting-started-with-python"&gt;(Heroku) Getting Started With Python&lt;/a&gt;&lt;br /&gt;
+&lt;a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud"&gt;Deployment on the Heroku Cloud&lt;/a&gt;&lt;/p&gt;</summary><category term="web"></category><category term="heroku"></category><category term="flask"></category><category term="git"></category><category term="deploy"></category></entry><entry><title>Testes de carga com o Locust</title><link href="http://www.diego-garcia.info/2015/01/10/testes-de-carga-com-o-locust/" rel="alternate"></link><updated>2015-01-10T18:45:15-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-10:2015/01/10/testes-de-carga-com-o-locust/</id><summary type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
 
 
 &lt;h2&gt;Locust&lt;/h2&gt;

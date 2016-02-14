@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Debugging em python (sem IDE)</title>
+
+            <link href="http://www.diego-garcia.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.diego-garcia.info/python.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.diego-garcia.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="python" />
+        <meta name="tags" contents="pdb" />
+        <meta name="tags" contents="debugging" />
+        <meta name="tags" contents="debug" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.diego-garcia.info/2015/02/15/debuggin-em-python-sem-ide/">
+	<meta property="og:title" content="Debugging em python (sem IDE)">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.diego-garcia.info/">
+	<meta property="article:published_time" content="2015-02-15 22:30:00-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.diego-garcia.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('http://www.diego-garcia.info/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Debugging em python (sem IDE)</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.diego-garcia.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Sun 15 February 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Um dos principais motivos que ainda levam desenvolvedores Python a recorrerem a IDEs pesadas e que requerem instalação é o <strong>debugging</strong>.
+Devs que vieram de linguagens como <em>DotNet</em>, <em>Java</em> e <em>Delphi</em> por exemplo, estão acostumados a IDEs super pesadas e inchadas que no final das contas, além do debugging, só servem para drenar memória RAM.
+Brincadeiras a parte, não a motivos para você não dar uma chance ao <strong>VIM</strong> ou ao <strong>Sublime</strong>, pois para fazer debugging em scripts python, tudo que você precisa é o <strong>PDB</strong>.</p>
+
+
+<h1>PDB</h1>
+<p>O <code>pdb</code> é um módulo <em>buit-in</em> que funciona como um console interativo, onde é posssível realizar debug de códigos python.
+Nele é possível fazer um <em>step-by-step</em> do código, verificando o valor de variaveis, definindo breakpoints, manipulando valores, etc.
+É possível inclusive realizer <em>step-into</em> em métodos. Ou seja, tudo que uma boa ferramenta de debug precisa ter.</p>
+<h2>Comandos</h2>
+<p>Antes de partirmos para prática, é importante conhecer alguns comandos básicos para já começar o uso do pdb de forma efetiva.</p>
+<p>Durante o debugging, eventualmente seu script irá <em>estacionar</em> em pontos de paradas, possívelmente definidos por você, neste momento, os comandos a seguir poderão ser utilizados.</p>
+<h3>q (quit)</h3>
+<p>Sai da execução do script.</p>
+<h3>n (next)</h3>
+<p>Avança para a próxima linha do script.</p>
+<h3>p (print)</h3>
+<p>Executa o comando <code>print</code> do python, por exemplo:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;foo var&quot;</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">p</span> <span class="n">foo</span>
+<span class="s1">&#39;foo var&#39;</span>
+</pre></div>
+
+
+<blockquote>
+<p>Vale ressaltar que no exemplo acima, não é necessário utilizar o comando <code>p</code>, basta digitar o nome da variável e pressionar <code>enter</code>, o efeito seria o mesmo.</p>
+</blockquote>
+<h3>c (continue)</h3>
+<p>Avança o debug até o próximo <strong>breakpoint</strong> ou até ocorrer uma <strong>exception</strong>.</p>
+<h3>l (list)</h3>
+<p>Lista algumas linhas do código que estão em volta da linha atual.
+Por padrão serão apresentadas 11 linhas (5 acima e 5 abaixo).</p>
+<h3>s (step into)</h3>
+<p>Ao realizar a navegação através do comando <code>n</code> o debug <strong>não</strong> irá <em>entrar</em> em métodos que possívelmente forem invocados.
+Para que o debug entre no método que está sendo invocado na linha corrente, basta trocar o comando <code>n</code>, pelo comando <code>s</code>.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">foo</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="s1">&#39;barz&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">s</span>
+<span class="o">--</span><span class="n">Call</span><span class="o">--</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">foo</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="n">bar</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">the_bar</span><span class="p">):</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>r (return)</h3>
+<p>Já o comando <code>r</code> libera a execução do script até sair da função atual.</p>
+<h3>b (breakpoint)</h3>
+<p>Cria um breakpoint em uma determinada linha ou método, por exemplo.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">b</span> <span class="mi">21</span>
+<span class="n">Breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">21</span>
+</pre></div>
+
+
+<p>No comando acima, setamos um breakpoint na linha 21 de nosso script.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">b</span> <span class="n">foo</span>
+<span class="n">Breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">30</span>
+</pre></div>
+
+
+<p>Já no exemplo acima, setamos o breakpoint para o método <code>foo</code>.
+O pdb informa qual linha ele setou o breakpoint, em nosso exemplo o método <code>foo</code> está na linha 30 do script.</p>
+<h3>a (arguments)</h3>
+<p>O comando <code>a</code> mostra os argumentos que foram passados para a função atual.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">foo</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="s1">&#39;barz&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">s</span>
+<span class="o">--</span><span class="n">Call</span><span class="o">--</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">foo</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="n">bar</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">the_bar</span><span class="p">):</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">a</span>
+<span class="n">the_bar</span> <span class="o">=</span> <span class="s2">&quot;barz&quot;</span>
+</pre></div>
+
+
+<h3>ENTER</h3>
+<p>Se você pressionar o <code>ENTER</code> sem nenhum comando no pdb, ele irá repetir o último comando executado.</p>
+<h2>Debug na prática</h2>
+<p>Vamos utilizar um script python simples e didático como exemplo.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NumberList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">if</span> <span class="s2">&quot;__main__&quot;</span> <span class="o">==</span> <span class="n">__name__</span><span class="p">:</span>
+    <span class="n">numbers</span> <span class="o">=</span> <span class="n">NumberList</span><span class="p">()</span>
+
+    <span class="n">numbers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">numbers</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">5</span>
+
+    <span class="n">numbers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">numbers</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">15</span>
+
+    <span class="k">print</span> <span class="s2">&quot;The End&quot;</span>
+</pre></div>
+
+
+<p>Esse script possui uma classe chamada <code>NumberList</code> que armazena uma lista de numeros e retorna a soma deles.
+Além destas classe, esse script também realiza algumas operações como instanciar essa classe e realizar alguns testes de asserção.
+Salve esse script em um arquivo chamado <code>numbers.py</code> para ser utilizado em nossos exemplos.</p>
+<h2>Modos de uso do pdb</h2>
+<p>Na prática o pdb se assemelha bastante ao prompt interativo do python, com a diferença dos caracteres identificadores.
+Enquanto que no prompt interativo do python o identificador é o <code>&gt;&gt;&gt;</code>, no pdb o identificador é <code>(Pdb)</code>.
+Existem algumas maneiras de usar o pdb, depende da forma como você pretende realizer o debug.</p>
+<h3>pdb.py</h3>
+<p>Uma delas é através da chamada do script <code>pdb.py</code> passando como paramêtro o script para ser feito do debug, por exemplo:</p>
+<div class="highlight"><pre><span></span>python -m pdb numbers.py
+</pre></div>
+
+
+<p>Isso fará com que o pdb seja iniciado na primeira linha do script <code>numbers.py</code>, no caso, a declaração da classe <code>NumberList()</code>.
+Caso você execute o comando <code>n</code>, a próxima linha será o <code>if "__main__" == __name__:</code> e assim por diante.
+Utilizando desta maneira, você pode verificar linha a linha do script ou <em>setar</em> um breakpoint assim que entrar no debug, por exemplo, se você quer criar um breakpoint na execução do método <code>sum()</code> de uma instância da classe <code>NumberList()</code>, basta executar o comando <code>b numbers.sum</code>.</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">venv</span><span class="p">)</span><span class="n">user</span><span class="nd">@machine</span><span class="p">:</span><span class="o">~/</span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pdb</span> <span class="n">numbers</span><span class="o">.</span><span class="n">py</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="k">class</span> <span class="nc">NumberList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">n</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">n</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="n">NumberList</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">n</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">numbers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">b</span> <span class="n">numbers</span><span class="o">.</span><span class="n">sum</span>
+<span class="n">Breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">13</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Ou para simplificar, também poderiamos setar o breakpoint pelo número da linha.</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">venv</span><span class="p">)</span><span class="n">user</span><span class="nd">@machine</span><span class="p">:</span><span class="o">~/</span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pdb</span> <span class="n">numbers</span><span class="o">.</span><span class="n">py</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="k">class</span> <span class="nc">NumberList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">b</span> <span class="mi">13</span>
+<span class="n">Breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">13</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>pdb.set_trace()</h3>
+<p>Outra forma é utilizando o método <code>set_trace()</code> do pacote <code>pdb</code>.
+Com o <code>pdb.set_trace()</code> você pode definir onde será o seu breakpoint via código, por exemplo, faremos uma alteração em nosso script para setar um breakpoint no método <code>NumberList().sum()</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NumberList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pdb</span>
+        <span class="n">pdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Resto do script omitido</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+
+<p>Dessa forma, ao executar o script (sem a necessidade de ser via pdb) e passar pelo método <code>pdb.set_trace()</code> será iniciado um prompt interativo do pdb.</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">venv</span><span class="p">)</span><span class="n">user</span><span class="nd">@machine</span><span class="p">:</span><span class="o">~/</span><span class="err">$</span> <span class="n">python</span> <span class="n">numbers</span><span class="o">.</span><span class="n">py</span>
+<span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">numbers</span><span class="o">.</span><span class="n">py</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="nb">sum</span><span class="p">()</span>
+<span class="o">-&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">(</span><span class="n">Pdb</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>ipdb</h2>
+<p>Uma das desvantagens do prompt interativo do python é a falta de <em>syntax highlighting</em> e <em>code completion</em>, com o pdb não é diferente, porém, assim como podemos recorrer ao <a href="http://ipython.org/">ipython</a> para isso, também podemos utilizar o <a href="https://github.com/gotcha/ipdb">ipdb</a>.
+O <code>ipdb</code> é uma espécie de wrapper para o pdb que faz uso das rotinas de debug do <code>IPython</code>.
+A maneira de uso se assemelha bastante ao pdb, bastando trocar o pacote <code>pdb</code> pelo pacote <code>ipdb</code>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ipdb</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>
+<span class="n">ipdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+</pre></div>
+
+
+<p>Para instalar o ipdb basta utilizar o <code>pip</code></p>
+<div class="highlight"><pre><span></span>pip install ipdb
+</pre></div>
+
+
+<p>Com certeza recomendo o uso do <code>ipdb</code> principalmente por ser mais intuitivo.</p>
+<p><strong>Referências</strong><br \>
+<a href="https://docs.python.org/2/library/pdb.html">Documentação Oficial</a><br />
+<a href="https://github.com/gotcha/ipdb">ipdb</a></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.diego-garcia.info/tag/python.html">python</a>, <a href="http://www.diego-garcia.info/tag/pdb.html">pdb</a>, <a href="http://www.diego-garcia.info/tag/debugging.html">debugging</a>, <a href="http://www.diego-garcia.info/tag/debug.html">debug</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2015/02/15/debuggin-em-python-sem-ide/';
+                var disqus_url = 'http://www.diego-garcia.info/2015/02/15/debuggin-em-python-sem-ide/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.diego-garcia.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.diego-garcia.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.diego-garcia.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
