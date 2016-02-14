@@ -1,0 +1,69 @@
+Title: Use o cURL
+Date: 2014-12-13 01:04:33
+Category: Curl
+
+O **cURL** é uma poderosa ferramenta de linha de comando open source utilizada basicamente para transferir dados pela sintaxe de chamadas baseadas em URL.
+Muito popular no mundo Unix, o cURL já vem por padrão na maioria das distribuições linux, porém, existem também versões para windows. Apesar da utilização principal do cURL ser voltada para realizar requisições _HTTP_, o que poucos sabem é que ele também funciona para outros protocolos como por exemplo _FTP_, _IMAP_, _POP3_, etc.
+
+<!-- more -->
+Mesmo que muitos torçam o nariz para a linha de comando, ficar ninja no cURL vai lhe ajudar (e muito) em seu dia a dia, principalmente se você é um desenvolvedor de APIs.
+Veja o básico para começar a trabalhar com ele.
+
+#### Sintaxe Padrão
+A sintaxe padrão do cURL é a seguinte
+
+```
+curl [parâmetros] [url]
+```
+
+Para requisições simples, não é necessário nenhum parâmetro, somente a url de destino.
+
+```
+curl http://localhost/
+```
+
+#### Definindo o verbo HTTP
+Por padrão, uma requisição simples no cURL é feita implicitamente através do verbo **GET**, mas é possível alterar o verbo HTTP da requisição através da opção ``-X``. Sendo assim, para realizar uma chamada com o verbo **DELETE** por exemplo, basta fazer desta forma:
+
+```
+curl -X DELETE http://localhost/person/foo
+```
+
+#### Enviando corpo na requisição
+Principalmente em métodos _POST_ e _PUT_ é natural transmitir na requisição algum conteúdo no corpo, para fazer isso no cURL basta utilizar a opção ``-d``.
+
+```
+curl -X POST -d 'name=Fulano&email=fulano@foo.bar' http://localhost:8888/person/
+```
+
+### Alterando os cabeçalhos da requisição
+Geralmente é necessário especificar alguma informação no cabeçalho da requisição, como por exemplo o _Authorization_, _Content-Type_, etc. Para isso, utilize a opção ``-H`` em cada item de cabeçalho adicionado.
+
+```
+curl -X POST -H 'Content-Type: application/json' -d '{"name": "Fulano", "email": "fulano@foo.bar"}' http://localhost:8888/person/
+```
+
+### Salvando a resposta em arquivo
+É muito comum realizar requisições para pegar um conteúdo que deverá ser salvo em um arquivo, por exemplo, baixar configurações, credenciais e os famosos _dotfiles_. Existem duas formas de se fazer isso, uma é direcionando a saída do curl para um arquivo através do ``>``:
+```
+curl http://mydotfiles.net/vimrc > ~/.vimrc
+```
+Ou através da opção ``-o``:
+```
+curl -o ~/.vimrc http://mydotfiles.net/vimrc
+```
+
+#### Exibindo o cabeçalho de resposta
+O cURL por padrão exibe somente o conteúdo do corpo da resposta, porém, muitas vezes (para não dizer todas), é necessário visualizar os cabeçalhos de retorno, como por exemplo o _status code_. Nesses casos utilize a opção ``-i``.
+
+```
+curl -i http://localhost:8888/person
+```
+
+Depois que comecei a usar o **cURL**, nunca mais usei nenhum tipo de client HTTP para realizar testes em minhas APIs e sinto que essa troca me tornou mais produtivo e mais profissional.
+Como o cURL é praticamente um padrão, me sinto confortavel em usa-lo até para registrar o uso de APIs em manuais e exemplos.
+
+Para saber mais comandos, você pode usar tanto o help ``curl --help`` quanto o manual ``curl --man``.
+
+**Referências**<br>
+[Site oficial](http://curl.haxx.se/)
