@@ -25,7 +25,7 @@ Agora, qualquer elemento html (de preferencia quadrado) que seja da classe **ava
 ```
 Veja o resultado com uma imagem aleatória
 
-<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/8/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/9/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ### Arredondando cantos
 Se a sua intenção não for criar circulos, você pode diminuir a porcentagem do raio (radius) ou trabalhar com pixels. Você pode também arredondar somente cantos específicos de um elemento. Assim como a grande maioria das propriedades do CSS, a propriedade _border-radius_ consiste em um conjunto de popriedades especificas para cada canto de um elemento, como por exemplo a propriedade **border-top-left-radius**.
@@ -48,7 +48,7 @@ ou assim
 
 Veja esse exemplo com a mesma imagem aleatória anterior
 
-<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/3/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/4/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ### É Cross-Browser?
 Realizei testes tanto com o Firefox (gecko) como com Chrome (webkit) e não tive problemas, o IE 9 (trident) também já está compativel, mas por garantia e compatibilidade com versões antigas de outros browsers, você pode usar as propriedades especificas de cada motor de renderização
