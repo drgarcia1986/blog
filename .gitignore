@@ -48,3 +48,6 @@ docs/_build
 
 # cache
 .cache
+
+# Keys
+publish-key.pub
