@@ -1,5 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://drgarcia1986.github.io/blog/" rel="alternate"></link><link href="http://drgarcia1986.github.io/blog/atom.xml" rel="self"></link><id>http://drgarcia1986.github.io/blog/</id><updated>2015-05-01T11:05:00-03:00</updated><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://drgarcia1986.github.io/blog/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:drgarcia1986.github.io,2015-05-01:blog/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://drgarcia1986.github.io/blog/" rel="alternate"></link><link href="http://drgarcia1986.github.io/blog/atom.xml" rel="self"></link><id>http://drgarcia1986.github.io/blog/</id><updated>2016-02-14T00:00:00-02:00</updated><entry><title>Migrando para o Pelican</title><link href="http://drgarcia1986.github.io/blog/2016/02/14/migrando-para-o-pelican/" rel="alternate"></link><updated>2016-02-14T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:drgarcia1986.github.io,2016-02-14:blog/2016/02/14/migrando-para-o-pelican/</id><summary type="html">&lt;p&gt;Depois de um longo hiato, resolvi voltar a dar atenção a esse blog, porém, antes de voltar a escrever, ainda tinha algo que me incomodava bastante, a complexidade do &lt;a href="http://blog.getpelican.com/"&gt;jekyll&lt;/a&gt;.
+Após contribuir com alguns posts no &lt;a href="http://pythonclub.com.br/"&gt;pythonclub&lt;/a&gt; descidi que iria migrar para o &lt;a href="http://blog.getpelican.com/"&gt;Pelican&lt;/a&gt;, pois, além de ser mais simples, o &lt;em&gt;Pelican&lt;/em&gt; é feito em python, o que me ajuda bastante em futuras customizações.
+&lt;/p&gt;
+&lt;h3&gt;O que é Pelican?&lt;/h3&gt;
+&lt;p&gt;Assim como o &lt;em&gt;Jekyll&lt;/em&gt; o &lt;em&gt;Pelican&lt;/em&gt; é um gerador de sites estáticos simples que não requer um banco de dados ou uma lógica server-side complexa.
+Com o pelican, no caso de blogs por exemplo, basta você escrever seus posts em arquivos no formato &lt;em&gt;markdown&lt;/em&gt; (ou &lt;em&gt;rst&lt;/em&gt; ou &lt;em&gt;AsciiDoc&lt;/em&gt;) em seu editor favorito e com apenas um comando simples, esses arquivos são convertidos em páginas html estáticas prontas para servir seu blog.&lt;/p&gt;
+&lt;h3&gt;Como começar?&lt;/h3&gt;
+&lt;p&gt;Começaremos instalando o Pelican, para isso, crie um virtualenv do python no diretório onde você irá criar seu blog e instale o pelican através o &lt;code&gt;pip&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt; $ pip install pelican markdown
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Com o &lt;em&gt;Pelican&lt;/em&gt; instalado, execute o comando &lt;code&gt;pelican-quickstart&lt;/code&gt; para criar um esqueleto básico do seu blog com o pelican:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt; $ pelican-quickstart
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Esse comando fará algumas perguntas básicas sobre seu blog, após respondê-las, seu blog está praticamente pronto :).&lt;/p&gt;
+&lt;h3&gt;Como escrever posts?&lt;/h3&gt;
+&lt;p&gt;Com a parte básica do &lt;em&gt;pelican&lt;/em&gt; já configurada, agora é hora de escrever um post.
+O diretório padrão para o conteúdo a ser processado pelo pelican é o diretório &lt;code&gt;content&lt;/code&gt; dentro da raiz do diretório onde o comando &lt;code&gt;pelican-quickstart&lt;/code&gt; foi executado, sendo assim, basta criar seus posts nesse diretório.&lt;/p&gt;
+&lt;h4&gt;Criando um "Hello World"&lt;/h4&gt;
+&lt;p&gt;Não existem segredos na criação de um post com o pelican, basta criar arquivos no diretório &lt;code&gt;content&lt;/code&gt; e preencher um cabeçalho mínimo com alguns meta-dados do post como esse:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Titulo&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="n"&gt;post&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Data&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="n"&gt;post&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;formato&lt;/span&gt; &lt;span class="n"&gt;aaaa&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mm&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dd&lt;/span&gt; &lt;span class="n"&gt;hh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mm&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Categoria&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="n"&gt;post&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Sendo assim, nosso &lt;em&gt;Hello World&lt;/em&gt; ficaria da seguinte forma:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2016&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt; &lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Review&lt;/span&gt;
+
+&lt;span class="n"&gt;Meu&lt;/span&gt; &lt;span class="n"&gt;primeiro&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt; &lt;span class="n"&gt;direto&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="n"&gt;Pelican&lt;/span&gt; &lt;span class="o"&gt;\&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Como gerar o conteúdo?&lt;/h3&gt;
+&lt;p&gt;Gerar o conteúdo estático é a parte mais simples do trabalho, basta executar o comando &lt;code&gt;pelican "diretório"&lt;/code&gt; e todos arquivos do diretório em questão serão processados:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt; $ pelican content
+Done: Processed &lt;span class="m"&gt;1&lt;/span&gt; articles, &lt;span class="m"&gt;0&lt;/span&gt; drafts, &lt;span class="m"&gt;0&lt;/span&gt; pages and &lt;span class="m"&gt;0&lt;/span&gt; hidden pages in 0.70 seconds.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Esse comando básicamente gera os arquivos estáticos no diretório &lt;code&gt;output&lt;/code&gt;.&lt;/p&gt;
+&lt;h3&gt;Como vejo o blog no ar?&lt;/h3&gt;
+&lt;p&gt;Agora que todo o conteúdo estático do seu blog já foi gerado, basta iniciar um servidor http no diretório &lt;code&gt;output&lt;/code&gt;.
+Para isso, dentro do diretório &lt;em&gt;output&lt;/em&gt; basta executar o comando &lt;code&gt;python -m pelican.server&lt;/code&gt; e abrir o navegar em &lt;em&gt;http://localhost:8000&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hello-world" src="/images/pelican_hello_world.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Pronto, seu blog com o Pelican já está no ar =D.&lt;/p&gt;
+&lt;h3&gt;Como mudar o tema padrão?&lt;/h3&gt;
+&lt;p&gt;Mudar o tema que será utilizado para gerar o output estático é algo trivial no Pelican, basta você baixar o tema escolhido (você pode escolher alguns disponíveis, no reposítorio &lt;a href="https://github.com/getpelican/pelican-themes"&gt;pelican-themes&lt;/a&gt;) e alterar o tema na constante &lt;code&gt;THEME&lt;/code&gt; do arquivo &lt;code&gt;pelicanconf.py&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# pelicanconf.py&lt;/span&gt;
+&lt;span class="n"&gt;THEME&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;/diretório/do/tema`&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Lembrando que os tema são feitos utilizando o &lt;a href="http://jinja.pocoo.org/docs/dev/"&gt;Jinja2&lt;/a&gt; como engine de templates, sendo assim, é muito simples customizar os temas ou até mesmo criar um novo.&lt;/p&gt;
+&lt;h3&gt;Como instalar plugins?&lt;/h3&gt;
+&lt;p&gt;Outra tarefa trivial, basta baixar o plugin (você pode escolher alguns disponíveis no repositório &lt;a href="https://github.com/getpelican/pelican-plugins"&gt;pelican-plugins&lt;/a&gt;) e alterar o arquivo &lt;code&gt;pelicanconf.py&lt;/code&gt; especificando o diretório dos plugins e quais plugins estão ativos:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# pelicanconf.py&lt;/span&gt;
+&lt;span class="n"&gt;PLUGIN_PATHS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/diretório/dos/plugins&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;PLUGINS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;plugins&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;ativos&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Como publicar usando o GitHub Pages?&lt;/h3&gt;
+&lt;p&gt;Utilizo o &lt;a href="https://pages.github.com/"&gt;GitHub Pages&lt;/a&gt; para publicar o conteúdo do blog.
+No Jekyll bastava o comando &lt;code&gt;rake deploy&lt;/code&gt; e a mágica acontecia, no Pelican não é diferente, basta o comando &lt;code&gt;make github&lt;/code&gt; e o conteúdo estático (pasta &lt;em&gt;output&lt;/em&gt;) será commitado e enviado para o GitHub.
+É possível automizar esse processo para sempre que houver um push no repositório o &lt;code&gt;travis&lt;/code&gt; gere o conteúdo estático e faça a atualização dos arquivos na branch do GitHub Pages, para mais informações de como configurar essa automação, recomendo a leitura do excelente artigo &lt;a href="http://df.python.org.br/blog/github-pages-com-pelican-e-travis-ci/"&gt;GitHub Pages com Pelican e Travis-CI&lt;/a&gt; do &lt;a href="http://df.python.org.br/"&gt;Grupy-DF&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;Como foi a migração do Jekyll para o Pelican?&lt;/h3&gt;
+&lt;p&gt;A migração do Jekyll para o Pelican foi algo extremamente simples, bastou copiar os posts do diretório &lt;code&gt;source/_post&lt;/code&gt; do jekyll para o diretório &lt;code&gt;content&lt;/code&gt; do pelican e alterar os metadados dos posts, por exemplo:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Padrão do Jekyll&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nn"&gt;---&lt;/span&gt;
+&lt;span class="l l-Scalar l-Scalar-Plain"&gt;layout&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;post&lt;/span&gt;
+&lt;span class="l l-Scalar l-Scalar-Plain"&gt;title&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Use&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;o&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;cURL&amp;quot;&lt;/span&gt;
+&lt;span class="l l-Scalar l-Scalar-Plain"&gt;date&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;2014-12-13 01:04:33 -0200&lt;/span&gt;
+&lt;span class="l l-Scalar l-Scalar-Plain"&gt;comments&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;true&lt;/span&gt;
+&lt;span class="l l-Scalar l-Scalar-Plain"&gt;categories&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="p p-Indicator"&gt;[&lt;/span&gt;&lt;span class="nv"&gt;curl&lt;/span&gt;&lt;span class="p p-Indicator"&gt;]&lt;/span&gt;
+&lt;span class="nn"&gt;---&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;Padrão do Pelican&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Use&lt;/span&gt; &lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;cURL&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2014&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt; &lt;span class="mi"&gt;01&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;04&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;33&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Curl&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Como decidi usar um tema novo (e não portar o que estava utilizando no jekyll) o resto foram ajustes simples.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="http://blog.getpelican.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pelican"></category></entry><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://drgarcia1986.github.io/blog/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:drgarcia1986.github.io,2015-05-01:blog/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
 Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
 Veremos nesse post uma &lt;em&gt;receita de bolo&lt;/em&gt; de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.&lt;/p&gt;
 

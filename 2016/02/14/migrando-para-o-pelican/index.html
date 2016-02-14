@@ -48,11 +48,11 @@
 
 	<meta property="og:type" content="article">
 	<meta property="article:author" content="">
-	<meta property="og:url" content="http://drgarcia1986.github.io/blog/drafts/migrando-para-o-pelican.html">
+	<meta property="og:url" content="http://drgarcia1986.github.io/blog/2016/02/14/migrando-para-o-pelican/">
 	<meta property="og:title" content="Migrando para o Pelican">
 	<meta property="og:description" content="">
 	<meta property="og:image" content="http://drgarcia1986.github.io/blog/">
-	<meta property="article:published_time" content="2016-02-11 00:00:00-02:00">
+	<meta property="article:published_time" content="2016-02-14 00:00:00-02:00">
 </head>
 
 <body>
@@ -91,7 +91,7 @@
                         <h1>Migrando para o Pelican</h1>
                         <span class="meta">Posted by
                                 <a href="http://drgarcia1986.github.io/blog/author/diego-garcia.html">Diego Garcia</a>
-                             on Thu 11 February 2016
+                             on Sun 14 February 2016
                         </span>
                         
                     </div>
@@ -108,13 +108,10 @@
     <article>
         <p>Depois de um longo hiato, resolvi voltar a dar atenção a esse blog, porém, antes de voltar a escrever, ainda tinha algo que me incomodava bastante, a complexidade do <a href="http://blog.getpelican.com/">jekyll</a>.
 Após contribuir com alguns posts no <a href="http://pythonclub.com.br/">pythonclub</a> descidi que iria migrar para o <a href="http://blog.getpelican.com/">Pelican</a>, pois, além de ser mais simples, o <em>Pelican</em> é feito em python, o que me ajuda bastante em futuras customizações.
-<!-- more --></p>
+</p>
 <h3>O que é Pelican?</h3>
-<p>Assim como o <em>Jekyll</em> o <em>Pelican</em> é um gerador de site estático simples que não requer um banco de dados ou uma lógica server-side complexa.
+<p>Assim como o <em>Jekyll</em> o <em>Pelican</em> é um gerador de sites estáticos simples que não requer um banco de dados ou uma lógica server-side complexa.
 Com o pelican, no caso de blogs por exemplo, basta você escrever seus posts em arquivos no formato <em>markdown</em> (ou <em>rst</em> ou <em>AsciiDoc</em>) em seu editor favorito e com apenas um comando simples, esses arquivos são convertidos em páginas html estáticas prontas para servir seu blog.</p>
-<blockquote>
-<p>Contarei aqui como foi o processo de migração do meu antigo blog em jekyll para o pelican.</p>
-</blockquote>
 <h3>Como começar?</h3>
 <p>Começaremos instalando o Pelican, para isso, crie um virtualenv do python no diretório onde você irá criar seu blog e instale o pelican através o <code>pip</code>:</p>
 <div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span> $ pip install pelican markdown
@@ -126,12 +123,12 @@ Com o pelican, no caso de blogs por exemplo, basta você escrever seus posts em 
 </pre></div>
 
 
-<p>Esse comando fará algumas perguntas básicas sobre seu blog, após respondelas, seu blog está praticamente pronto :).</p>
+<p>Esse comando fará algumas perguntas básicas sobre seu blog, após respondê-las, seu blog está praticamente pronto :).</p>
 <h3>Como escrever posts?</h3>
 <p>Com a parte básica do <em>pelican</em> já configurada, agora é hora de escrever um post.
-O pelican busca pelo seu conteúdo no diretório <code>content</code> dentro da raiz do diretório onde o comando <code>pelican-quickstart</code> foi executado, sendo assim, basta criar seus posts nesse diretório.</p>
+O diretório padrão para o conteúdo a ser processado pelo pelican é o diretório <code>content</code> dentro da raiz do diretório onde o comando <code>pelican-quickstart</code> foi executado, sendo assim, basta criar seus posts nesse diretório.</p>
 <h4>Criando um "Hello World"</h4>
-<p>Não existem segredos na criação de um post com o pelican, basta criar arquivos no diretório <code>content</code> e preencher um cabeçalho mínimo como esse:</p>
+<p>Não existem segredos na criação de um post com o pelican, basta criar arquivos no diretório <code>content</code> e preencher um cabeçalho mínimo com alguns meta-dados do post como esse:</p>
 <div class="highlight"><pre><span></span><span class="n">Title</span><span class="o">:</span> <span class="n">Titulo</span> <span class="k">do</span> <span class="n">post</span>
 <span class="n">Date</span><span class="o">:</span> <span class="n">Data</span> <span class="k">do</span> <span class="n">post</span> <span class="n">no</span> <span class="n">formato</span> <span class="n">aaaa</span><span class="o">-</span><span class="n">mm</span><span class="o">-</span><span class="n">dd</span> <span class="n">hh</span><span class="o">-</span><span class="n">mm</span>
 <span class="n">Category</span><span class="o">:</span> <span class="n">Categoria</span> <span class="k">do</span> <span class="n">post</span>
@@ -154,11 +151,12 @@ Done: Processed <span class="m">1</span> articles, <span class="m">0</span> draf
 </pre></div>
 
 
+<p>Esse comando básicamente gera os arquivos estáticos no diretório <code>output</code>.</p>
 <h3>Como vejo o blog no ar?</h3>
-<p>Agora que todo o conteúdo estático do seu blog já foi gerado, basta iniciar um servidor http no diretório <code>output</code> que é o diretório onde o pelican gera os arquivos estáticos.
+<p>Agora que todo o conteúdo estático do seu blog já foi gerado, basta iniciar um servidor http no diretório <code>output</code>.
 Para isso, dentro do diretório <em>output</em> basta executar o comando <code>python -m pelican.server</code> e abrir o navegar em <em>http://localhost:8000</em>.</p>
-<h3>TODO: Colocar um print desse hello world funfando</h3>
-<p>Pronto, seu blog com o Pelican já está no ar.</p>
+<p><img alt="hello-world" src="/images/pelican_hello_world.png" /></p>
+<p>Pronto, seu blog com o Pelican já está no ar =D.</p>
 <h3>Como mudar o tema padrão?</h3>
 <p>Mudar o tema que será utilizado para gerar o output estático é algo trivial no Pelican, basta você baixar o tema escolhido (você pode escolher alguns disponíveis, no reposítorio <a href="https://github.com/getpelican/pelican-themes">pelican-themes</a>) e alterar o tema na constante <code>THEME</code> do arquivo <code>pelicanconf.py</code>.</p>
 <div class="highlight"><pre><span></span><span class="c1"># pelicanconf.py</span>
@@ -175,6 +173,10 @@ Para isso, dentro do diretório <em>output</em> basta executar o comando <code>p
 </pre></div>
 
 
+<h3>Como publicar usando o GitHub Pages?</h3>
+<p>Utilizo o <a href="https://pages.github.com/">GitHub Pages</a> para publicar o conteúdo do blog.
+No Jekyll bastava o comando <code>rake deploy</code> e a mágica acontecia, no Pelican não é diferente, basta o comando <code>make github</code> e o conteúdo estático (pasta <em>output</em>) será commitado e enviado para o GitHub.
+É possível automizar esse processo para sempre que houver um push no repositório o <code>travis</code> gere o conteúdo estático e faça a atualização dos arquivos na branch do GitHub Pages, para mais informações de como configurar essa automação, recomendo a leitura do excelente artigo <a href="http://df.python.org.br/blog/github-pages-com-pelican-e-travis-ci/">GitHub Pages com Pelican e Travis-CI</a> do <a href="http://df.python.org.br/">Grupy-DF</a>.</p>
 <h3>Como foi a migração do Jekyll para o Pelican?</h3>
 <p>A migração do Jekyll para o Pelican foi algo extremamente simples, bastou copiar os posts do diretório <code>source/_post</code> do jekyll para o diretório <code>content</code> do pelican e alterar os metadados dos posts, por exemplo:</p>
 <ul>
@@ -208,8 +210,26 @@ Para isso, dentro do diretório <em>output</em> basta executar o comando <code>p
             <p>tags: <a href="http://drgarcia1986.github.io/blog/tag/python.html">python</a>, <a href="http://drgarcia1986.github.io/blog/tag/pelican.html">pelican</a>, </p>
         </div>
 
+<hr>
+<div class="sharing">
+</div>
     <hr>
 
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2016/02/14/migrando-para-o-pelican/';
+                var disqus_url = 'http://drgarcia1986.github.io/blog/2016/02/14/migrando-para-o-pelican/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
             </div>
         </div>
     </div>
