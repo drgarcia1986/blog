@@ -395,6 +395,11 @@ img::-moz-selection {
   color: white;
   background: transparent;
 }
+img {
+  max-width: 100%;
+  height: auto;
+  width: auto\9; /* ie8 */
+}
 body {
   webkit-tap-highlight-color: #0085a1;
 }
