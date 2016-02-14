@@ -18,7 +18,7 @@
 
 
 &lt;p&gt;Veja o resultado com uma imagem aleatória&lt;/p&gt;
-&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/8/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/62yPB/9/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
 
 &lt;h3&gt;Arredondando cantos&lt;/h3&gt;
 &lt;p&gt;Se a sua intenção não for criar circulos, você pode diminuir a porcentagem do raio (radius) ou trabalhar com pixels. Você pode também arredondar somente cantos específicos de um elemento. Assim como a grande maioria das propriedades do CSS, a propriedade &lt;em&gt;border-radius&lt;/em&gt; consiste em um conjunto de popriedades especificas para cada canto de um elemento, como por exemplo a propriedade &lt;strong&gt;border-top-left-radius&lt;/strong&gt;.
@@ -38,7 +38,7 @@ Para arredondar somente os cantos inferiores de um elemento, podemos fazer da se
 
 
 &lt;p&gt;Veja esse exemplo com a mesma imagem aleatória anterior&lt;/p&gt;
-&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/3/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
+&lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/Jjy5K/4/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;
 
 &lt;h3&gt;É Cross-Browser?&lt;/h3&gt;
 &lt;p&gt;Realizei testes tanto com o Firefox (gecko) como com Chrome (webkit) e não tive problemas, o IE 9 (trident) também já está compativel, mas por garantia e compatibilidade com versões antigas de outros browsers, você pode usar as propriedades especificas de cada motor de renderização&lt;/p&gt;
