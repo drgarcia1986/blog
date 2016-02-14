@@ -36,6 +36,7 @@ ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
 # Theme
 THEME = 'theme'
 COLOR_SCHEME_CSS = 'monokai.css'
+HEADER_COLOR = 'black'
 
 # Plugins
 PLUGIN_PATHS = ['plugins']
