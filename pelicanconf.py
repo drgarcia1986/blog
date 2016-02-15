@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'Diego Garcia'
 SITENAME = u'Diego Garcia'
+SITESUBTITLE = u'Tecnologia, Ciclismo, Paternidade e qualquer outra coisa'
 SITEURL = ''
 
 PATH = 'content'
@@ -37,6 +38,7 @@ ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
 THEME = 'theme'
 COLOR_SCHEME_CSS = 'monokai.css'
 HEADER_COLOR = 'black'
+DISPLAY_PAGES_ON_MENU = True
 
 # Plugins
 PLUGIN_PATHS = ['plugins']
