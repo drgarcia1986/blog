@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+
+        <title>Threads em Python? é claro!</title>
+
+            <link href="http://www.diego-garcia.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.diego-garcia.info/python.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.diego-garcia.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+        <meta name="tags" contents="python" />
+        <meta name="tags" contents="threads" />
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/">
+	<meta property="og:title" content="Threads em Python? é claro!">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="http://www.diego-garcia.info/">
+	<meta property="article:published_time" content="2016-02-18 10:00:00-02:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.diego-garcia.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="http://www.diego-garcia.info/pages/sobre.html">Sobre</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-color: black">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Threads em Python? é claro!</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.diego-garcia.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Thu 18 February 2016
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:</p>
+<p><em>Python não é bom com threads</em></p>
+<p>Isso não é totalmente mentira, mas a questão é, threads só não serão efetivas com o python, se você não usar da forma correta.</p>
+
+
+<h3>O temível GIL</h3>
+<p>O <code>CPython</code> (interpretador padrão do python) possui o <strong>G</strong>lobal <strong>I</strong>nterpreter <strong>L</strong>ock, também conhecido como <code>GIL</code>.
+Um mecanismo (presente também em outras linguagens como o <em>Ruby</em>) responsável por prevenir o uso de paralelismo, fazendo com que apenas uma thread seja executada no interpretador por vez.
+Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread sejá melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).</p>
+<p>Existem vários beneficios e malefícios relacionados ao <em>GIL</em> e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.</p>
+<p>Porém, o que nem todos sabem é que para operações de <code>I/O</code> (network/socket e escrita em arquvios) o <em>GIL</em> é liberado, ou seja, sempre que uma tarefa de <em>I/O</em> for executada (por exemplo, consultar um servidor externo) o <em>GIL</em> é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
+Vamos ver isso na prática.</p>
+<h3>Problema do mundo real: multiplos requests http</h3>
+<p>Uma situação muito comum no dia a dia de um desenvolvedor é ter que lidar com multiplos requests externos na mesma rotina.
+Usaremos um exemplo ficticio de uma aplicação de linha de comando que imprimi a cotação do real em relação a algumas moedas estrangeiras.
+Essas cotações serão recuperadas do site <a href="http://dolarhoje.com/">Dolar Hoje</a> e sites similares.</p>
+<h3>Recuperando as cotações</h3>
+<p>Recuperaremos as cotações das seguintes modeas: <code>dolar</code>, <code>euro</code>, <code>libra</code> e <code>peso</code></p>
+<div class="highlight"><pre><span></span><span class="n">CURRENCY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;dolar&#39;</span><span class="p">:</span> <span class="s1">&#39;http://dolarhoje.com/&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;euro&#39;</span><span class="p">:</span> <span class="s1">&#39;http://eurohoje.com/&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;libra&#39;</span><span class="p">:</span> <span class="s1">&#39;http://librahoje.com/&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;peso&#39;</span><span class="p">:</span> <span class="s1">&#39;http://pesohoje.com/&#39;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Como esses sites utilizam o mesmo formato, utilizaremos uma regex padrão para processa-los:</p>
+<div class="highlight"><pre><span></span><span class="n">DEFAULT_REGEX</span> <span class="o">=</span> <span class="s1">r&#39;&lt;input type=&quot;text&quot; id=&quot;nacional&quot; value=&quot;([^&quot;]+)&quot;/&gt;&#39;</span>
+</pre></div>
+
+
+<p>Para recuperar essas cotações, faremos uma espécie de web crawler que fara um <code>GET</code> na página e via <code>RegEx</code> será recuperada a informação sobre a cotação monetária.
+O método para realizar esse request é extremamente simples:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+
+<span class="k">def</span> <span class="nf">exchange_rate</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">DEFAULT_REGEX</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Um simples <code>get</code> e <code>decode</code> do conteúdo de uma url através da <code>urlib</code> e a busca do padrão de uma regex através da função <code>search</code> do pacote <code>re</code> nativo do python para lidar com regex. <br></p>
+<blockquote>
+<p>Utilizei a <code>urllib</code> por ser uma biblioteca nativa do python, porém, para esse tipo de operação (e qualquer outro tipo de request sincrono) recomendo o uso da bibliotéca <a href="http://docs.python-requests.org/en/master/">requests</a></p>
+</blockquote>
+<h3>Execução serial</h3>
+<p>Para recuperar a cotação de todas as urls listadas no dicionáro <code>CURRENCY</code> de forma serial, basta iterar pelos <code>items</code> (chave, valor) desse dicionário, executando a função <code>exchange_rate</code> para cada um passando a url como parâmetro.</p>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">currency</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">CURRENCY</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{}: R${}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">currency</span><span class="p">,</span> <span class="n">exchange_rate</span><span class="p">(</span><span class="n">url</span><span class="p">)))</span>
+</pre></div>
+
+
+<p>Cada iteração desse <em>for</em> só será finalizada após a função <code>exchange_rate</code> processar a url informada, ou seja, o tempo demorado será algo em torno do tempo do primeiro request vezes o número de items do dicionário.</p>
+<h3>Execução multithread</h3>
+<p>Para executar essa mesma rotina mas de forma paralela, utilizaremos a forma mais moderna de se trabalhar com concorrencia em python, o módulo <code>concurrent.futures</code>.
+Esse módulo permite através de um <code>Executor</code> executar tarefas assincronas através de <em>threads</em> ou <em>sub processos</em>.</p>
+<blockquote>
+<p>O módulo <em>concurrent.futures</em> está disponivel apartir da versão 3.2 do python, porém, possui o backport <a href="https://pypi.python.org/pypi/futures">futures</a> compatível com python 2.7</p>
+</blockquote>
+<p>O módulo <em>concurrent.futures</em> possuí 2 principais componentes:</p>
+<ul>
+<li><code>Executor</code>: Interface que possui métodos para executar rotinas de forma assincrona.</li>
+<li><code>Future</code>: Interface que encapsula a execução assincrona de uma rotina.</li>
+</ul>
+<p>Para executarmos nossa função <code>exchange_rate</code> de forma assincrona deveremos executar o método <code>submit</code> do <em>executor</em> (em nosso caso, uma instância de <code>ThreadPoolExecutor</code>).
+Esse método aceita como parâmetro a função que será executada de forma assincrona e seus <code>*args</code> e <code>**kwargs</code>, no nosso caso devemos passar a função <em>exchange_rate</em> e a <em>url</em>.
+O método <em>submit</em> retorna uma instância de <em>Future</em> que encapsulara a execução assincrona da rotina.</p>
+<p>Em nosso problema, precisamos iniciar todos os requests e aguardar até que todos sejam concluídos, para que isso seja possível basta criar <em>futures</em> dessas rotinas e processar as que forem concluídas.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span>
+
+
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">CURRENCY</span><span class="p">))</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">waits</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">exchange_rate</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span> <span class="n">currency</span>
+        <span class="k">for</span> <span class="n">currency</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">CURRENCY</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">waits</span><span class="p">):</span>
+        <span class="n">currency</span> <span class="o">=</span> <span class="n">waits</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{}: R${}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">currency</span><span class="p">,</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()))</span>
+</pre></div>
+
+
+<p>O gerador <code>as_completed</code> do módulo <em>concurrent.futures</em> retorna as <em>futures</em> que forem concluídas na ordem em que forem concluídas.
+Após a <em>future</em> estar concluída, basta recuperar seu resultado através do método <code>result()</code>.</p>
+<blockquote>
+<p>Repare que na criação do <strong>executor</strong> foi necessário especificar o número de workers que serão utilizados para executar as rotinas assincronas, porém, na versão 3.5 do python esse parâmetro não é mais obrigatório e caso ele seja omitido, o python assume o número de processadores na máquina</p>
+</blockquote>
+<h3>Comparando a execução</h3>
+<p>Apesar de o mesmo numero de requests externos estarem sendo executados em ambos os casos, a execução serial executa um request por vez, enquanto que a execução multithread executa todos os requests de uma só vez, de forma paralela (sem intervenção do <em>GIL</em>) diminuindo assim o tempo de execução da aplicação de forma exponencial</p>
+<ul>
+<li>Execução serial</li>
+</ul>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python multi_requests.py
+libra: R<span class="nv">$5</span>,78
+dolar: R<span class="nv">$4</span>,00
+euro: R<span class="nv">$4</span>,47
+peso: R<span class="nv">$0</span>,27
+
+real    0m3.476s
+user    0m0.129s
+sys     0m0.004s
+</pre></div>
+
+
+<ul>
+<li>Execução multithread</li>
+</ul>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python multi_requests.py threads
+dolar: R<span class="nv">$4</span>,00
+euro: R<span class="nv">$4</span>,47
+libra: R<span class="nv">$5</span>,78
+peso: R<span class="nv">$0</span>,27
+
+real    0m1.433s
+user    0m0.122s
+sys     0m0.025s
+</pre></div>
+
+
+<p>Note que a execução serial demorou em torno de <strong>3.47 segundos</strong> contra <strong>1.43 segundos</strong> da excução multithread.
+Essa diferença tende a crescer de acordo com a quantidade de requests feitos.</p>
+<p>Veja o código completo desse exemplo <a href="https://gist.github.com/drgarcia1986/2a5d283b0d279ea96c26">neste gist</a>.</p>
+<h3>Conclusão</h3>
+<p>Em resumo, toda vez que alguém enche a boca para me dizer <em>"python não é bom com threads"</em> essa é a minha reação:</p>
+<p>(╯°□°）╯︵ ┻━┻</p>
+<p><strong>Referências</strong><br>
+<a href="https://docs.python.org/3/library/concurrent.futures.html">Launching parallel tasks</a><br>
+<a href="http://www.dabeaz.com/python/UnderstandingGIL.pdf">Understanding the Python GIL</a><br></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.diego-garcia.info/tag/python.html">python</a>, <a href="http://www.diego-garcia.info/tag/threads.html">threads</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2016/02/18/threads-em-python-e-claro/';
+                var disqus_url = 'http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.diego-garcia.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.diego-garcia.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.diego-garcia.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
