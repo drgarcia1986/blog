@@ -1,5 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2016-02-18T10:00:00-02:00</updated><entry><title>Threads em Python? é claro!</title><link href="http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/" rel="alternate"></link><updated>2016-02-18T10:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-18:2016/02/18/threads-em-python-e-claro/</id><summary type="html">&lt;p&gt;Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2016-02-27T14:00:00-03:00</updated><entry><title>MultiProcess em Python e o drible no GIL</title><link href="http://www.diego-garcia.info/2016/02/27/multi-process-em-python-e-fuga-do-gil/" rel="alternate"></link><updated>2016-02-27T14:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-27:2016/02/27/multi-process-em-python-e-fuga-do-gil/</id><summary type="html">&lt;p&gt;Se você leu o post anterior sobre &lt;a href="/2016/02/18/threads-em-python-e-claro/"&gt;threads em python&lt;/a&gt;, muito provavelmente percebeu que o fato do &lt;code&gt;CPython&lt;/code&gt; ser otimizado para executar códigos &lt;em&gt;singlethread&lt;/em&gt;, não é um impeditivo para execução de tarefas paralelas com alto desempenho.
+Porém, threads resolvem com maestria a execução de tarefas de &lt;strong&gt;I/O Bound&lt;/strong&gt; paralelas, mas quando o assunto é &lt;strong&gt;CPU Bound&lt;/strong&gt;, existe uma outra forma de ser efetivo no paralelismo com python.&lt;/p&gt;
+
+
+&lt;h3&gt;Ainda o GIL&lt;/h3&gt;
+&lt;p&gt;Assim como na execução singlethread, o &lt;code&gt;GIL&lt;/code&gt; &lt;strong&gt;NÃO&lt;/strong&gt; é liberado para tarefas do tipo &lt;em&gt;CPU Bound&lt;/em&gt; (ou seja, que dependem do uso massivo do processador e não de &lt;em&gt;I/O&lt;/em&gt;).
+Mesmo que sejam criadas inúmeras threads para execução desse tipo de tarefa, o desempenho final não seria satisfatório, pelo contrário, o desempenho singlethread seria melhor do que o multithread.&lt;/p&gt;
+&lt;p&gt;Porém, existe outra forma de lidar com esse problema, &lt;em&gt;processos&lt;/em&gt;.
+Veja como isso funciona.&lt;/p&gt;
+&lt;h3&gt;Encontrando os números primos&lt;/h3&gt;
+&lt;p&gt;Para demonstrar o uso de multi processamento no python partiremos para um exemplo totalmente didático.
+Faremos uma função que retorna uma lista com o números primos até um determinado número limite.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;primes_until&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;break&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Por exemplo, ao executar a função &lt;code&gt;primes_until&lt;/code&gt; passando o número &lt;code&gt;10&lt;/code&gt; como argumento, teremos o seguinte retorno:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;primes_until&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Números primos são os números naturais que têm apenas dois divisores diferentes: o 1 e ele mesmo. &lt;a href="http://www.somatematica.com.br/fundam/primos.php"&gt;fonte&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Como essa função não exige muito poder computacional para ser executada, daremos uma &lt;em&gt;forçada na barra&lt;/em&gt; para que a execução fique lenta o suficiente a ponto de compensar o multi processamento.
+Executaremos a função &lt;code&gt;primes_until&lt;/code&gt; &lt;em&gt;14&lt;/em&gt; vezes passando como número limite o range de &lt;em&gt;1000&lt;/em&gt; até &lt;em&gt;15000&lt;/em&gt; saltando de &lt;em&gt;1000&lt;/em&gt; em &lt;em&gt;1000&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;TO_CALCULATE&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;15000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Execução Serial&lt;/h3&gt;
+&lt;p&gt;Para realizar esses cálculos de forma serial, iremos iterar sobre o gerador &lt;code&gt;TO_CALCULATE&lt;/code&gt; que especificamos anteriormente e para cada número gerado iremos executar a função &lt;code&gt;primes_until&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run_serial&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;primes_until&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;TO_CALCULATE&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Como escrevo esses exemplos baseados no Python 3 a função built-in &lt;code&gt;range&lt;/code&gt; se tornou um gerador. Para utiliza-la como gerador no Python 2 utilize a função &lt;code&gt;xrange&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Execução multiprocess&lt;/h3&gt;
+&lt;p&gt;Faremos o mesmo para realizar a execução multiprocess, porém, iremos distribuir cada execução em um processo diferente.
+Assim como no post sobre &lt;a href="/2016/02/18/threads-em-python-e-claro/"&gt;threads em python&lt;/a&gt;, usaremos o módulo &lt;code&gt;concurrent.futures&lt;/code&gt;, com a diferença que desta vez utilizaremos o &lt;code&gt;ProcessPoolExecutor&lt;/code&gt; como nosso &lt;em&gt;executor&lt;/em&gt;.
+Criaremos &lt;code&gt;Futures&lt;/code&gt; para cada execução (através do método &lt;code&gt;executor.submit()&lt;/code&gt;) e depois através do gerador &lt;code&gt;as_completed()&lt;/code&gt; iteraremos sobre as &lt;em&gt;futures&lt;/em&gt; (no caso nossos processos) que já estejam concluídas.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;concurrent.futures&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;as_completed&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ProcessPoolExecutor&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run_multiprocess&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;waits&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;ProcessPoolExecutor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;waits&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;submit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;primes_until&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;TO_CALCULATE&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+            &lt;span class="n"&gt;waits&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;future&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;future&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;future&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;as_completed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;waits&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Caso não seja especificado o parâmetro &lt;code&gt;max_workers&lt;/code&gt; na criação da instancia do &lt;em&gt;ProcessPoolExecutor&lt;/em&gt;, por padrão o python assume como sendo o número de processadores da máquina.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ao realizar o &lt;code&gt;submit&lt;/code&gt; da função &lt;em&gt;primes_until&lt;/em&gt; para o nosso &lt;em&gt;ProcessPoolExecutor&lt;/em&gt;, um fork do processo principal é criado e a execução é feita nesse processo separado de forma paralela.
+Dessa forma, conseguimos dividir a execução em processo separados (com o &lt;strong&gt;GIL&lt;/strong&gt; independente para cada um) e com isso não temos o efeito do &lt;em&gt;lock&lt;/em&gt; do GIL para cada requisição ao processador.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ ps aux &lt;span class="p"&gt;|&lt;/span&gt; grep python3
+diego-g+ &lt;span class="m"&gt;10074&lt;/span&gt;  6.0  0.2 &lt;span class="m"&gt;194720&lt;/span&gt; &lt;span class="m"&gt;12404&lt;/span&gt; pts/24   Sl+  13:01   0:00 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10075&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10076&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7932&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10077&lt;/span&gt;  &lt;span class="m"&gt;119&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7940&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10078&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Comparando a execução&lt;/h3&gt;
+&lt;p&gt;Como disse no começo desse post, a função &lt;em&gt;primes_until&lt;/em&gt; não requer um grande poder de processamento para ser executada, mas como esse post tem fins didáticos, forçamos um conjudo de execuções pesadas a ponto de ficar muito demorado a excução singlethread.
+Obviamente a execução multiprocess executa todos os calculos de uma só vez de forma paralela e sem intervenção do GIL (por se tratar de processos separados), com isso, conseguimos alcançar uma maior velocidade na execução.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Execução serial&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; python primes_numbers.py
+
+real    0m6.366s
+user    0m6.285s
+sys     0m0.076s
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;Execução multiprocess&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; python primes_numbers.py multiprocess
+
+real    0m3.588s
+user    0m12.186s
+sys     0m0.055s
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Se trocassamos o executor de &lt;em&gt;ProcessPoolExecutor&lt;/em&gt; para &lt;em&gt;ThreadPoolExecutor&lt;/em&gt; teriamos sérios problemas de performance, devido ao bloqueio do GIL a ponto de a execução singlethread ter um desempenho melhor.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Veja o código completo desse exemplo &lt;a href="https://gist.github.com/drgarcia1986/b70c895b4d9b825f367f"&gt;neste gist&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;O custo do uso de multi processamento&lt;/h3&gt;
+&lt;p&gt;Apesar da execução multiprocess do exemplo anterior ter sido concluída em praticamente metade do tempo quando comparada a execução serial, não podemos encarar o multiprocess como a solução de todos os problemas em python.
+Multiprocess não é uma bala de prata, muito pelo contrário, o seu uso deve ser muito ponderado.&lt;/p&gt;
+&lt;p&gt;O multiprocess tem um custo no python que muitas vezes não paga o seu uso, como por exemplo, o tempo de &lt;code&gt;fork&lt;/code&gt; do processo, &lt;code&gt;serialização&lt;/code&gt;(via pickle) dos dados, &lt;code&gt;comunicação&lt;/code&gt; entre processos, etc.
+A minha sugestão é, teste e compare antes de tomar uma decisão, se uma arquitetura multiprocess não for muito superior em termos de desempenho para o seu problema, não vale a pena manter essa complexidade.&lt;/p&gt;
+&lt;h3&gt;Alternativas&lt;/h3&gt;
+&lt;p&gt;Antes de pensar em uma solução baseada em paralelismo, você pode executar o seu código em outros interpretadores do python como por exemplo o &lt;a href="http://pypy.org/"&gt;pypy&lt;/a&gt; que promete ser um interpretador extremamente rápido e otimizado ou o &lt;a href="http://cython.org/"&gt;Cython&lt;/a&gt; que tem uma relação mais amigavel com o &lt;strong&gt;GIL&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="https://docs.python.org/3/library/concurrent.futures.html"&gt;Launching parallel tasks&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="process"></category></entry><entry><title>Threads em Python? é claro!</title><link href="http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/" rel="alternate"></link><updated>2016-02-18T10:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-18:2016/02/18/threads-em-python-e-claro/</id><summary type="html">&lt;p&gt;Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Python não é bom com threads&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Isso não é totalmente mentira, mas a questão é, threads só não serão efetivas com o python, se você não usar da forma correta.&lt;/p&gt;
 

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>MultiProcess em Python e o drible no GIL</title>
+
+            <link href="http://www.diego-garcia.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.diego-garcia.info/python.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.diego-garcia.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="Se você leu o post anterior sobre threads em python, muito provavelmente percebeu que o fato do CPython ser otimizado para executar ...">
+
+        <meta name="author" content="Diego Garcia">
+
+        <meta name="tags" content="python">
+        <meta name="tags" content="process">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="Diego Garcia" >
+	<meta property="og:url" content="http://www.diego-garcia.info/2016/02/27/multi-process-em-python-e-fuga-do-gil/">
+	<meta property="og:title" content="MultiProcess em Python e o drible no GIL">
+	<meta property="article:published_time" content="2016-02-27 14:00:00-03:00">
+            <meta property="og:description" content="Se você leu o post anterior sobre threads em python, muito provavelmente percebeu que o fato do CPython ser otimizado para executar ...">
+
+            <meta property="og:image" content="http://www.diego-garcia.info/theme/images/post-bg.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.diego-garcia.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="http://www.diego-garcia.info/pages/sobre.html">Sobre</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-color: black">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>MultiProcess em Python e o drible no GIL</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.diego-garcia.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Sat 27 February 2016
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Se você leu o post anterior sobre <a href="/2016/02/18/threads-em-python-e-claro/">threads em python</a>, muito provavelmente percebeu que o fato do <code>CPython</code> ser otimizado para executar códigos <em>singlethread</em>, não é um impeditivo para execução de tarefas paralelas com alto desempenho.
+Porém, threads resolvem com maestria a execução de tarefas de <strong>I/O Bound</strong> paralelas, mas quando o assunto é <strong>CPU Bound</strong>, existe uma outra forma de ser efetivo no paralelismo com python.</p>
+
+
+<h3>Ainda o GIL</h3>
+<p>Assim como na execução singlethread, o <code>GIL</code> <strong>NÃO</strong> é liberado para tarefas do tipo <em>CPU Bound</em> (ou seja, que dependem do uso massivo do processador e não de <em>I/O</em>).
+Mesmo que sejam criadas inúmeras threads para execução desse tipo de tarefa, o desempenho final não seria satisfatório, pelo contrário, o desempenho singlethread seria melhor do que o multithread.</p>
+<p>Porém, existe outra forma de lidar com esse problema, <em>processos</em>.
+Veja como isso funciona.</p>
+<h3>Encontrando os números primos</h3>
+<p>Para demonstrar o uso de multi processamento no python partiremos para um exemplo totalmente didático.
+Faremos uma função que retorna uma lista com o números primos até um determinado número limite.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">primes_until</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+
+
+<p>Por exemplo, ao executar a função <code>primes_until</code> passando o número <code>10</code> como argumento, teremos o seguinte retorno:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">primes_until</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+</pre></div>
+
+
+<blockquote>
+<p>Números primos são os números naturais que têm apenas dois divisores diferentes: o 1 e ele mesmo. <a href="http://www.somatematica.com.br/fundam/primos.php">fonte</a></p>
+</blockquote>
+<p>Como essa função não exige muito poder computacional para ser executada, daremos uma <em>forçada na barra</em> para que a execução fique lenta o suficiente a ponto de compensar o multi processamento.
+Executaremos a função <code>primes_until</code> <em>14</em> vezes passando como número limite o range de <em>1000</em> até <em>15000</em> saltando de <em>1000</em> em <em>1000</em>.</p>
+<div class="highlight"><pre><span></span><span class="n">TO_CALCULATE</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">15000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Execução Serial</h3>
+<p>Para realizar esses cálculos de forma serial, iremos iterar sobre o gerador <code>TO_CALCULATE</code> que especificamos anteriormente e para cada número gerado iremos executar a função <code>primes_until</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_serial</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">({</span><span class="n">i</span><span class="p">:</span> <span class="n">primes_until</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">TO_CALCULATE</span><span class="p">})</span>
+</pre></div>
+
+
+<blockquote>
+<p>Como escrevo esses exemplos baseados no Python 3 a função built-in <code>range</code> se tornou um gerador. Para utiliza-la como gerador no Python 2 utilize a função <code>xrange</code></p>
+</blockquote>
+<h3>Execução multiprocess</h3>
+<p>Faremos o mesmo para realizar a execução multiprocess, porém, iremos distribuir cada execução em um processo diferente.
+Assim como no post sobre <a href="/2016/02/18/threads-em-python-e-claro/">threads em python</a>, usaremos o módulo <code>concurrent.futures</code>, com a diferença que desta vez utilizaremos o <code>ProcessPoolExecutor</code> como nosso <em>executor</em>.
+Criaremos <code>Futures</code> para cada execução (através do método <code>executor.submit()</code>) e depois através do gerador <code>as_completed()</code> iteraremos sobre as <em>futures</em> (no caso nossos processos) que já estejam concluídas.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+
+
+<span class="k">def</span> <span class="nf">run_multiprocess</span><span class="p">():</span>
+    <span class="n">waits</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="n">waits</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">primes_until</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span> <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">TO_CALCULATE</span>
+        <span class="p">}</span>
+        <span class="k">print</span><span class="p">({</span>
+            <span class="n">waits</span><span class="p">[</span><span class="n">future</span><span class="p">]:</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">waits</span><span class="p">)</span>
+        <span class="p">})</span>
+</pre></div>
+
+
+<blockquote>
+<p>Caso não seja especificado o parâmetro <code>max_workers</code> na criação da instancia do <em>ProcessPoolExecutor</em>, por padrão o python assume como sendo o número de processadores da máquina.</p>
+</blockquote>
+<p>Ao realizar o <code>submit</code> da função <em>primes_until</em> para o nosso <em>ProcessPoolExecutor</em>, um fork do processo principal é criado e a execução é feita nesse processo separado de forma paralela.
+Dessa forma, conseguimos dividir a execução em processo separados (com o <strong>GIL</strong> independente para cada um) e com isso não temos o efeito do <em>lock</em> do GIL para cada requisição ao processador.</p>
+<div class="highlight"><pre><span></span>$ ps aux <span class="p">|</span> grep python3
+diego-g+ <span class="m">10074</span>  6.0  0.2 <span class="m">194720</span> <span class="m">12404</span> pts/24   Sl+  13:01   0:00 python3 primes_numbers.py multiprocess
+diego-g+ <span class="m">10075</span>  <span class="m">121</span>  0.1  <span class="m">47256</span>  <span class="m">7936</span> pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ <span class="m">10076</span>  <span class="m">121</span>  0.1  <span class="m">47256</span>  <span class="m">7932</span> pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ <span class="m">10077</span>  <span class="m">119</span>  0.1  <span class="m">47256</span>  <span class="m">7940</span> pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ <span class="m">10078</span>  <span class="m">121</span>  0.1  <span class="m">47256</span>  <span class="m">7936</span> pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+</pre></div>
+
+
+<h3>Comparando a execução</h3>
+<p>Como disse no começo desse post, a função <em>primes_until</em> não requer um grande poder de processamento para ser executada, mas como esse post tem fins didáticos, forçamos um conjudo de execuções pesadas a ponto de ficar muito demorado a excução singlethread.
+Obviamente a execução multiprocess executa todos os calculos de uma só vez de forma paralela e sem intervenção do GIL (por se tratar de processos separados), com isso, conseguimos alcançar uma maior velocidade na execução.</p>
+<ul>
+<li>Execução serial</li>
+</ul>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python primes_numbers.py
+
+real    0m6.366s
+user    0m6.285s
+sys     0m0.076s
+</pre></div>
+
+
+<ul>
+<li>Execução multiprocess</li>
+</ul>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python primes_numbers.py multiprocess
+
+real    0m3.588s
+user    0m12.186s
+sys     0m0.055s
+</pre></div>
+
+
+<blockquote>
+<p>Se trocassamos o executor de <em>ProcessPoolExecutor</em> para <em>ThreadPoolExecutor</em> teriamos sérios problemas de performance, devido ao bloqueio do GIL a ponto de a execução singlethread ter um desempenho melhor.</p>
+</blockquote>
+<p>Veja o código completo desse exemplo <a href="https://gist.github.com/drgarcia1986/b70c895b4d9b825f367f">neste gist</a>.</p>
+<h3>O custo do uso de multi processamento</h3>
+<p>Apesar da execução multiprocess do exemplo anterior ter sido concluída em praticamente metade do tempo quando comparada a execução serial, não podemos encarar o multiprocess como a solução de todos os problemas em python.
+Multiprocess não é uma bala de prata, muito pelo contrário, o seu uso deve ser muito ponderado.</p>
+<p>O multiprocess tem um custo no python que muitas vezes não paga o seu uso, como por exemplo, o tempo de <code>fork</code> do processo, <code>serialização</code>(via pickle) dos dados, <code>comunicação</code> entre processos, etc.
+A minha sugestão é, teste e compare antes de tomar uma decisão, se uma arquitetura multiprocess não for muito superior em termos de desempenho para o seu problema, não vale a pena manter essa complexidade.</p>
+<h3>Alternativas</h3>
+<p>Antes de pensar em uma solução baseada em paralelismo, você pode executar o seu código em outros interpretadores do python como por exemplo o <a href="http://pypy.org/">pypy</a> que promete ser um interpretador extremamente rápido e otimizado ou o <a href="http://cython.org/">Cython</a> que tem uma relação mais amigavel com o <strong>GIL</strong>.</p>
+<p><strong>Referências</strong><br>
+<a href="https://docs.python.org/3/library/concurrent.futures.html">Launching parallel tasks</a><br></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.diego-garcia.info/tag/python.html">python</a>, <a href="http://www.diego-garcia.info/tag/process.html">process</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+        <!-- AddThis Button BEGIN -->
+        <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+            <a class="addthis_button_preferred_1"></a>
+            <a class="addthis_button_preferred_2"></a>
+            <a class="addthis_button_preferred_3"></a>
+            <a class="addthis_button_preferred_4"></a>
+            <a class="addthis_button_preferred_5"></a>
+            <a class="addthis_button_preferred_6"></a>
+            <a class="addthis_button_preferred_7"></a>
+            <a class="addthis_button_preferred_8"></a>
+            <a class="addthis_button_preferred_9"></a>
+            <a class="addthis_button_compact"></a>
+            <a class="addthis_counter addthis_bubble_style"></a>
+        </div>
+        <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-56c73262ac2c1b1d"></script>
+        <!-- AddThis Button END -->
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2016/02/27/multi-process-em-python-e-fuga-do-gil/';
+                var disqus_url = 'http://www.diego-garcia.info/2016/02/27/multi-process-em-python-e-fuga-do-gil/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.diego-garcia.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.diego-garcia.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.diego-garcia.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
