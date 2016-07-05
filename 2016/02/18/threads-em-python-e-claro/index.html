@@ -117,7 +117,7 @@
 Um mecanismo (presente também em outras linguagens como o <em>Ruby</em>) responsável por prevenir o uso de paralelismo, fazendo com que apenas uma thread seja executada no interpretador por vez.
 Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread sejá melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).</p>
 <p>Existem vários beneficios e malefícios relacionados ao <em>GIL</em> e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.</p>
-<p>Porém, o que nem todos sabem é que para operações de <code>I/O</code> (network/socket e escrita em arquvios) o <em>GIL</em> é liberado, ou seja, sempre que uma tarefa de <em>I/O</em> for executada (por exemplo, consultar um servidor externo) o <em>GIL</em> é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
+<p>Porém, o que nem todos sabem é que para operações de <code>I/O</code> (network/socket e escrita em arquivos) o <em>GIL</em> é liberado, ou seja, sempre que uma tarefa de <em>I/O</em> for executada (por exemplo, consultar um servidor externo) o <em>GIL</em> é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
 Vamos ver isso na prática.</p>
 <h3>Problema do mundo real: multiplos requests http</h3>
 <p>Uma situação muito comum no dia a dia de um desenvolvedor é ter que lidar com multiplos requests externos na mesma rotina.
