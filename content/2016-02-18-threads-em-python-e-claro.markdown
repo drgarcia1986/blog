@@ -14,7 +14,7 @@ Isso não é totalmente mentira, mas a questão é, threads só não serão efet
 ### O temível GIL
 O `CPython` (interpretador padrão do python) possui o **G**lobal **I**nterpreter **L**ock, também conhecido como `GIL`.
 Um mecanismo (presente também em outras linguagens como o _Ruby_) responsável por prevenir o uso de paralelismo, fazendo com que apenas uma thread seja executada no interpretador por vez.
-Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread sejá melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).
+Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread será melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).
 
 Existem vários beneficios e malefícios relacionados ao _GIL_ e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.
 
