@@ -18,7 +18,7 @@ Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina si
 
 Existem vários beneficios e malefícios relacionados ao _GIL_ e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.
 
-Porém, o que nem todos sabem é que para operações de `I/O` (network/socket e escrita em arquvios) o _GIL_ é liberado, ou seja, sempre que uma tarefa de _I/O_ for executada (por exemplo, consultar um servidor externo) o _GIL_ é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
+Porém, o que nem todos sabem é que para operações de `I/O` (network/socket e escrita em arquivos) o _GIL_ é liberado, ou seja, sempre que uma tarefa de _I/O_ for executada (por exemplo, consultar um servidor externo) o _GIL_ é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
 Vamos ver isso na prática.
 
 ### Problema do mundo real: multiplos requests http
