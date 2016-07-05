@@ -115,16 +115,16 @@
 <h3>O temível GIL</h3>
 <p>O <code>CPython</code> (interpretador padrão do python) possui o <strong>G</strong>lobal <strong>I</strong>nterpreter <strong>L</strong>ock, também conhecido como <code>GIL</code>.
 Um mecanismo (presente também em outras linguagens como o <em>Ruby</em>) responsável por prevenir o uso de paralelismo, fazendo com que apenas uma thread seja executada no interpretador por vez.
-Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread sejá melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).</p>
-<p>Existem vários beneficios e malefícios relacionados ao <em>GIL</em> e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.</p>
+Isso faz com que, mesmo criando inúmeras threads, o desempenho de uma rotina singlethread será melhor do que o desempenho de uma rotina multithread, já que internamente, apenas uma thread estará fazendo uso da cpu por vez (mesmo em um ambiente multicore).</p>
+<p>Existem vários benefícios e malefícios relacionados ao <em>GIL</em> e talvez esse seja o motivo pelo qual muitas pessoas acreditam que em python, threads não são efetivas.</p>
 <p>Porém, o que nem todos sabem é que para operações de <code>I/O</code> (network/socket e escrita em arquivos) o <em>GIL</em> é liberado, ou seja, sempre que uma tarefa de <em>I/O</em> for executada (por exemplo, consultar um servidor externo) o <em>GIL</em> é liberado para que outro processo seja executado de forma paralela até essa primeira chamada retornar resultado.
 Vamos ver isso na prática.</p>
-<h3>Problema do mundo real: multiplos requests http</h3>
+<h3>Problema do mundo real: múltiplos requests http</h3>
 <p>Uma situação muito comum no dia a dia de um desenvolvedor é ter que lidar com multiplos requests externos na mesma rotina.
-Usaremos um exemplo ficticio de uma aplicação de linha de comando que imprimi a cotação do real em relação a algumas moedas estrangeiras.
-Essas cotações serão recuperadas do site <a href="http://dolarhoje.com/">Dolar Hoje</a> e sites similares.</p>
+Usaremos um exemplo fictício de uma aplicação de linha de comando que imprime a cotação do real em relação à algumas moedas estrangeiras.
+Essas cotações serão recuperadas do site <a href="http://dolarhoje.com/">Dólar Hoje</a> e sites similares.</p>
 <h3>Recuperando as cotações</h3>
-<p>Recuperaremos as cotações das seguintes modeas: <code>dolar</code>, <code>euro</code>, <code>libra</code> e <code>peso</code></p>
+<p>Recuperaremos as cotações das seguintes moedas: <code>dólar</code>, <code>euro</code>, <code>libra</code> e <code>peso</code></p>
 <div class="highlight"><pre><span></span><span class="n">CURRENCY</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;dolar&#39;</span><span class="p">:</span> <span class="s1">&#39;http://dolarhoje.com/&#39;</span><span class="p">,</span>
     <span class="s1">&#39;euro&#39;</span><span class="p">:</span> <span class="s1">&#39;http://eurohoje.com/&#39;</span><span class="p">,</span>
@@ -139,7 +139,7 @@ Essas cotações serão recuperadas do site <a href="http://dolarhoje.com/">Dola
 </pre></div>
 
 
-<p>Para recuperar essas cotações, faremos uma espécie de web crawler que fara um <code>GET</code> na página e via <code>RegEx</code> será recuperada a informação sobre a cotação monetária.
+<p>Para recuperar essas cotações, faremos uma espécie de web crawler que fará um <code>GET</code> na página e via <code>RegEx</code> será recuperada a informação sobre a cotação monetária.
 O método para realizar esse request é extremamente simples:</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
@@ -155,30 +155,30 @@ O método para realizar esse request é extremamente simples:</p>
 
 <p>Um simples <code>get</code> e <code>decode</code> do conteúdo de uma url através da <code>urlib</code> e a busca do padrão de uma regex através da função <code>search</code> do pacote <code>re</code> nativo do python para lidar com regex. <br></p>
 <blockquote>
-<p>Utilizei a <code>urllib</code> por ser uma biblioteca nativa do python, porém, para esse tipo de operação (e qualquer outro tipo de request sincrono) recomendo o uso da bibliotéca <a href="http://docs.python-requests.org/en/master/">requests</a></p>
+<p>Utilizei a <code>urllib</code> por ser uma biblioteca nativa do python, porém, para esse tipo de operação (e qualquer outro tipo de request síncrono) recomendo o uso da biblioteca <a href="http://docs.python-requests.org/en/master/">requests</a></p>
 </blockquote>
 <h3>Execução serial</h3>
-<p>Para recuperar a cotação de todas as urls listadas no dicionáro <code>CURRENCY</code> de forma serial, basta iterar pelos <code>items</code> (chave, valor) desse dicionário, executando a função <code>exchange_rate</code> para cada um passando a url como parâmetro.</p>
+<p>Para recuperar a cotação de todas as urls listadas no dicionário <code>CURRENCY</code> de forma serial, basta iterar pelos <code>items</code> (chave, valor) desse dicionário, executando a função <code>exchange_rate</code> para cada um passando a url como parâmetro.</p>
 <div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">currency</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">CURRENCY</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{}: R${}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">currency</span><span class="p">,</span> <span class="n">exchange_rate</span><span class="p">(</span><span class="n">url</span><span class="p">)))</span>
 </pre></div>
 
 
-<p>Cada iteração desse <em>for</em> só será finalizada após a função <code>exchange_rate</code> processar a url informada, ou seja, o tempo demorado será algo em torno do tempo do primeiro request vezes o número de items do dicionário.</p>
+<p>Cada iteração desse <em>for</em> só será finalizada após a função <code>exchange_rate</code> processar a url informada, ou seja, o tempo demorado será algo em torno do tempo do primeiro request vezes o número de itens do dicionário.</p>
 <h3>Execução multithread</h3>
-<p>Para executar essa mesma rotina mas de forma paralela, utilizaremos a forma mais moderna de se trabalhar com concorrencia em python, o módulo <code>concurrent.futures</code>.
-Esse módulo permite através de um <code>Executor</code> executar tarefas assincronas através de <em>threads</em> ou <em>sub processos</em>.</p>
+<p>Para executar essa mesma rotina mas de forma paralela, utilizaremos a forma mais moderna de se trabalhar com concorrência em python, o módulo <code>concurrent.futures</code>.
+Esse módulo permite através de um <code>Executor</code> executar tarefas assíncronas através de <em>threads</em> ou <em>sub processos</em>.</p>
 <blockquote>
-<p>O módulo <em>concurrent.futures</em> está disponivel apartir da versão 3.2 do python, porém, possui o backport <a href="https://pypi.python.org/pypi/futures">futures</a> compatível com python 2.7</p>
+<p>O módulo <em>concurrent.futures</em> está disponível a partir da versão 3.2 do python, porém, possui o backport <a href="https://pypi.python.org/pypi/futures">futures</a> compatível com python 2.7</p>
 </blockquote>
-<p>O módulo <em>concurrent.futures</em> possuí 2 principais componentes:</p>
+<p>O módulo <em>concurrent.futures</em> possui 2 principais componentes:</p>
 <ul>
-<li><code>Executor</code>: Interface que possui métodos para executar rotinas de forma assincrona.</li>
-<li><code>Future</code>: Interface que encapsula a execução assincrona de uma rotina.</li>
+<li><code>Executor</code>: Interface que possui métodos para executar rotinas de forma assíncrona.</li>
+<li><code>Future</code>: Interface que encapsula a execução assíncrona de uma rotina.</li>
 </ul>
-<p>Para executarmos nossa função <code>exchange_rate</code> de forma assincrona deveremos executar o método <code>submit</code> do <em>executor</em> (em nosso caso, uma instância de <code>ThreadPoolExecutor</code>).
-Esse método aceita como parâmetro a função que será executada de forma assincrona e seus <code>*args</code> e <code>**kwargs</code>, no nosso caso devemos passar a função <em>exchange_rate</em> e a <em>url</em>.
-O método <em>submit</em> retorna uma instância de <em>Future</em> que encapsulara a execução assincrona da rotina.</p>
+<p>Para executarmos nossa função <code>exchange_rate</code> de forma assíncrona deveremos executar o método <code>submit</code> do <em>executor</em> (em nosso caso, uma instância de <code>ThreadPoolExecutor</code>).
+Esse método aceita como parâmetro a função que será executada de forma assíncrona e seus <code>*args</code> e <code>**kwargs</code>, no nosso caso devemos passar a função <em>exchange_rate</em> e a <em>url</em>.
+O método <em>submit</em> retorna uma instância de <em>Future</em> que encapsulará a execução assíncrona da rotina.</p>
 <p>Em nosso problema, precisamos iniciar todos os requests e aguardar até que todos sejam concluídos, para que isso seja possível basta criar <em>futures</em> dessas rotinas e processar as que forem concluídas.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span>
 
@@ -197,10 +197,10 @@ O método <em>submit</em> retorna uma instância de <em>Future</em> que encapsul
 <p>O gerador <code>as_completed</code> do módulo <em>concurrent.futures</em> retorna as <em>futures</em> que forem concluídas na ordem em que forem concluídas.
 Após a <em>future</em> estar concluída, basta recuperar seu resultado através do método <code>result()</code>.</p>
 <blockquote>
-<p>Repare que na criação do <strong>executor</strong> foi necessário especificar o número de workers que serão utilizados para executar as rotinas assincronas, porém, na versão 3.5 do python esse parâmetro não é mais obrigatório e caso ele seja omitido, o python assume o número de processadores na máquina</p>
+<p>Repare que na criação do <strong>executor</strong> foi necessário especificar o número de workers que serão utilizados para executar as rotinas assíncronas, porém, na versão 3.5 do python esse parâmetro não é mais obrigatório e caso ele seja omitido, o python assume o número de processadores na máquina</p>
 </blockquote>
 <h3>Comparando a execução</h3>
-<p>Apesar de o mesmo numero de requests externos estarem sendo executados em ambos os casos, a execução serial executa um request por vez, enquanto que a execução multithread executa todos os requests de uma só vez, de forma paralela (sem intervenção do <em>GIL</em>) diminuindo assim o tempo de execução da aplicação de forma exponencial</p>
+<p>Apesar de o mesmo número de requests externos estarem sendo executados em ambos os casos, a execução serial executa um request por vez, enquanto que a execução multithread executa todos os requests de uma só vez, de forma paralela (sem intervenção do <em>GIL</em>) diminuindo assim o tempo de execução da aplicação de forma exponencial</p>
 <ul>
 <li>Execução serial</li>
 </ul>
@@ -231,7 +231,7 @@ sys     0m0.025s
 </pre></div>
 
 
-<p>Note que a execução serial demorou em torno de <strong>3.47 segundos</strong> contra <strong>1.43 segundos</strong> da excução multithread.
+<p>Note que a execução serial demorou em torno de <strong>3.47 segundos</strong> contra <strong>1.43 segundos</strong> da execução multithread.
 Essa diferença tende a crescer de acordo com a quantidade de requests feitos.</p>
 <p>Veja o código completo desse exemplo <a href="https://gist.github.com/drgarcia1986/2a5d283b0d279ea96c26">neste gist</a>.</p>
 <h3>Conclusão</h3>
