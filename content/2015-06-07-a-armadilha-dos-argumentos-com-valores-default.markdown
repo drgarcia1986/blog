@@ -129,7 +129,7 @@ Porque strings são `imutáveis`, o que significa que a cada alteração de valo
 
 Em argumentos com valores default, não é diferente.
 
-```
+```python
 def my_function(my_str='abc'):
     my_str += 'd'
     print(my_str)
