@@ -173,7 +173,7 @@ para esses valores, através do parametro `type` do método `add_argument` como 
 Ao determinar um _type_ para um argumento, será executado um _type-checking_ no momento do *parse_args()* para garantir
 que o valor do argumento é do tipo especificado:
 
-````python
+```python
 >>> from argparse import ArgumentParser
 >>> parser = ArgumentParser()
 >>> parser.add_argument('number', type=int)
