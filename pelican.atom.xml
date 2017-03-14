@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/pelican.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2016-02-14T00:00:00-02:00</updated><entry><title>Migrando para o Pelican</title><link href="http://www.diego-garcia.info/2016/02/14/migrando-para-o-pelican/" rel="alternate"></link><published>2016-02-14T00:00:00-02:00</published><updated>2016-02-14T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-14:2016/02/14/migrando-para-o-pelican/</id><summary type="html">&lt;p&gt;Depois de um longo hiato, resolvi voltar a dar atenção a esse blog, porém, antes de voltar a escrever, ainda tinha algo que me incomodava bastante, a complexidade do &lt;a href="http://blog.getpelican.com/"&gt;jekyll&lt;/a&gt;.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia - Pelican</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/pelican.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2016-02-14T00:00:00-02:00</updated><entry><title>Migrando para o Pelican</title><link href="http://www.diego-garcia.info/2016/02/14/migrando-para-o-pelican/" rel="alternate"></link><published>2016-02-14T00:00:00-02:00</published><updated>2016-02-14T00:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-14:/2016/02/14/migrando-para-o-pelican/</id><summary type="html">&lt;p&gt;Depois de um longo hiato, resolvi voltar a dar atenção a esse blog, porém, antes de voltar a escrever, ainda tinha algo que me incomodava bastante, a complexidade do &lt;a href="http://blog.getpelican.com/"&gt;jekyll&lt;/a&gt;.
+Após contribuir com alguns posts no &lt;a href="http://pythonclub.com.br/"&gt;pythonclub&lt;/a&gt; descidi que iria migrar para o &lt;a href="http://blog.getpelican.com/"&gt;Pelican&lt;/a&gt;, pois, além de ser mais simples, o &lt;em&gt;Pelican&lt;/em&gt; é feito em python, o que me ajuda bastante em futuras customizações.
+</summary><content type="html">&lt;p&gt;Depois de um longo hiato, resolvi voltar a dar atenção a esse blog, porém, antes de voltar a escrever, ainda tinha algo que me incomodava bastante, a complexidade do &lt;a href="http://blog.getpelican.com/"&gt;jekyll&lt;/a&gt;.
 Após contribuir com alguns posts no &lt;a href="http://pythonclub.com.br/"&gt;pythonclub&lt;/a&gt; descidi que iria migrar para o &lt;a href="http://blog.getpelican.com/"&gt;Pelican&lt;/a&gt;, pois, além de ser mais simples, o &lt;em&gt;Pelican&lt;/em&gt; é feito em python, o que me ajuda bastante em futuras customizações.
 &lt;/p&gt;
 &lt;h3&gt;O que é Pelican?&lt;/h3&gt;
@@ -40,7 +42,7 @@ O diretório padrão para o conteúdo a ser processado pelo pelican é o diretó
 &lt;h3&gt;Como gerar o conteúdo?&lt;/h3&gt;
 &lt;p&gt;Gerar o conteúdo estático é a parte mais simples do trabalho, basta executar o comando &lt;code&gt;pelican "diretório"&lt;/code&gt; e todos arquivos do diretório em questão serão processados:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt; $ pelican content
-Done: Processed &lt;span class="m"&gt;1&lt;/span&gt; articles, &lt;span class="m"&gt;0&lt;/span&gt; drafts, &lt;span class="m"&gt;0&lt;/span&gt; pages and &lt;span class="m"&gt;0&lt;/span&gt; hidden pages in 0.70 seconds.
+Done: Processed &lt;span class="m"&gt;1&lt;/span&gt; articles, &lt;span class="m"&gt;0&lt;/span&gt; drafts, &lt;span class="m"&gt;0&lt;/span&gt; pages and &lt;span class="m"&gt;0&lt;/span&gt; hidden pages in &lt;span class="m"&gt;0&lt;/span&gt;.70 seconds.
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -48,7 +50,7 @@ Done: Processed &lt;span class="m"&gt;1&lt;/span&gt; articles, &lt;span class="m
 &lt;h3&gt;Como vejo o blog no ar?&lt;/h3&gt;
 &lt;p&gt;Agora que todo o conteúdo estático do seu blog já foi gerado, basta iniciar um servidor http no diretório &lt;code&gt;output&lt;/code&gt;.
 Para isso, dentro do diretório &lt;em&gt;output&lt;/em&gt; basta executar o comando &lt;code&gt;python -m pelican.server&lt;/code&gt; e abrir o navegar em &lt;em&gt;http://localhost:8000&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="hello-world" src="/images/pelican_hello_world.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hello-world" src="/images/pelican_hello_world.png"&gt;&lt;/p&gt;
 &lt;p&gt;Pronto, seu blog com o Pelican já está no ar =D.&lt;/p&gt;
 &lt;h3&gt;Como mudar o tema padrão?&lt;/h3&gt;
 &lt;p&gt;Mudar o tema que será utilizado para gerar o output estático é algo trivial no Pelican, basta você baixar o tema escolhido (você pode escolher alguns disponíveis, no reposítorio &lt;a href="https://github.com/getpelican/pelican-themes"&gt;pelican-themes&lt;/a&gt;) e alterar o tema na constante &lt;code&gt;THEME&lt;/code&gt; do arquivo &lt;code&gt;pelicanconf.py&lt;/code&gt;.&lt;/p&gt;
@@ -96,4 +98,4 @@ No Jekyll bastava o comando &lt;code&gt;rake deploy&lt;/code&gt; e a mágica aco
 
 &lt;p&gt;Como decidi usar um tema novo (e não portar o que estava utilizando no jekyll) o resto foram ajustes simples.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
-&lt;a href="http://blog.getpelican.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pelican"></category></entry></feed>
+&lt;a href="http://blog.getpelican.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</content><category term="python"></category><category term="pelican"></category></entry></feed>

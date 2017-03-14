@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/html.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2014-11-23T10:13:03-02:00</updated><entry><title>Validações de formulários e inputs</title><link href="http://www.diego-garcia.info/2014/11/23/validacoes-de-formularios-e-inputs/" rel="alternate"></link><published>2014-11-23T10:13:03-02:00</published><updated>2014-11-23T10:13:03-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2014-11-23:2014/11/23/validacoes-de-formularios-e-inputs/</id><summary type="html">&lt;p&gt;Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o &lt;strong&gt;HTML5&lt;/strong&gt; adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em &lt;em&gt;JavaScript&lt;/em&gt;.&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia - HTML</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/html.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2014-11-23T10:13:03-02:00</updated><entry><title>Validações de formulários e inputs</title><link href="http://www.diego-garcia.info/2014/11/23/validacoes-de-formularios-e-inputs/" rel="alternate"></link><published>2014-11-23T10:13:03-02:00</published><updated>2014-11-23T10:13:03-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2014-11-23:/2014/11/23/validacoes-de-formularios-e-inputs/</id><summary type="html">&lt;p&gt;Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o &lt;strong&gt;HTML5&lt;/strong&gt; adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em &lt;em&gt;JavaScript&lt;/em&gt;.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O que algumas pessoas não sabem é que o &lt;strong&gt;HTML5&lt;/strong&gt; adicionou algumas novas facilidades para lidarmos com formulários e inputs, algumas até, podem aposentar os antigos códigos de válidação em &lt;em&gt;JavaScript&lt;/em&gt;.&lt;/p&gt;
 
 
 &lt;h3&gt;RegEx&lt;/h3&gt;
@@ -64,11 +65,11 @@
 &lt;p&gt;Esses tipos específicos são muito úteis para sites voltados para mobile, pois os navegadores mobile já estão preparados para exibir ao usuário somente a opção de teclado compatível com o input.&lt;/p&gt;
 &lt;h3&gt;Estilizando inputs de acordo com a validação&lt;/h3&gt;
 &lt;p&gt;É possível de forma simples e genérica aplicar estilos CSS em inputs com valores válidos ou inválidos, de acordo com as regras que você determinar. Por exemplo, criaremos um padrão em que inputs inválidos terão o fundo avermelhando e os inputs válidos terão o fundo azulado.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#F08080&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;background-color&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mh"&gt;#F08080&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nb"&gt;background-color&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="m"&gt;#87CEFA&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;background-color&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mh"&gt;#87CEFA&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -82,15 +83,15 @@ Idade: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&l
 &lt;p&gt;Simples, prático e o melhor de tudo, genérico. Veja esse código funcionando:
 &lt;iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wtku5m7L/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"&gt;&lt;/iframe&gt;&lt;/p&gt;
 &lt;p&gt;Para deixar a aparência ainda mais profissional, podemos utilizar imagens nos inputs. Faremos o mesmo exemplo, porém, ao invés de usarmos cores de fundo nos inputs, iremos acrescentar pequenos icones após o conteúdo, indicado se o campo está válido ou inválido.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:focus:invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/invalid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;invalid&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;invalid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="k"&gt;background-image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;url&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sx"&gt;/imgs/invalid.png&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+     &lt;span class="k"&gt;background-position&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;right&lt;/span&gt; &lt;span class="kc"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="k"&gt;background-repeat&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
  &lt;span class="p"&gt;}&lt;/span&gt;
- &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-     &lt;span class="nb"&gt;background-image&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="sx"&gt;url(/imgs/valid.png)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-     &lt;span class="nb"&gt;background-position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;right&lt;/span&gt; &lt;span class="nb"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-     &lt;span class="nb"&gt;background-repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+ &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;valid&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="k"&gt;background-image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;url&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sx"&gt;/imgs/valid.png&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+     &lt;span class="k"&gt;background-position&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;right&lt;/span&gt; &lt;span class="kc"&gt;top&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="k"&gt;background-repeat&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;no-repeat&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
  &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -106,11 +107,11 @@ Idade: &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;input&l
 
 
 &lt;p&gt;Após o conteúdo deste label, iremos adicionar o simbolo &lt;strong&gt;X&lt;/strong&gt; para os inputs inválidos e o simbolo &lt;strong&gt;✓&lt;/strong&gt; para os inputs válidos, utilizando o pseudo-elemento &lt;em&gt;after&lt;/em&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:invalid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; X&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;invalid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;content&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; X&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="nd"&gt;:valid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;:after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nb"&gt;content&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; ✓&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;valid&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nt"&gt;label&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;after&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;content&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; ✓&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -130,4 +131,4 @@ Existe uma forma de modificar essa mensagem via javascript, através do método 
 &lt;p&gt;&lt;a href="http://www.w3schools.com/tags/att_input_pattern.asp"&gt;Input Pattern - W3Schools&lt;/a&gt; &lt;br /&gt;
 &lt;a href="http://www.the-art-of-web.com/html/html5-form-validation/"&gt;Html5 form validation - Art of Web&lt;/a&gt; &lt;br /&gt;
 &lt;a href="http://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message"&gt;Set Custom Validation Message - Stackoverflow&lt;/a&gt; &lt;br /&gt;
-&lt;a href="http://www.w3schools.com/css/css_pseudo_elements.asp"&gt;CSS Pseudo Elements&lt;/a&gt;&lt;/p&gt;</summary><category term="html"></category><category term="forms"></category><category term="javascript"></category></entry></feed>
+&lt;a href="http://www.w3schools.com/css/css_pseudo_elements.asp"&gt;CSS Pseudo Elements&lt;/a&gt;&lt;/p&gt;</content><category term="html"></category><category term="forms"></category><category term="javascript"></category></entry></feed>

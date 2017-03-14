@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/docker.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2015-05-01T11:05:00-03:00</updated><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://www.diego-garcia.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><published>2015-05-01T11:05:00-03:00</published><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-05-01:2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia - Docker</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/docker.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2015-05-01T11:05:00-03:00</updated><entry><title>Executando uma aplicação WSGI com Docker</title><link href="http://www.diego-garcia.info/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/" rel="alternate"></link><published>2015-05-01T11:05:00-03:00</published><updated>2015-05-01T11:05:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-05-01:/2015/05/01/executando-uma-aplicacao-wsgi-com-docker/</id><summary type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
+Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
+Veremos nesse post uma &lt;em&gt;receita de bolo&lt;/em&gt; de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Já sabemos um pouco sobre o Docker, como ele funciona e como podemos brincar com ele.
 Porém, na prática, como podemos conteinerizar nossas aplicações de forma simples e com um bom desempenho?
 Veremos nesse post uma &lt;em&gt;receita de bolo&lt;/em&gt; de como conteinerizar aplicações WSGI de forma simples com um molde que pode ser reaproveitado sempre que necessário.&lt;/p&gt;
 
@@ -16,7 +19,7 @@ Basicamente esse será o arquivo que deverá ser chamado quando quisermos coloca
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;my_app&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;
 
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -26,7 +29,7 @@ Por exemplo, se estivessemos criando uma aplicação Flask, bastaria ter o segui
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;
 
 
-&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 
 &lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -55,7 +58,7 @@ Como falei anteriormente, a idéia é não se aprofundar na aplicação, mas sim
 &lt;p&gt;O &lt;a href="http://gunicorn.org/"&gt;Gunicorn&lt;/a&gt; é um servidor HTTP dedicado que serve aplicações WSGI, como é o caso de aplicações desenvolvidas com &lt;em&gt;Flask&lt;/em&gt;, &lt;em&gt;Django&lt;/em&gt;, &lt;em&gt;Bootle&lt;/em&gt;, etc.
 Com o gunicorn é possível por exemplo executar uma aplicação wsgi com diversos &lt;code&gt;workers&lt;/code&gt; fazendo assim com que as requisições sejam divididas entre eles e como consequência, tornar a aplicação &lt;em&gt;mais robusta&lt;/em&gt;.
 Utilizaremos o Gunicorn para controlar a instancia de nossa aplicação, com a seguinte &lt;em&gt;command line&lt;/em&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gunicorn -b 0.0.0.0:8000 -w &lt;span class="m"&gt;4&lt;/span&gt; run:app
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gunicorn -b &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0:8000 -w &lt;span class="m"&gt;4&lt;/span&gt; run:app
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -132,7 +135,7 @@ Veja um exemplo de como a estrutura do projeto pode ficar.&lt;/p&gt;
 
 &lt;h4&gt;Executar&lt;/h4&gt;
 &lt;p&gt;Após o processo de criação da imagem, basta usar o comando &lt;code&gt;docker run&lt;/code&gt; para executar o container.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker run -d -p 8000:8000 my_app
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo docker run -d -p &lt;span class="m"&gt;8000&lt;/span&gt;:8000 my_app
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -158,7 +161,11 @@ Você pode dar um nome para o container, para isso basta utilizar a opção &lt;
 Em um próximo post veremos um pouco sobre o &lt;strong&gt;docker compose&lt;/strong&gt; e como fazer o deploy de nossos containers na nuvem.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Docker, por onde começar</title><link href="http://www.diego-garcia.info/2015/02/15/docker-por-onde-comecar/" rel="alternate"></link><published>2015-02-15T10:32:26-02:00</published><updated>2015-02-15T10:32:26-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:2015/02/15/docker-por-onde-comecar/</id><summary type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</content><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry><entry><title>Docker, por onde começar</title><link href="http://www.diego-garcia.info/2015/02/15/docker-por-onde-comecar/" rel="alternate"></link><published>2015-02-15T10:32:26-02:00</published><updated>2015-02-15T10:32:26-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:/2015/02/15/docker-por-onde-comecar/</id><summary type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
+Arrisco dizer que, nos próximos anos, se o Docker não acabar com a virtualização, essa só irá existir em conjunto com o Docker.
+O projeto ainda está no começo mas já existem pessoas utilizando em produção.
+Entenda um pouco sobre o que é o Docker e como você pode começar a utilizar em seu dia a dia.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Uma das grandes novidades da tecnologia que mais me chamaram a atenção ultimamente é o &lt;strong&gt;Docker&lt;/strong&gt;, essa poderosa ferramenta que veio para deixar qualquer devops feliz da vida.
 Arrisco dizer que, nos próximos anos, se o Docker não acabar com a virtualização, essa só irá existir em conjunto com o Docker.
 O projeto ainda está no começo mas já existem pessoas utilizando em produção.
 Entenda um pouco sobre o que é o Docker e como você pode começar a utilizar em seu dia a dia.&lt;/p&gt;
@@ -183,12 +190,12 @@ Para instalar o Docker no ubuntu, basta instalar o pacote &lt;code&gt;docker.io&
 
 &lt;p&gt;Para confirmar se a instalação foi bem sucedida, utilize o comando &lt;code&gt;docker version&lt;/code&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker version
-Client version: 1.0.1
-Client API version: 1.12
+Client version: &lt;span class="m"&gt;1&lt;/span&gt;.0.1
+Client API version: &lt;span class="m"&gt;1&lt;/span&gt;.12
 Go version &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: go1.2.1
 Git commit &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: 990021a
-Server version: 1.0.1
-Server API version: 1.12
+Server version: &lt;span class="m"&gt;1&lt;/span&gt;.0.1
+Server API version: &lt;span class="m"&gt;1&lt;/span&gt;.12
 Go version &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: go1.2.1
 Git commit &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: 990021a
 &lt;/pre&gt;&lt;/div&gt;
@@ -213,7 +220,7 @@ Para baixar a imagem do ubuntu, basta executar o comando a seguir.&lt;/p&gt;
 &lt;p&gt;Para testar se o download da imagem foi bem sucedido, iremos executar uma instrução dentro do container do ubuntu, através do comando &lt;code&gt;docker run&lt;/code&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker run ubuntu:14.04 cat /etc/lsb-release
 &lt;span class="nv"&gt;DISTRIB_ID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Ubuntu
-&lt;span class="nv"&gt;DISTRIB_RELEASE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;14.04
+&lt;span class="nv"&gt;DISTRIB_RELEASE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.04
 &lt;span class="nv"&gt;DISTRIB_CODENAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;trusty
 &lt;span class="nv"&gt;DISTRIB_DESCRIPTION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Ubuntu 14.04.1 LTS&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
@@ -264,7 +271,7 @@ O comando &lt;code&gt;docker commit&lt;/code&gt; possui a seguinte sintaxe.&lt;/
 Para saber qual é a identificação do ultimo container criado, execute o comando &lt;code&gt;docker ps -l&lt;/code&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker ps -l
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
-4e0ba33ccad5        ubuntu:14.04        /bin/bash           &lt;span class="m"&gt;22&lt;/span&gt; minutes ago      Exited &lt;span class="o"&gt;(&lt;/span&gt;0&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;11&lt;/span&gt; minutes ago                       focused_mayer
+4e0ba33ccad5        ubuntu:14.04        /bin/bash           &lt;span class="m"&gt;22&lt;/span&gt; minutes ago      Exited &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;11&lt;/span&gt; minutes ago                       focused_mayer
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -277,7 +284,7 @@ Sendo assim, para finalmente realizar o commit, utilizaremos o comando a seguir.
 &lt;p&gt;Com o comando acima, estamos criando uma nova imagem chamada &lt;code&gt;wsgi-stack&lt;/code&gt; com o conteúdo das alterações que realizamos anteriormente.
 Para conferir se tudo funcinou corretamente, vamos executar o comando &lt;code&gt;python --version&lt;/code&gt; em nosso novo container.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;user@machine:~$ sudo docker run wsgi-stack python --version
-Python 2.7.6
+Python &lt;span class="m"&gt;2&lt;/span&gt;.7.6
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -388,4 +395,4 @@ Login Succeeded
 &lt;p&gt;Em uma segunda parte desse artigo veremos como executar uma aplicação web dentro de um conteiner e como automatizar ainda mais a criação de imagens do Docker através do ~Fig~ &lt;strong&gt;docker compose&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="https://www.docker.com/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry></feed>
+&lt;a href="http://docs.docker.com/"&gt;Documentação oficial&lt;/a&gt;&lt;/p&gt;</content><category term="docker"></category><category term="devops"></category><category term="linux"></category><category term="python"></category></entry></feed>

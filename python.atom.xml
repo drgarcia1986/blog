@@ -1,5 +1,524 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/python.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2016-06-24T10:00:00-03:00</updated><entry><title>A armadilha do groupby do Python</title><link href="http://www.diego-garcia.info/2016/06/24/a-armadilha-do-groupby-do-python/" rel="alternate"></link><published>2016-06-24T10:00:00-03:00</published><updated>2016-06-24T10:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-06-24:2016/06/24/a-armadilha-do-groupby-do-python/</id><summary type="html">&lt;p&gt;O &lt;code&gt;itertools&lt;/code&gt; é um módulo fantástico da bibliotéca padrão do python, para trabalhar com iteradores e estruturas complexas de dados.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Diego Garcia - Python</title><link href="http://www.diego-garcia.info/" rel="alternate"></link><link href="http://www.diego-garcia.info/python.atom.xml" rel="self"></link><id>http://www.diego-garcia.info/</id><updated>2017-03-13T22:00:00-03:00</updated><entry><title>Criando Um Aplicativo De Linha De Comando Com Python</title><link href="http://www.diego-garcia.info/2017/03/13/criando-um-aplicativo-de-linha-de-comando-com-python/" rel="alternate"></link><published>2017-03-13T22:00:00-03:00</published><updated>2017-03-13T22:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2017-03-13:/2017/03/13/criando-um-aplicativo-de-linha-de-comando-com-python/</id><summary type="html">&lt;p&gt;Com certeza você já uso algum aplicativo de linha de comando, seja dos mais simples (como por exemplo o &lt;em&gt;echo&lt;/em&gt;),
+ou dos mais sofisticados (como é o caso do &lt;a href="/2014/12/13/use-o-curl/"&gt;cURL&lt;/a&gt;).
+O fato é, todo programador deveria criar pelo menos uma vez um aplicativo de linha de comando, seja para fins de estudo,
+ou até mesmo para se tornar uma grande ferramenta. Com python, criar aplicativos de linha de comando é algo muito simples e produtivo.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Com certeza você já uso algum aplicativo de linha de comando, seja dos mais simples (como por exemplo o &lt;em&gt;echo&lt;/em&gt;),
+ou dos mais sofisticados (como é o caso do &lt;a href="/2014/12/13/use-o-curl/"&gt;cURL&lt;/a&gt;).
+O fato é, todo programador deveria criar pelo menos uma vez um aplicativo de linha de comando, seja para fins de estudo,
+ou até mesmo para se tornar uma grande ferramenta. Com python, criar aplicativos de linha de comando é algo muito simples e produtivo.&lt;/p&gt;
+
+
+&lt;h2&gt;Hello World&lt;/h2&gt;
+&lt;p&gt;Antes de nos aprofundarmos no assunto, faremos um simples &lt;code&gt;Hello World&lt;/code&gt; utilizando o módulo &lt;code&gt;argparse&lt;/code&gt; que é built-in do python.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;say your name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Hello {}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Resumindo o código anterior, criamos um &lt;code&gt;parser&lt;/code&gt; e nesse &lt;em&gt;parser&lt;/em&gt; adicionamos um &lt;em&gt;argumento posicional&lt;/em&gt; (o argumento &lt;code&gt;name&lt;/code&gt;).
+Depois convertemos os argumentos da linha de comando no objeto &lt;code&gt;args&lt;/code&gt; e mostramos uma mensagem utilizando o valor passado para o
+argumento &lt;em&gt;name&lt;/em&gt;.
+O resultado será o seguinte:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py World
+Hello World
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Pode parecer mais complicado do que simplesmente recuperar os valores de &lt;a href="https://docs.python.org/3/library/sys.html#sys.argv"&gt;&lt;code&gt;sys.argv&lt;/code&gt;&lt;/a&gt;,
+porém, é algo muito mais poderoso.
+Um exemplo disso é o fato de que, esse código da forma como está, já possui um &lt;em&gt;help&lt;/em&gt; bem intuitivo dos possíveis comandos aceitos:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py -h
+usage: cli.py &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; name
+
+positional arguments:
+  name        say your name
+
+optional arguments:
+  -h, --help  show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Um pouco sobre o Argparse&lt;/h2&gt;
+&lt;p&gt;O &lt;code&gt;argparse&lt;/code&gt; é um módulo que foi adicionado a standard library do python a partir da versão 2.7 substituindo seu antecessor, o módulo &lt;code&gt;optparse&lt;/code&gt;.
+Ele foi projetado para criar aplicativos de linha de comando de forma amigável e descomplicada.&lt;/p&gt;
+&lt;h3&gt;O parser&lt;/h3&gt;
+&lt;p&gt;O principal componente do módulo &lt;em&gt;argparse&lt;/em&gt; é a classe &lt;code&gt;ArgumentParser&lt;/code&gt;.
+A partir de uma instância de &lt;em&gt;ArgumentParser&lt;/em&gt; é possível determinar o comportamento de linha de comando do aplicativo.
+Na criação do parser é possível informar alguns parâmetros relativos ao aplicativo, sendo que alguns deles servem para customizar
+a mensagem de &lt;em&gt;help&lt;/em&gt; gerada automaticamente, como é o caso do parâmetro &lt;code&gt;description&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Powerful command-line tool&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;-h&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;usage&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;Powerful&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="n"&gt;tool&lt;/span&gt;
+
+&lt;span class="n"&gt;optional&lt;/span&gt; &lt;span class="n"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;help&lt;/span&gt;  &lt;span class="n"&gt;show&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="nb"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note que é possível informar para o parser os argumentos que ele deve parsear, através do método &lt;code&gt;parse_args&lt;/code&gt;.
+Esse método espera uma lista de strings como parâmetro e caso essa não seja informada, recupera a lista de
+argumentos através do &lt;code&gt;sys.argv&lt;/code&gt;, ou seja, os argumentos de linha de comando.&lt;/p&gt;
+&lt;h3&gt;Argumentos&lt;/h3&gt;
+&lt;p&gt;Com vimos no primeiro exemplo, é possível adicionar argumentos ao parser, sejam eles &lt;em&gt;posicionais&lt;/em&gt; (e obrigátorios),
+ou &lt;em&gt;opcionais&lt;/em&gt;.&lt;/p&gt;
+&lt;h4&gt;Argumentos posicionais&lt;/h4&gt;
+&lt;p&gt;Os argumentos posicionais, são argumentos obrigatórios que devem ser informados na ordem em que foram declarados.
+Veja um exemplo de uma simples soma feita através da linha de comando:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;first_number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;second_number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{} + {} = {}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first_number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second_number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first_number&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second_number&lt;/span&gt;
+&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O exemplo de uso do código anterior seria algo como:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt; + &lt;span class="nv"&gt;5&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;7&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Não se preocupe com o &lt;code&gt;type&lt;/code&gt; no exemplo, veremos o que isso significa mais adiante&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;Argumentos opcionais&lt;/h4&gt;
+&lt;p&gt;Os argumentos opcionais são declarados com um ou dois hífens no prefixo do nome (e.g. &lt;em&gt;-f&lt;/em&gt;, &lt;em&gt;--foo&lt;/em&gt;) e não
+dependem de uma posição especifica para serem informados.
+Usando o exemplo anterior, vamos adicionar um argumento opcional para determinar se o output do comando
+deve ou não ser verboso:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;first_number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;second_number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;--verbose&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;store_true&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first_number&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second_number&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{} + {} = {}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first_number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second_number&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;result&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Desta forma, possibilitamos saidas diferentes da nossa aplicação de acordo com a presença ou não do
+argumento &lt;code&gt;--verbose&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;
+&lt;span class="m"&gt;7&lt;/span&gt;
+$ python t.py &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt; --verbose
+&lt;span class="m"&gt;2&lt;/span&gt; + &lt;span class="nv"&gt;5&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;7&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Não se preocupe com o &lt;code&gt;action&lt;/code&gt; no exemplo, veremos o que isso significa mais adiante&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Podemos simplificar aindas mais o argumento &lt;em&gt;--verbose&lt;/em&gt; criando uma opção encurtada dele.
+O método &lt;code&gt;add_argument&lt;/code&gt; do &lt;code&gt;ArgumentParser&lt;/code&gt; aceita uma lista de nomes do argumento, sendo assim,
+basta adicionar as opções na criação do argumento:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;-v&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;--verbose&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;store_true&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E inclusive, essa alteração já reflete no &lt;em&gt;help&lt;/em&gt; da aplicação:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py -h
+usage: cli.py &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;-v&lt;span class="o"&gt;]&lt;/span&gt; first_number second_number
+
+positional arguments:
+  first_number
+  second_number
+
+optional arguments:
+  -h, --help     show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+  -v, --verbose
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Vale ressaltar que essa opção só faz sentido para argumentos opcionais.&lt;/p&gt;
+&lt;h3&gt;Types&lt;/h3&gt;
+&lt;p&gt;Por padrão, o valor de todos os argumentos são interpretados como &lt;em&gt;string&lt;/em&gt;, porém, é possível determinar um tipo
+para esses valores, através do parametro &lt;code&gt;type&lt;/code&gt; do método &lt;code&gt;add_argument&lt;/code&gt; como já vimos anteriormente.&lt;br&gt;
+Ao determinar um &lt;em&gt;type&lt;/em&gt; para um argumento, será executado um &lt;em&gt;type-checking&lt;/em&gt; no momento do &lt;em&gt;parse_args()&lt;/em&gt; para garantir
+que o valor do argumento é do tipo especificado:&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;````python&lt;/dt&gt;
+&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; from argparse import ArgumentParser&lt;/dt&gt;
+&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; parser = ArgumentParser()&lt;/dt&gt;
+&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; parser.add_argument('number', type=int)&lt;/dt&gt;
+&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; args = parser.parse_args(['a'])&lt;/dt&gt;
+&lt;dt&gt;usage: [-h] number&lt;/dt&gt;
+&lt;dd&gt;error: argument number: invalid int value: 'a'&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Qualquer&lt;/span&gt; &lt;span class="n"&gt;_callable_&lt;/span&gt; &lt;span class="n"&gt;pode&lt;/span&gt; &lt;span class="n"&gt;ser&lt;/span&gt; &lt;span class="n"&gt;usado&lt;/span&gt; &lt;span class="n"&gt;como&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pontencializando&lt;/span&gt; &lt;span class="n"&gt;ainda&lt;/span&gt; &lt;span class="n"&gt;mais&lt;/span&gt; &lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;uso&lt;/span&gt; &lt;span class="n"&gt;de&lt;/span&gt; &lt;span class="n"&gt;tipos&lt;/span&gt; &lt;span class="n"&gt;nos&lt;/span&gt; &lt;span class="n"&gt;argumentos&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+
+&lt;span class="sb"&gt;``&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;odd&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+    &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;argparse&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ArgumentTypeError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{} is not an odd number&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;argparse&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;odd_number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;odd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Neste exemplo, se pasarmos um numero par para o argumento &lt;code&gt;odd_number&lt;/code&gt; teremos uma mensagem
+de erro indicando que esse numero não é um numero impar.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py &lt;span class="m"&gt;2&lt;/span&gt;
+usage: &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; odd_number
+: error: argument odd_number: &lt;span class="m"&gt;2&lt;/span&gt; its not an odd number
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Actions&lt;/h3&gt;
+&lt;p&gt;É possível determinar ações para determinados argumentos sendo a mais comum a ação &lt;code&gt;store&lt;/code&gt; que
+basicamente armazena o valor passado para o argumento. Esta é a ação default para qualquer argumento
+caso outro tipo de ação não seja informado.&lt;br&gt;
+Existem outros tipos de ações, veremos algumas delas.&lt;/p&gt;
+&lt;h4&gt;store_true&lt;/h4&gt;
+&lt;p&gt;A action &lt;code&gt;store_true&lt;/code&gt; basicamente armazena o valor &lt;code&gt;True&lt;/code&gt; caso o argumento
+seja informado (como vimos anteriormente no exemplo do argumento &lt;em&gt;--verbose&lt;/em&gt;).&lt;/p&gt;
+&lt;h4&gt;append&lt;/h4&gt;
+&lt;p&gt;A action &lt;code&gt;append&lt;/code&gt; armazena uma lista dos valores passados para o mesmo argumento, e.g.:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;--file&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;append&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;--file 1.txt --file 2.txt --file 3.txt&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;span class="n"&gt;Namespace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;1.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;2.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;3.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;count&lt;/h4&gt;
+&lt;p&gt;A action &lt;code&gt;count&lt;/code&gt; armazena um contador de vezes em que um argumento foi usado
+(útil para determinar niveis de verbosidade), e.g.:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;--verbose&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;-v&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;count&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;-vvvv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;Namespace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Casos mais complexos&lt;/h2&gt;
+&lt;p&gt;Normalmente, no desenvolvimento de um aplicativo &lt;em&gt;cli&lt;/em&gt; acabamos tendo que lidar com casos mais complexos,
+e não somente um comando simples com alguns parâmetros. Esses aplicativos tendem a crescer
+e lidar com outros subcomandos, como por exemplo o &lt;strong&gt;git&lt;/strong&gt; (&lt;em&gt;add&lt;/em&gt;, &lt;em&gt;commit&lt;/em&gt;, &lt;em&gt;branch&lt;/em&gt;, etc):&lt;/p&gt;
+&lt;p&gt;Iremos criar um aplicativo simples com dois subcomandos, o subcomando &lt;code&gt;read&lt;/code&gt; e o subcomando &lt;code&gt;write&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;A melhor maneira de lidar com subcomandos é criar &lt;code&gt;SubParsers&lt;/code&gt; especificos para cada
+comando que o aplicativo irá lidar.&lt;/p&gt;
+&lt;h3&gt;SubParsers&lt;/h3&gt;
+&lt;p&gt;Subparsers são parsers independentes, com suas próprias caracteristicas
+mas que deviram de um parser principal.
+Vamos começar nosso aplicativo de exemplo criando seu parser principal e seus dois
+subparsers:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;subparsers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_subparsers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;r_parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subparsers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;read&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Commands to read data&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;w_parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subparsers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;write&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Commands to write data&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Se dermos uma olhada no &lt;em&gt;help&lt;/em&gt; gerado pelo python, já veremos instruções de uso
+para os subcomandos:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py -h
+usage: cli.py &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;read,write&lt;span class="o"&gt;}&lt;/span&gt; ...
+
+positional arguments:
+  &lt;span class="o"&gt;{&lt;/span&gt;read,write&lt;span class="o"&gt;}&lt;/span&gt;
+    &lt;span class="nb"&gt;read&lt;/span&gt;        Commands to &lt;span class="nb"&gt;read&lt;/span&gt; data
+    write       Commands to write data
+
+optional arguments:
+  -h, --help    show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Iremos agora incrementar um pouco mais nosso aplicativo adicionando argumentos para cada
+subcomando:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+
+&lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;subparsers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_subparsers&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Sub commands&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;r_parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subparsers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;read&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Commands to read data&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;r_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;origin&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;File origin&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;r_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;--head&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Read only N lines&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;w_parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subparsers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;write&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Commands to write data&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;w_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;destination&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Destination file&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;w_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s1"&gt;&amp;#39;--upper&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;store_true&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Write all in UPPERCASE&amp;#39;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora é possível ter um help geral do aplicativo e um help para cada subcomando:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py -h
+
+usage: cli.py &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;read,write&lt;span class="o"&gt;}&lt;/span&gt; ...
+
+positional arguments:
+  &lt;span class="o"&gt;{&lt;/span&gt;read,write&lt;span class="o"&gt;}&lt;/span&gt;  Sub commands
+    &lt;span class="nb"&gt;read&lt;/span&gt;        Commands to &lt;span class="nb"&gt;read&lt;/span&gt; data
+    write       Commands to write data
+
+optional arguments:
+  -h, --help    show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py &lt;span class="nb"&gt;read&lt;/span&gt; -h
+
+usage: cli.py &lt;span class="nb"&gt;read&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;--head HEAD&lt;span class="o"&gt;]&lt;/span&gt; origin
+
+positional arguments:
+  origin       File origin
+
+optional arguments:
+  -h, --help   show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+  --head HEAD  Read only N lines
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py write -h
+
+usage: cli.py write &lt;span class="o"&gt;[&lt;/span&gt;-h&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;--upper&lt;span class="o"&gt;]&lt;/span&gt; destination
+
+positional arguments:
+  destination  Destination file
+
+optional arguments:
+  -h, --help   show this &lt;span class="nb"&gt;help&lt;/span&gt; message and &lt;span class="nb"&gt;exit&lt;/span&gt;
+  --upper      Write all in UPPERCASE
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;set_defaults&lt;/h3&gt;
+&lt;p&gt;Um problema ao se utilizar subparsers é que ao executar o &lt;code&gt;parser.parser_args()&lt;/code&gt; não
+é possível determinar qual subcomando foi requisitado, somente os argumentos do
+subparser:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="n"&gt;cli&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt; &lt;span class="n"&gt;read&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Namespace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;origin&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="c"&gt;&amp;#39;foo.txt&amp;#39;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para contornar esse comportamento, é possível determinar valores default para
+um subparser através do método &lt;code&gt;set_default&lt;/code&gt;, que espera um conjunto de argumentos nomeados (&lt;em&gt;**kwargs&lt;/em&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+&lt;span class="n"&gt;r_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_defaults&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;read&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;subcommand: &amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Para o exemplo anterior, ao chamar o &lt;em&gt;cli.py&lt;/em&gt; na linha de comando passando o subcomando &lt;code&gt;read&lt;/code&gt;
+teriamos a seguinte saida:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py &lt;span class="nb"&gt;read&lt;/span&gt; foo.txt
+subcommand: &lt;span class="nb"&gt;read&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Criando handlers para os subparsers&lt;/h3&gt;
+&lt;p&gt;Conhecendo esse truque e sabendo que o valor default pode ser de qualquer tipo (inclusive um callable),
+podemos criar &lt;em&gt;handlers&lt;/em&gt; para os nossos subcommands.&lt;br&gt;
+Vamos mudar nosso código de exemplo adicionado duas funções, a função &lt;code&gt;read&lt;/code&gt; e a função &lt;code&gt;write&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;call read with: {}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;call write with: {}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Agora iremos usar essas funções como um valor default em nossos subparser:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;r_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_defaults&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handler&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;w_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_defaults&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handler&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E por fim, iremos usar essas funções após a leitura dos argumentos da linha de comando:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;handler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ao executarmos nosso cli passando um subcomando, podemos ver que a saída do comando indica
+que nosso &lt;em&gt;handler&lt;/em&gt; foi chamado:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python cli.py write foo.txt --upper
+call write with: Namespace&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;destination&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;foo.txt&amp;#39;&lt;/span&gt;, &lt;span class="nv"&gt;handler&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="k"&gt;function&lt;/span&gt; write at 0x100de9140&amp;gt;, &lt;span class="nv"&gt;upper&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;True&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Isso abre a possíbilidade de criar aplicativos realmente complexos de
+forma simples e organizada.&lt;/p&gt;
+&lt;h3&gt;Testando Parsers&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“I don’t care if it works on your machine! We are not shipping your machine!” — Vidiu Platon.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Software sem testes é um software que não deve ser entregue, ou seja, é um software incompleto.
+Já sabemos como criar complexas soluções de aplicativos de linha de comando, só nos falta saber
+como criar testes para essa aplicações.&lt;br&gt;
+Usando o &lt;em&gt;ArgumentParser&lt;/em&gt;  do python não existe muitos mistérios em como realizar os testes,
+para utilizar o método &lt;code&gt;parse_args()&lt;/code&gt; e verificar a forma como os argumentos foram processados:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;subparser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_subparsers&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x_parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subparser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;x&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x_parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_defaults&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;x&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;x&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="ne"&gt;AssertionError&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Algumas quebras de linha foram adicionadas para melhorar a leitura&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Você pode tranquilamente utilizar esse recurso dentro da sua suite de testes.&lt;/p&gt;
+&lt;h2&gt;Distribuindo seu aplicativo&lt;/h2&gt;
+&lt;p&gt;Com o aplicativo já escrito (e devidamente testado), chegou a hora de distribuir para o mundo.
+Não irei entrar em detalhes sobre como prepara o arquivo &lt;code&gt;setup.py&lt;/code&gt; de forma correta
+(talvez em outro post), porém irei comentar sobre uma configuração especifica, os &lt;code&gt;entry_points&lt;/code&gt;.&lt;/p&gt;
+&lt;h3&gt;Entrypoint&lt;/h3&gt;
+&lt;p&gt;Existem diferentes tipos de entrypoints disponíveis para serem usados, em nosso exemplo iremos
+usar o mais comum deles, o &lt;code&gt;console_script&lt;/code&gt;, com isso, iremos determinar como a nossa aplicação
+deverá ser chamada na linha de comando após a instalação:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# setup.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;find_packages&lt;/span&gt;
+
+&lt;span class="n"&gt;author_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Diego Garcia&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;author_email&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;drgarcia1986@gmail.com&amp;#39;&lt;/span&gt;
+
+&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;cli&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;0.0.1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Cool cli&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Cool cli from http://www.diego-garcia.info/,&lt;/span&gt;
+    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://github.com/drgarcia1986/cli&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;author_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;maintainer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;author_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;maintainer_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;license&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;MIT&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Development Status :: 4 - Beta&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Intended Audience :: Developers&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Topic :: System :: Shells&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Programming Language :: Python :: 2.7&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Programming Language :: Python :: 3.3&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Programming Language :: Python :: 3.4&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;Programming Language :: Python :: 3.5&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;],&lt;/span&gt;
+    &lt;span class="n"&gt;keywords&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;cli&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;download_url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://github.com/drgarcia1986/cli/archive/master.zip&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;find_packages&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;exclude&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;tests*&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt;
+    &lt;span class="n"&gt;install_requires&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[],&lt;/span&gt;
+    &lt;span class="n"&gt;entry_points&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;console_scripts&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;cli = cli:main&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]},&lt;/span&gt;
+    &lt;span class="n"&gt;platforms&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;windows linux&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;O detalhe importante fica por conta da linha &lt;code&gt;entry_points={'console_scripts': ['cli = cli:main']}&lt;/code&gt;,
+onde determinamos que o &lt;em&gt;entry point&lt;/em&gt; de &lt;em&gt;console script&lt;/em&gt; da nossa aplicação, será
+a função &lt;em&gt;main&lt;/em&gt; dentro do arquivo &lt;em&gt;cli&lt;/em&gt;, para quando a aplicação for chamada como
+&lt;em&gt;cli&lt;/em&gt; na linha de comando. &lt;br&gt;
+Essa função &lt;em&gt;main&lt;/em&gt; nada mais é do que uma função que chama o método &lt;em&gt;parser_args()&lt;/em&gt;, e.g.:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;handler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Pronto, ao realizar a instalação da aplicação podemos utiliza-la na linha de comando apenas
+chamando o comando &lt;code&gt;cli&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;cli&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;
+
+&lt;span class="n"&gt;usage&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cli&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt;
+
+&lt;span class="n"&gt;positional&lt;/span&gt; &lt;span class="n"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;  &lt;span class="n"&gt;Sub&lt;/span&gt; &lt;span class="n"&gt;commands&lt;/span&gt;
+    &lt;span class="n"&gt;read&lt;/span&gt;        &lt;span class="n"&gt;Commands&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;read&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;
+    &lt;span class="n"&gt;write&lt;/span&gt;       &lt;span class="n"&gt;Commands&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;write&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;
+
+&lt;span class="n"&gt;optional&lt;/span&gt; &lt;span class="n"&gt;arguments&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;help&lt;/span&gt;    &lt;span class="n"&gt;show&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="nb"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Third party libs&lt;/h2&gt;
+&lt;p&gt;Existem algumas bibliotecas opensource que podem facilitar a vida de quem pretende escrever
+um aplicativo de linha de comando, vou listar algumas:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/google/python-fire"&gt;python-fire&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://click.pocoo.org/"&gt;click&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/docopt/docopt"&gt;docopt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Você pode testá-las e concluir se alguma se encaixa melhor no seu problema ou se
+a standard library do python já é o suficiente.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
+&lt;a href="https://docs.python.org/3/library/argparse.html"&gt;Argparse Official Documentation&lt;/a&gt;&lt;br&gt;
+&lt;a href="https://docs.python.org/3/howto/argparse.html"&gt;Argparse tutorial&lt;/a&gt;&lt;br&gt;
+&lt;a href="https://mkaz.tech/python-argparse-cookbook.html"&gt;Python Argparse Cookbook&lt;/a&gt;&lt;br&gt;
+&lt;a href="https://pymotw.com/2/argparse/"&gt;argparse – Command line option and argument parsing&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</content><category term="python"></category><category term="argparse"></category></entry><entry><title>A armadilha do groupby do Python</title><link href="http://www.diego-garcia.info/2016/06/24/a-armadilha-do-groupby-do-python/" rel="alternate"></link><published>2016-06-24T10:00:00-03:00</published><updated>2016-06-24T10:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-06-24:/2016/06/24/a-armadilha-do-groupby-do-python/</id><summary type="html">&lt;p&gt;O &lt;code&gt;itertools&lt;/code&gt; é um módulo fantástico da bibliotéca padrão do python, para trabalhar com iteradores e estruturas complexas de dados.
+Porém, é recomendado um conhecimento mínimo sobre geradores para evitar possíveis armadilhas.
+Sim, eu cai em mais uma &lt;a href="/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/"&gt;armadilha&lt;/a&gt; do Python, dessa vez foi o &lt;code&gt;groupby&lt;/code&gt; do
+módulo &lt;em&gt;itertools&lt;/em&gt;.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;O &lt;code&gt;itertools&lt;/code&gt; é um módulo fantástico da bibliotéca padrão do python, para trabalhar com iteradores e estruturas complexas de dados.
 Porém, é recomendado um conhecimento mínimo sobre geradores para evitar possíveis armadilhas.
 Sim, eu cai em mais uma &lt;a href="/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/"&gt;armadilha&lt;/a&gt; do Python, dessa vez foi o &lt;code&gt;groupby&lt;/code&gt; do
 módulo &lt;em&gt;itertools&lt;/em&gt;.&lt;/p&gt;
@@ -73,7 +592,9 @@ Sim, meu vacilo foi ainda maior pois, a documentação oficial do python alerta 
 &lt;/blockquote&gt;
 &lt;p&gt;Tudo bem que poderia ter um destaque maior esse alerta ou até mesmo um exemplo, porém, não adianta reclamar que não está documentado =).&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
-&lt;a href="https://docs.python.org/3.4/library/itertools.html#itertools.groupby"&gt;Documentação Oficial&lt;/a&gt;&lt;/p&gt;</summary><category term="python"></category><category term="itertools"></category></entry><entry><title>MultiProcess em Python e o drible no GIL</title><link href="http://www.diego-garcia.info/2016/02/27/multi-process-em-python-e-fuga-do-gil/" rel="alternate"></link><published>2016-02-27T14:00:00-03:00</published><updated>2016-02-27T14:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-27:2016/02/27/multi-process-em-python-e-fuga-do-gil/</id><summary type="html">&lt;p&gt;Se você leu o post anterior sobre &lt;a href="/2016/02/18/threads-em-python-e-claro/"&gt;threads em python&lt;/a&gt;, muito provavelmente percebeu que o fato do &lt;code&gt;CPython&lt;/code&gt; ser otimizado para executar códigos &lt;em&gt;singlethread&lt;/em&gt;, não é um impeditivo para execução de tarefas paralelas com alto desempenho.
+&lt;a href="https://docs.python.org/3.4/library/itertools.html#itertools.groupby"&gt;Documentação Oficial&lt;/a&gt;&lt;/p&gt;</content><category term="python"></category><category term="itertools"></category></entry><entry><title>MultiProcess em Python e o drible no GIL</title><link href="http://www.diego-garcia.info/2016/02/27/multi-process-em-python-e-fuga-do-gil/" rel="alternate"></link><published>2016-02-27T14:00:00-03:00</published><updated>2016-02-27T14:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-27:/2016/02/27/multi-process-em-python-e-fuga-do-gil/</id><summary type="html">&lt;p&gt;Se você leu o post anterior sobre &lt;a href="/2016/02/18/threads-em-python-e-claro/"&gt;threads em python&lt;/a&gt;, muito provavelmente percebeu que o fato do &lt;code&gt;CPython&lt;/code&gt; ser otimizado para executar códigos &lt;em&gt;singlethread&lt;/em&gt;, não é um impeditivo para execução de tarefas paralelas com alto desempenho.
+Porém, threads resolvem com maestria a execução de tarefas de &lt;strong&gt;I/O Bound&lt;/strong&gt; paralelas, mas quando o assunto é &lt;strong&gt;CPU Bound&lt;/strong&gt;, existe uma outra forma de ser efetivo no paralelismo com python.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Se você leu o post anterior sobre &lt;a href="/2016/02/18/threads-em-python-e-claro/"&gt;threads em python&lt;/a&gt;, muito provavelmente percebeu que o fato do &lt;code&gt;CPython&lt;/code&gt; ser otimizado para executar códigos &lt;em&gt;singlethread&lt;/em&gt;, não é um impeditivo para execução de tarefas paralelas com alto desempenho.
 Porém, threads resolvem com maestria a execução de tarefas de &lt;strong&gt;I/O Bound&lt;/strong&gt; paralelas, mas quando o assunto é &lt;strong&gt;CPU Bound&lt;/strong&gt;, existe uma outra forma de ser efetivo no paralelismo com python.&lt;/p&gt;
 
 
@@ -149,11 +670,11 @@ Criaremos &lt;code&gt;Futures&lt;/code&gt; para cada execução (através do mé
 &lt;p&gt;Ao realizar o &lt;code&gt;submit&lt;/code&gt; da função &lt;em&gt;primes_until&lt;/em&gt; para o nosso &lt;em&gt;ProcessPoolExecutor&lt;/em&gt;, um fork do processo principal é criado e a execução é feita nesse processo separado de forma paralela.
 Dessa forma, conseguimos dividir a execução em processo separados (com o &lt;strong&gt;GIL&lt;/strong&gt; independente para cada um) e com isso não temos o efeito do &lt;em&gt;lock&lt;/em&gt; do GIL para cada requisição ao processador.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ ps aux &lt;span class="p"&gt;|&lt;/span&gt; grep python3
-diego-g+ &lt;span class="m"&gt;10074&lt;/span&gt;  6.0  0.2 &lt;span class="m"&gt;194720&lt;/span&gt; &lt;span class="m"&gt;12404&lt;/span&gt; pts/24   Sl+  13:01   0:00 python3 primes_numbers.py multiprocess
-diego-g+ &lt;span class="m"&gt;10075&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
-diego-g+ &lt;span class="m"&gt;10076&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7932&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
-diego-g+ &lt;span class="m"&gt;10077&lt;/span&gt;  &lt;span class="m"&gt;119&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7940&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
-diego-g+ &lt;span class="m"&gt;10078&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  0.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   13:01   0:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10074&lt;/span&gt;  &lt;span class="m"&gt;6&lt;/span&gt;.0  &lt;span class="m"&gt;0&lt;/span&gt;.2 &lt;span class="m"&gt;194720&lt;/span&gt; &lt;span class="m"&gt;12404&lt;/span&gt; pts/24   Sl+  &lt;span class="m"&gt;13&lt;/span&gt;:01   &lt;span class="m"&gt;0&lt;/span&gt;:00 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10075&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  &lt;span class="m"&gt;0&lt;/span&gt;.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   &lt;span class="m"&gt;13&lt;/span&gt;:01   &lt;span class="m"&gt;0&lt;/span&gt;:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10076&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  &lt;span class="m"&gt;0&lt;/span&gt;.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7932&lt;/span&gt; pts/24   R+   &lt;span class="m"&gt;13&lt;/span&gt;:01   &lt;span class="m"&gt;0&lt;/span&gt;:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10077&lt;/span&gt;  &lt;span class="m"&gt;119&lt;/span&gt;  &lt;span class="m"&gt;0&lt;/span&gt;.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7940&lt;/span&gt; pts/24   R+   &lt;span class="m"&gt;13&lt;/span&gt;:01   &lt;span class="m"&gt;0&lt;/span&gt;:01 python3 primes_numbers.py multiprocess
+diego-g+ &lt;span class="m"&gt;10078&lt;/span&gt;  &lt;span class="m"&gt;121&lt;/span&gt;  &lt;span class="m"&gt;0&lt;/span&gt;.1  &lt;span class="m"&gt;47256&lt;/span&gt;  &lt;span class="m"&gt;7936&lt;/span&gt; pts/24   R+   &lt;span class="m"&gt;13&lt;/span&gt;:01   &lt;span class="m"&gt;0&lt;/span&gt;:01 python3 primes_numbers.py multiprocess
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -194,7 +715,10 @@ A minha sugestão é, teste e compare antes de tomar uma decisão, se uma arquit
 &lt;h3&gt;Alternativas&lt;/h3&gt;
 &lt;p&gt;Antes de pensar em uma solução baseada em paralelismo, você pode executar o seu código em outros interpretadores do python como por exemplo o &lt;a href="http://pypy.org/"&gt;pypy&lt;/a&gt; que promete ser um interpretador extremamente rápido e otimizado ou o &lt;a href="http://cython.org/"&gt;Cython&lt;/a&gt; que tem uma relação mais amigavel com o &lt;strong&gt;GIL&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
-&lt;a href="https://docs.python.org/3/library/concurrent.futures.html"&gt;Launching parallel tasks&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="process"></category></entry><entry><title>Threads em Python? é claro!</title><link href="http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/" rel="alternate"></link><published>2016-02-18T10:00:00-02:00</published><updated>2016-02-18T10:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-18:2016/02/18/threads-em-python-e-claro/</id><summary type="html">&lt;p&gt;Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:&lt;/p&gt;
+&lt;a href="https://docs.python.org/3/library/concurrent.futures.html"&gt;Launching parallel tasks&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</content><category term="python"></category><category term="process"></category></entry><entry><title>Threads em Python? é claro!</title><link href="http://www.diego-garcia.info/2016/02/18/threads-em-python-e-claro/" rel="alternate"></link><published>2016-02-18T10:00:00-02:00</published><updated>2016-02-18T10:00:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2016-02-18:/2016/02/18/threads-em-python-e-claro/</id><summary type="html">&lt;p&gt;Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Python não é bom com threads&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Isso não é totalmente mentira, mas a questão é, threads só não serão efetivas com o python, se você não usar da forma correta.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Muito provavelmente você já deve ter ouvido a mesma lenda que me foi contada quando estava apreendendo python:&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Python não é bom com threads&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Isso não é totalmente mentira, mas a questão é, threads só não serão efetivas com o python, se você não usar da forma correta.&lt;/p&gt;
 
@@ -222,7 +746,7 @@ Essas cotações serão recuperadas do site &lt;a href="http://dolarhoje.com/"&g
 
 
 &lt;p&gt;Como esses sites utilizam o mesmo formato, utilizaremos uma regex padrão para processa-los:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;DEFAULT_REGEX&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;r&amp;#39;&amp;lt;input type=&amp;quot;text&amp;quot; id=&amp;quot;nacional&amp;quot; value=&amp;quot;([^&amp;quot;]+)&amp;quot;/&amp;gt;&amp;#39;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;DEFAULT_REGEX&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;lt;input type=&amp;quot;text&amp;quot; id=&amp;quot;nacional&amp;quot; value=&amp;quot;([^&amp;quot;]+)&amp;quot;/&amp;gt;&amp;#39;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -326,7 +850,10 @@ Essa diferença tende a crescer de acordo com a quantidade de requests feitos.&l
 &lt;p&gt;(╯°□°）╯︵ ┻━┻&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="https://docs.python.org/3/library/concurrent.futures.html"&gt;Launching parallel tasks&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://www.dabeaz.com/python/UnderstandingGIL.pdf"&gt;Understanding the Python GIL&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</summary><category term="python"></category><category term="threads"></category></entry><entry><title>A armadilha dos argumentos com valores padrão</title><link href="http://www.diego-garcia.info/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/" rel="alternate"></link><published>2015-06-07T11:00:00-03:00</published><updated>2015-06-07T11:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-06-07:2015/06/07/a-armadilha-dos-argumentos-com-valores-default/</id><summary type="html">&lt;p&gt;Algo muito comum em várias linguagens de programação é a possibilidade de definir &lt;em&gt;valores default&lt;/em&gt; (valores padrão) para argumentos de funções e métodos, tornando a utilização desses opcional.
+&lt;a href="http://www.dabeaz.com/python/UnderstandingGIL.pdf"&gt;Understanding the Python GIL&lt;/a&gt;&lt;br&gt;&lt;/p&gt;</content><category term="python"></category><category term="threads"></category></entry><entry><title>A armadilha dos argumentos com valores padrão</title><link href="http://www.diego-garcia.info/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/" rel="alternate"></link><published>2015-06-07T11:00:00-03:00</published><updated>2015-06-07T11:00:00-03:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-06-07:/2015/06/07/a-armadilha-dos-argumentos-com-valores-default/</id><summary type="html">&lt;p&gt;Algo muito comum em várias linguagens de programação é a possibilidade de definir &lt;em&gt;valores default&lt;/em&gt; (valores padrão) para argumentos de funções e métodos, tornando a utilização desses opcional.
+Isso é ótimo, principalmente para manter retrocompatibilidade, porém, o python possui uma pequena armadilha que caso passe despercebida, pode causar sérios problemas, muitas vezes difíceis de serem detectados.
+Essa armadilha ocorre quando usamos valores de tipos &lt;code&gt;mutáveis&lt;/code&gt; como valor default de argumentos.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Algo muito comum em várias linguagens de programação é a possibilidade de definir &lt;em&gt;valores default&lt;/em&gt; (valores padrão) para argumentos de funções e métodos, tornando a utilização desses opcional.
 Isso é ótimo, principalmente para manter retrocompatibilidade, porém, o python possui uma pequena armadilha que caso passe despercebida, pode causar sérios problemas, muitas vezes difíceis de serem detectados.
 Essa armadilha ocorre quando usamos valores de tipos &lt;code&gt;mutáveis&lt;/code&gt; como valor default de argumentos.&lt;/p&gt;
 
@@ -406,7 +933,7 @@ Ou seja, por questões de optimização, seguindo nosso exemplo, o python não c
 &lt;h3&gt;Isso também acontece com classes?&lt;/h3&gt;
 &lt;p&gt;Sim e de uma forma ainda mais perigosa.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ListNumbers&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[]):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[]):&lt;/span&gt;
         &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt;
 
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
@@ -499,7 +1026,10 @@ Ou seja, por questões de optimização, seguindo nosso exemplo, o python não c
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://shop.oreilly.com/product/0636920032519.do"&gt;Fluent Python (Mutable types as parameter defaults: bad idea)&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://docs.quantifiedcode.com/python-anti-patterns/correctness/mutable_default_value_as_argument.html"&gt;Python Anti-Patterns (Using a mutable default value as an argument)&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="python"></category><category term="anti-pattern"></category></entry><entry><title>Debugging em python (sem IDE)</title><link href="http://www.diego-garcia.info/2015/02/15/debuggin-em-python-sem-ide/" rel="alternate"></link><published>2015-02-15T22:30:00-02:00</published><updated>2015-02-15T22:30:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:2015/02/15/debuggin-em-python-sem-ide/</id><summary type="html">&lt;p&gt;Um dos principais motivos que ainda levam desenvolvedores Python a recorrerem a IDEs pesadas e que requerem instalação é o &lt;strong&gt;debugging&lt;/strong&gt;.
+&lt;/ul&gt;</content><category term="python"></category><category term="anti-pattern"></category></entry><entry><title>Debugging em python (sem IDE)</title><link href="http://www.diego-garcia.info/2015/02/15/debuggin-em-python-sem-ide/" rel="alternate"></link><published>2015-02-15T22:30:00-02:00</published><updated>2015-02-15T22:30:00-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-02-15:/2015/02/15/debuggin-em-python-sem-ide/</id><summary type="html">&lt;p&gt;Um dos principais motivos que ainda levam desenvolvedores Python a recorrerem a IDEs pesadas e que requerem instalação é o &lt;strong&gt;debugging&lt;/strong&gt;.
+Devs que vieram de linguagens como &lt;em&gt;DotNet&lt;/em&gt;, &lt;em&gt;Java&lt;/em&gt; e &lt;em&gt;Delphi&lt;/em&gt; por exemplo, estão acostumados a IDEs super pesadas e inchadas que no final das contas, além do debugging, só servem para drenar memória RAM.
+Brincadeiras a parte, não a motivos para você não dar uma chance ao &lt;strong&gt;VIM&lt;/strong&gt; ou ao &lt;strong&gt;Sublime&lt;/strong&gt;, pois para fazer debugging em scripts python, tudo que você precisa é o &lt;strong&gt;PDB&lt;/strong&gt;.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Um dos principais motivos que ainda levam desenvolvedores Python a recorrerem a IDEs pesadas e que requerem instalação é o &lt;strong&gt;debugging&lt;/strong&gt;.
 Devs que vieram de linguagens como &lt;em&gt;DotNet&lt;/em&gt;, &lt;em&gt;Java&lt;/em&gt; e &lt;em&gt;Delphi&lt;/em&gt; por exemplo, estão acostumados a IDEs super pesadas e inchadas que no final das contas, além do debugging, só servem para drenar memória RAM.
 Brincadeiras a parte, não a motivos para você não dar uma chance ao &lt;strong&gt;VIM&lt;/strong&gt; ou ao &lt;strong&gt;Sublime&lt;/strong&gt;, pois para fazer debugging em scripts python, tudo que você precisa é o &lt;strong&gt;PDB&lt;/strong&gt;.&lt;/p&gt;
 
@@ -582,7 +1112,7 @@ O pdb informa qual linha ele setou o breakpoint, em nosso exemplo o método &lt;
 &lt;h2&gt;Debug na prática&lt;/h2&gt;
 &lt;p&gt;Vamos utilizar um script python simples e didático como exemplo.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
         &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
@@ -597,7 +1127,7 @@ O pdb informa qual linha ele setou o breakpoint, em nosso exemplo o método &lt;
         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
 
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
     &lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -631,7 +1161,7 @@ Utilizando desta maneira, você pode verificar linha a linha do script ou &lt;em
 &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
 &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
 &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pdb&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
@@ -658,7 +1188,7 @@ Utilizando desta maneira, você pode verificar linha a linha do script ou &lt;em
 &lt;p&gt;Outra forma é utilizando o método &lt;code&gt;set_trace()&lt;/code&gt; do pacote &lt;code&gt;pdb&lt;/code&gt;.
 Com o &lt;code&gt;pdb.set_trace()&lt;/code&gt; você pode definir onde será o seu breakpoint via código, por exemplo, faremos uma alteração em nosso script para setar um breakpoint no método &lt;code&gt;NumberList().sum()&lt;/code&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NumberList&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
         &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;numbers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
@@ -709,7 +1239,8 @@ A maneira de uso se assemelha bastante ao pdb, bastando trocar o pacote &lt;code
 &lt;p&gt;Com certeza recomendo o uso do &lt;code&gt;ipdb&lt;/code&gt; principalmente por ser mais intuitivo.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br \&gt;
 &lt;a href="https://docs.python.org/2/library/pdb.html"&gt;Documentação Oficial&lt;/a&gt;&lt;br /&gt;
-&lt;a href="https://github.com/gotcha/ipdb"&gt;ipdb&lt;/a&gt;&lt;/p&gt;</summary><category term="python"></category><category term="pdb"></category><category term="debugging"></category><category term="debug"></category></entry><entry><title>Testes de carga com o Locust</title><link href="http://www.diego-garcia.info/2015/01/10/testes-de-carga-com-o-locust/" rel="alternate"></link><published>2015-01-10T18:45:15-02:00</published><updated>2015-01-10T18:45:15-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-10:2015/01/10/testes-de-carga-com-o-locust/</id><summary type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
+&lt;a href="https://github.com/gotcha/ipdb"&gt;ipdb&lt;/a&gt;&lt;/p&gt;</content><category term="python"></category><category term="pdb"></category><category term="debugging"></category><category term="debug"></category></entry><entry><title>Testes de carga com o Locust</title><link href="http://www.diego-garcia.info/2015/01/10/testes-de-carga-com-o-locust/" rel="alternate"></link><published>2015-01-10T18:45:15-02:00</published><updated>2015-01-10T18:45:15-02:00</updated><author><name>Diego Garcia</name></author><id>tag:www.diego-garcia.info,2015-01-10:/2015/01/10/testes-de-carga-com-o-locust/</id><summary type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não conseguiu responder nenhuma das questões anteriores, ou apenas uma, ou até mesmo respondeu as duas mas em algum momento utilizou a palavra &lt;em&gt;complicado&lt;/em&gt; para descrever como testou, chegou a hora de resolver esse problema de uma forma muito simples.&lt;/p&gt;
 
 
 &lt;h2&gt;Locust&lt;/h2&gt;
@@ -736,7 +1267,7 @@ Installing setuptools, pip...done.
 
 &lt;p&gt;Para confirmar se o Locust está instalado, use o comando &lt;code&gt;locust&lt;/code&gt; com a opção &lt;code&gt;-V&lt;/code&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine:~/locust$ locust -V
-&lt;span class="o"&gt;[&lt;/span&gt;2015-01-08 22:59:28,251&lt;span class="o"&gt;]&lt;/span&gt; machine/INFO/stdout: Locust 0.7.2
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2015&lt;/span&gt;-01-08 &lt;span class="m"&gt;22&lt;/span&gt;:59:28,251&lt;span class="o"&gt;]&lt;/span&gt; machine/INFO/stdout: Locust &lt;span class="m"&gt;0&lt;/span&gt;.7.2
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -760,7 +1291,7 @@ Installing setuptools, pip...done.
              &lt;span class="s1"&gt;&amp;#39;DS&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;86400&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="c1"&gt;# day to seconds&lt;/span&gt;
              &lt;span class="s1"&gt;&amp;#39;HS&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;3600&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;   &lt;span class="c1"&gt;# hour to seconds&lt;/span&gt;
 
-&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;lt;rule&amp;gt;/&amp;lt;int:value&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;conversion&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rule&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
@@ -770,7 +1301,7 @@ Installing setuptools, pip...done.
         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Rule for conversion not found&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;404&lt;/span&gt;
 
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -824,9 +1355,9 @@ Installing setuptools, pip...done.
 &lt;p&gt;A opção &lt;code&gt;-f&lt;/code&gt; específica o arquivo com script Locust e a opção &lt;code&gt;-H&lt;/code&gt; específica o endereço do webservice que será testado.
 Ao executar esse comando, o Locust será iniciado na porta &lt;strong&gt;8089&lt;/strong&gt; (porta padrão que pode ser alterada através da opção &lt;code&gt;-P&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;Ao abrir no browser a url http://127.0.0.1:8089 será apresentada a seguinte tela:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Tela inicial" src="/images/locust_inicial.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tela inicial" src="/images/locust_inicial.png"&gt;&lt;/p&gt;
 &lt;p&gt;O campo &lt;strong&gt;Number of users to simulate&lt;/strong&gt; é referente a quantidade de usuários simultâneos que serão utilizados para o teste, já o campo &lt;strong&gt;Hatch rate&lt;/strong&gt; é referente a quantidade de usuários que serão adicionados ao teste por segundo (até atingir o numéro de usuários específicado na opção anterior). Específique as opções anteriores e clique em &lt;strong&gt;Start swarming&lt;/strong&gt; para que os testes sejam iniciados e seja apresentada a seguinte tela.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Testes" src="/images/locust.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Testes" src="/images/locust.png"&gt;&lt;/p&gt;
 &lt;p&gt;Talvez as informações mais importantes apresentadas nessa tela é o &lt;strong&gt;RPS&lt;/strong&gt; (request per seconds) e os &lt;strong&gt;failures&lt;/strong&gt;.
 Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e são totalizados no final da listagem.&lt;/p&gt;
 &lt;h3&gt;Definindo &lt;em&gt;peso&lt;/em&gt; para os teste&lt;/h3&gt;
@@ -887,7 +1418,7 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 
 
 &lt;p&gt;Mas isso geraria um problema, pois o Locust agrupa o relatório de testes por url, como estamos realizando até 10 chamadas diferentes para o mesmo recurso, teriamos até 10 chamadas diferentes sendo listas e contabilizadas separadamente.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Random" src="/images/locust_random.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Random" src="/images/locust_random.png"&gt;&lt;/p&gt;
 &lt;p&gt;Para resolver esse problema, podemos nomear os requests independente da url, atráves do parâmetro &lt;code&gt;name&lt;/code&gt; dos métodos do client HTTP. Sendo assim nosso código poderia ficar da seguinte forma:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;
@@ -910,14 +1441,14 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 
 
 &lt;p&gt;Com isso o relatório volta a ser apresentado da maneira esperada.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="nomeadas" src="/images/locust_name.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="nomeadas" src="/images/locust_name.png"&gt;&lt;/p&gt;
 &lt;h3&gt;Sessão de usuário&lt;/h3&gt;
 &lt;p&gt;O cliente http da classe &lt;code&gt;HttpLocust&lt;/code&gt; preserva os cookies entre os requests, possibilitando realizar logins e consumir métodos remotos que dependem de uma sessão de usuário ativa.&lt;/p&gt;
 &lt;p&gt;Para validar esse conceito, criaremos uma aplicação simples que possui login de usuário e um recurso protegido pela sessão. Somente o necessário para ver o Locust em ação.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;abort&lt;/span&gt;
 
 
-&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;SECRET_KEY&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;a7b05c4e06fe0502af4a3d42dd41327b&amp;#39;&lt;/span&gt;
 
 &lt;span class="n"&gt;users&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;john&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;mypass&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;John Lee&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
@@ -966,14 +1497,14 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 &lt;span class="s1"&gt;    &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;url_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;login&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;A aplicação representada no código acima consiste em uma página inicial (&lt;code&gt;/&lt;/code&gt;), uma página de login (&lt;code&gt;/login&lt;/code&gt;), uma página de logout (&lt;code&gt;/logout&lt;/code&gt;) e uma página home do usuário (&lt;code&gt;/home&lt;/code&gt;) que só está acessivel para usuários logados. Obviamente esse é só um exemplo didático.&lt;/p&gt;
 &lt;p&gt;Se criarmos um script Locust para testar essa aplicação e nele não realizarmos o login do usuário, teriamos uma série de falhas para consumir o método remoto &lt;code&gt;/home&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="401" src="/images/locust_session_fail.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="401" src="/images/locust_session_fail.png"&gt;&lt;/p&gt;
 &lt;p&gt;Porém a classe &lt;code&gt;TaskSet&lt;/code&gt; do Locust possui o método &lt;code&gt;on_start&lt;/code&gt; que consiste no método que será executado (apenas uma vez) antes do cliente Locust iniciar as tasks. Será nele que iremos realizar o &lt;em&gt;login&lt;/em&gt; do usuário.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;locust&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;TaskSet&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HttpLocust&lt;/span&gt;
 
@@ -1000,7 +1531,7 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 
 
 &lt;p&gt;Como estamos realizando o login do usuário sempre que o cliente Locust inicia suas &lt;em&gt;tasks&lt;/em&gt;, os cookies de sessão já estarão armazenados nos controles do objeto &lt;code&gt;self.client&lt;/code&gt;, com isso, é possível testar até mesmo os métodos que dependem de autenticação para serem consumidos.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="session" src="/images/locust_session_success.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="session" src="/images/locust_session_success.png"&gt;&lt;/p&gt;
 &lt;h3&gt;Escalando os testes&lt;/h3&gt;
 &lt;p&gt;O Locust é baseado em eventos, graças a isso é possível simular milhares de usuários concorrentes na mesma máquinas, porém em alguns casos esse numero não é o suficiente. Pensando nessa necessidade, o Locust possibilita trabalhar de forma distribuida, através do conceito de &lt;strong&gt;Master&lt;/strong&gt; e &lt;strong&gt;Slave&lt;/strong&gt;.&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1013,7 +1544,7 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 
 &lt;p&gt;Essa instancia do Locust não irá simular nenhum cliente para teste, apenas irá disponibilizar a interface web com as estatisticas dos testes realizados e irá aguardar a conexão dos &lt;em&gt;slaves&lt;/em&gt;, poís esses serão os responsáveis pela realização dos testes.&lt;/p&gt;
 &lt;p&gt;Agora, para iniciar uma instância &lt;em&gt;slave&lt;/em&gt; do Locust, são utilizados dois parâmetros, o &lt;code&gt;--slave&lt;/code&gt; que determina que essa instância é um slave e o parâmetro &lt;code&gt;--master-host&lt;/code&gt; com a localização do &lt;em&gt;master&lt;/em&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine2:~/locust$ locust -f locust_script.py --slave --master-host&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.15
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;venv&lt;span class="o"&gt;)&lt;/span&gt;user@machine2:~/locust$ locust -f locust_script.py --slave --master-host&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.0.15
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -1021,7 +1552,7 @@ Note que os resultados são apresentados por cada &lt;em&gt;Task&lt;/em&gt; e s�
 &lt;p&gt;Tanto a máquina &lt;strong&gt;master&lt;/strong&gt; quanto as máquinas &lt;strong&gt;slave&lt;/strong&gt; precisam ter o Locust instalado e possuir uma cópia do script de testes que será executado de forma distribuida.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Com as instâncias slaves iniciadas, basta acessar no browser o Locust (da máquina &lt;em&gt;master&lt;/em&gt;) e ver os testes em ação.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="distribuido" src="/images/locust_distributed.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="distribuido" src="/images/locust_distributed.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Referências&lt;/strong&gt;&lt;br&gt;
 &lt;a href="http://locust.io/"&gt;Site Oficial&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://docs.locust.io/en/latest/index.html"&gt;Documentação&lt;/a&gt;&lt;/p&gt;</summary><category term="python"></category><category term="tests"></category></entry></feed>
+&lt;a href="http://docs.locust.io/en/latest/index.html"&gt;Documentação&lt;/a&gt;&lt;/p&gt;</content><category term="python"></category><category term="tests"></category></entry></feed>

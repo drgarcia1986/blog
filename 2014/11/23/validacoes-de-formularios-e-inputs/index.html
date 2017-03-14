@@ -35,7 +35,7 @@
 
 
 
-        <meta name="description" content="Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O ...">
+        <meta name="description" content="Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O...">
 
         <meta name="author" content="Diego Garcia">
 
@@ -51,7 +51,7 @@
 	<meta property="og:url" content="http://www.diego-garcia.info/2014/11/23/validacoes-de-formularios-e-inputs/">
 	<meta property="og:title" content="Validações de formulários e inputs">
 	<meta property="article:published_time" content="2014-11-23 10:13:03-02:00">
-            <meta property="og:description" content="Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O ...">
+            <meta property="og:description" content="Qualquer um sabe que é praticamente impossível encontrar sites sem nenhum formulário, nem que seja apenas para contato com o autor. O...">
 
             <meta property="og:image" content="http://www.diego-garcia.info/theme/images/post-bg.jpg">
 </head>
@@ -76,7 +76,6 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
 
-                            <li><a href="http://www.diego-garcia.info/pages/sobre.html">Sobre</a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -173,11 +172,11 @@
 <p>Esses tipos específicos são muito úteis para sites voltados para mobile, pois os navegadores mobile já estão preparados para exibir ao usuário somente a opção de teclado compatível com o input.</p>
 <h3>Estilizando inputs de acordo com a validação</h3>
 <p>É possível de forma simples e genérica aplicar estilos CSS em inputs com valores válidos ou inválidos, de acordo com as regras que você determinar. Por exemplo, criaremos um padrão em que inputs inválidos terão o fundo avermelhando e os inputs válidos terão o fundo azulado.</p>
-<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span><span class="o">,</span> <span class="nt">input</span><span class="nd">:focus:invalid</span> <span class="p">{</span>
-    <span class="nb">background-color</span><span class="o">:</span> <span class="m">#F08080</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="p">:</span><span class="nd">invalid</span><span class="o">,</span> <span class="nt">input</span><span class="p">:</span><span class="nd">focus</span><span class="p">:</span><span class="nd">invalid</span> <span class="p">{</span>
+    <span class="k">background-color</span><span class="p">:</span> <span class="mh">#F08080</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="nt">input</span><span class="nd">:valid</span> <span class="p">{</span>
-    <span class="nb">background-color</span><span class="o">:</span> <span class="m">#87CEFA</span><span class="p">;</span>
+<span class="nt">input</span><span class="p">:</span><span class="nd">valid</span> <span class="p">{</span>
+    <span class="k">background-color</span><span class="p">:</span> <span class="mh">#87CEFA</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -191,15 +190,15 @@ Idade: <span class="p">&lt;</span><span class="nt">input</span> <span class="na"
 <p>Simples, prático e o melhor de tudo, genérico. Veja esse código funcionando:
 <iframe width="100%" height="300" src="http://jsfiddle.net/drgarcia1986/wtku5m7L/1/embedded/result,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
 <p>Para deixar a aparência ainda mais profissional, podemos utilizar imagens nos inputs. Faremos o mesmo exemplo, porém, ao invés de usarmos cores de fundo nos inputs, iremos acrescentar pequenos icones após o conteúdo, indicado se o campo está válido ou inválido.</p>
-<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span><span class="o">,</span> <span class="nt">input</span><span class="nd">:focus:invalid</span> <span class="p">{</span>
-     <span class="nb">background-image</span><span class="o">:</span> <span class="sx">url(/imgs/invalid.png)</span><span class="p">;</span>
-     <span class="nb">background-position</span><span class="o">:</span> <span class="nb">right</span> <span class="nb">top</span><span class="p">;</span>
-     <span class="nb">background-repeat</span><span class="o">:</span> <span class="nb">no-repeat</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="p">:</span><span class="nd">invalid</span><span class="o">,</span> <span class="nt">input</span><span class="p">:</span><span class="nd">focus</span><span class="p">:</span><span class="nd">invalid</span> <span class="p">{</span>
+     <span class="k">background-image</span><span class="p">:</span> <span class="nb">url</span><span class="p">(</span><span class="sx">/imgs/invalid.png</span><span class="p">);</span>
+     <span class="k">background-position</span><span class="p">:</span> <span class="kc">right</span> <span class="kc">top</span><span class="p">;</span>
+     <span class="k">background-repeat</span><span class="p">:</span> <span class="kc">no-repeat</span><span class="p">;</span>
  <span class="p">}</span>
- <span class="nt">input</span><span class="nd">:valid</span> <span class="p">{</span>
-     <span class="nb">background-image</span><span class="o">:</span> <span class="sx">url(/imgs/valid.png)</span><span class="p">;</span>
-     <span class="nb">background-position</span><span class="o">:</span> <span class="nb">right</span> <span class="nb">top</span><span class="p">;</span>
-     <span class="nb">background-repeat</span><span class="o">:</span> <span class="nb">no-repeat</span><span class="p">;</span>
+ <span class="nt">input</span><span class="p">:</span><span class="nd">valid</span> <span class="p">{</span>
+     <span class="k">background-image</span><span class="p">:</span> <span class="nb">url</span><span class="p">(</span><span class="sx">/imgs/valid.png</span><span class="p">);</span>
+     <span class="k">background-position</span><span class="p">:</span> <span class="kc">right</span> <span class="kc">top</span><span class="p">;</span>
+     <span class="k">background-repeat</span><span class="p">:</span> <span class="kc">no-repeat</span><span class="p">;</span>
  <span class="p">}</span>
 </pre></div>
 
@@ -215,11 +214,11 @@ Idade: <span class="p">&lt;</span><span class="nt">input</span> <span class="na"
 
 
 <p>Após o conteúdo deste label, iremos adicionar o simbolo <strong>X</strong> para os inputs inválidos e o simbolo <strong>✓</strong> para os inputs válidos, utilizando o pseudo-elemento <em>after</em>.</p>
-<div class="highlight"><pre><span></span><span class="nt">input</span><span class="nd">:invalid</span> <span class="o">+</span> <span class="nt">label</span><span class="o">:</span><span class="nd">:after</span> <span class="p">{</span>
-    <span class="nb">content</span><span class="o">:</span><span class="s1">&#39; X&#39;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="nt">input</span><span class="p">:</span><span class="nd">invalid</span> <span class="o">+</span> <span class="nt">label</span><span class="p">::</span><span class="nd">after</span> <span class="p">{</span>
+    <span class="k">content</span><span class="p">:</span><span class="s1">&#39; X&#39;</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="nt">input</span><span class="nd">:valid</span> <span class="o">+</span> <span class="nt">label</span><span class="o">:</span><span class="nd">:after</span> <span class="p">{</span>
-    <span class="nb">content</span><span class="o">:</span><span class="s1">&#39; ✓&#39;</span><span class="p">;</span>
+<span class="nt">input</span><span class="p">:</span><span class="nd">valid</span> <span class="o">+</span> <span class="nt">label</span><span class="p">::</span><span class="nd">after</span> <span class="p">{</span>
+    <span class="k">content</span><span class="p">:</span><span class="s1">&#39; ✓&#39;</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 

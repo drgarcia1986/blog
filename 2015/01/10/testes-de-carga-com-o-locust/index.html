@@ -35,7 +35,7 @@
 
 
 
-        <meta name="description" content="Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não ...">
+        <meta name="description" content="Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não...">
 
         <meta name="author" content="Diego Garcia">
 
@@ -50,7 +50,7 @@
 	<meta property="og:url" content="http://www.diego-garcia.info/2015/01/10/testes-de-carga-com-o-locust/">
 	<meta property="og:title" content="Testes de carga com o Locust">
 	<meta property="article:published_time" content="2015-01-10 18:45:15-02:00">
-            <meta property="og:description" content="Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não ...">
+            <meta property="og:description" content="Quanto de carga sua aplicação web aguenta? Se conseguiu responder essa pergunta, como você fez para medir esse desempenho? Se você não...">
 
             <meta property="og:image" content="http://www.diego-garcia.info/theme/images/post-bg.jpg">
 </head>
@@ -75,7 +75,6 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
 
-                            <li><a href="http://www.diego-garcia.info/pages/sobre.html">Sobre</a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -134,7 +133,7 @@ Installing setuptools, pip...done.
 
 <p>Para confirmar se o Locust está instalado, use o comando <code>locust</code> com a opção <code>-V</code></p>
 <div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine:~/locust$ locust -V
-<span class="o">[</span>2015-01-08 22:59:28,251<span class="o">]</span> machine/INFO/stdout: Locust 0.7.2
+<span class="o">[</span><span class="m">2015</span>-01-08 <span class="m">22</span>:59:28,251<span class="o">]</span> machine/INFO/stdout: Locust <span class="m">0</span>.7.2
 </pre></div>
 
 
@@ -158,7 +157,7 @@ Installing setuptools, pip...done.
              <span class="s1">&#39;DS&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">86400</span><span class="p">,</span>  <span class="c1"># day to seconds</span>
              <span class="s1">&#39;HS&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">h</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">}</span>   <span class="c1"># hour to seconds</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&lt;rule&gt;/&lt;int:value&gt;&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">conversion</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -168,7 +167,7 @@ Installing setuptools, pip...done.
         <span class="k">return</span> <span class="s2">&quot;Rule for conversion not found&quot;</span><span class="p">,</span> <span class="mi">404</span>
 
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 
@@ -222,9 +221,9 @@ Installing setuptools, pip...done.
 <p>A opção <code>-f</code> específica o arquivo com script Locust e a opção <code>-H</code> específica o endereço do webservice que será testado.
 Ao executar esse comando, o Locust será iniciado na porta <strong>8089</strong> (porta padrão que pode ser alterada através da opção <code>-P</code>).</p>
 <p>Ao abrir no browser a url http://127.0.0.1:8089 será apresentada a seguinte tela:</p>
-<p><img alt="Tela inicial" src="/images/locust_inicial.png" /></p>
+<p><img alt="Tela inicial" src="/images/locust_inicial.png"></p>
 <p>O campo <strong>Number of users to simulate</strong> é referente a quantidade de usuários simultâneos que serão utilizados para o teste, já o campo <strong>Hatch rate</strong> é referente a quantidade de usuários que serão adicionados ao teste por segundo (até atingir o numéro de usuários específicado na opção anterior). Específique as opções anteriores e clique em <strong>Start swarming</strong> para que os testes sejam iniciados e seja apresentada a seguinte tela.</p>
-<p><img alt="Testes" src="/images/locust.png" /></p>
+<p><img alt="Testes" src="/images/locust.png"></p>
 <p>Talvez as informações mais importantes apresentadas nessa tela é o <strong>RPS</strong> (request per seconds) e os <strong>failures</strong>.
 Note que os resultados são apresentados por cada <em>Task</em> e são totalizados no final da listagem.</p>
 <h3>Definindo <em>peso</em> para os teste</h3>
@@ -285,7 +284,7 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 
 
 <p>Mas isso geraria um problema, pois o Locust agrupa o relatório de testes por url, como estamos realizando até 10 chamadas diferentes para o mesmo recurso, teriamos até 10 chamadas diferentes sendo listas e contabilizadas separadamente.</p>
-<p><img alt="Random" src="/images/locust_random.png" /></p>
+<p><img alt="Random" src="/images/locust_random.png"></p>
 <p>Para resolver esse problema, podemos nomear os requests independente da url, atráves do parâmetro <code>name</code> dos métodos do client HTTP. Sendo assim nosso código poderia ficar da seguinte forma:</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
@@ -308,14 +307,14 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 
 
 <p>Com isso o relatório volta a ser apresentado da maneira esperada.</p>
-<p><img alt="nomeadas" src="/images/locust_name.png" /></p>
+<p><img alt="nomeadas" src="/images/locust_name.png"></p>
 <h3>Sessão de usuário</h3>
 <p>O cliente http da classe <code>HttpLocust</code> preserva os cookies entre os requests, possibilitando realizar logins e consumir métodos remotos que dependem de uma sessão de usuário ativa.</p>
 <p>Para validar esse conceito, criaremos uma aplicação simples que possui login de usuário e um recurso protegido pela sessão. Somente o necessário para ver o Locust em ação.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">abort</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a7b05c4e06fe0502af4a3d42dd41327b&#39;</span>
 
 <span class="n">users</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;john&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;mypass&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Lee&#39;</span><span class="p">},</span>
@@ -364,14 +363,14 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 <span class="s1">    &#39;&#39;&#39;</span> <span class="o">%</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 
 
 <p>A aplicação representada no código acima consiste em uma página inicial (<code>/</code>), uma página de login (<code>/login</code>), uma página de logout (<code>/logout</code>) e uma página home do usuário (<code>/home</code>) que só está acessivel para usuários logados. Obviamente esse é só um exemplo didático.</p>
 <p>Se criarmos um script Locust para testar essa aplicação e nele não realizarmos o login do usuário, teriamos uma série de falhas para consumir o método remoto <code>/home</code>.</p>
-<p><img alt="401" src="/images/locust_session_fail.png" /></p>
+<p><img alt="401" src="/images/locust_session_fail.png"></p>
 <p>Porém a classe <code>TaskSet</code> do Locust possui o método <code>on_start</code> que consiste no método que será executado (apenas uma vez) antes do cliente Locust iniciar as tasks. Será nele que iremos realizar o <em>login</em> do usuário.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">locust</span> <span class="kn">import</span> <span class="n">TaskSet</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">HttpLocust</span>
 
@@ -398,7 +397,7 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 
 
 <p>Como estamos realizando o login do usuário sempre que o cliente Locust inicia suas <em>tasks</em>, os cookies de sessão já estarão armazenados nos controles do objeto <code>self.client</code>, com isso, é possível testar até mesmo os métodos que dependem de autenticação para serem consumidos.</p>
-<p><img alt="session" src="/images/locust_session_success.png" /></p>
+<p><img alt="session" src="/images/locust_session_success.png"></p>
 <h3>Escalando os testes</h3>
 <p>O Locust é baseado em eventos, graças a isso é possível simular milhares de usuários concorrentes na mesma máquinas, porém em alguns casos esse numero não é o suficiente. Pensando nessa necessidade, o Locust possibilita trabalhar de forma distribuida, através do conceito de <strong>Master</strong> e <strong>Slave</strong>.</p>
 <blockquote>
@@ -411,7 +410,7 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 
 <p>Essa instancia do Locust não irá simular nenhum cliente para teste, apenas irá disponibilizar a interface web com as estatisticas dos testes realizados e irá aguardar a conexão dos <em>slaves</em>, poís esses serão os responsáveis pela realização dos testes.</p>
 <p>Agora, para iniciar uma instância <em>slave</em> do Locust, são utilizados dois parâmetros, o <code>--slave</code> que determina que essa instância é um slave e o parâmetro <code>--master-host</code> com a localização do <em>master</em>.</p>
-<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine2:~/locust$ locust -f locust_script.py --slave --master-host<span class="o">=</span>192.168.0.15
+<div class="highlight"><pre><span></span><span class="o">(</span>venv<span class="o">)</span>user@machine2:~/locust$ locust -f locust_script.py --slave --master-host<span class="o">=</span><span class="m">192</span>.168.0.15
 </pre></div>
 
 
@@ -419,7 +418,7 @@ Note que os resultados são apresentados por cada <em>Task</em> e são totalizad
 <p>Tanto a máquina <strong>master</strong> quanto as máquinas <strong>slave</strong> precisam ter o Locust instalado e possuir uma cópia do script de testes que será executado de forma distribuida.</p>
 </blockquote>
 <p>Com as instâncias slaves iniciadas, basta acessar no browser o Locust (da máquina <em>master</em>) e ver os testes em ação.</p>
-<p><img alt="distribuido" src="/images/locust_distributed.png" /></p>
+<p><img alt="distribuido" src="/images/locust_distributed.png"></p>
 <p><strong>Referências</strong><br>
 <a href="http://locust.io/">Site Oficial</a><br>
 <a href="http://docs.locust.io/en/latest/index.html">Documentação</a></p>

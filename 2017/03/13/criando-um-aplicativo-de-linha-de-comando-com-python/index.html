@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>Criando Um Aplicativo De Linha De Comando Com Python</title>
+
+            <link href="http://www.diego-garcia.info/atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Full Atom Feed" />
+            <link href="http://www.diego-garcia.info/python.atom.xml" type="application/atom+xml" rel="alternate" title="Diego Garcia Categories Atom Feed" />
+        <!-- Bootstrap Core CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="http://www.diego-garcia.info/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="http://www.diego-garcia.info/theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="Com certeza você já uso algum aplicativo de linha de comando, seja dos mais simples (como por exemplo o echo), ou dos mais sofisticados...">
+
+        <meta name="author" content="Diego Garcia">
+
+        <meta name="tags" content="python">
+        <meta name="tags" content="argparse">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Diego Garcia">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="Diego Garcia" >
+	<meta property="og:url" content="http://www.diego-garcia.info/2017/03/13/criando-um-aplicativo-de-linha-de-comando-com-python/">
+	<meta property="og:title" content="Criando Um Aplicativo De Linha De Comando Com Python">
+	<meta property="article:published_time" content="2017-03-13 22:00:00-03:00">
+            <meta property="og:description" content="Com certeza você já uso algum aplicativo de linha de comando, seja dos mais simples (como por exemplo o echo), ou dos mais sofisticados...">
+
+            <meta property="og:image" content="http://www.diego-garcia.info/theme/images/post-bg.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.diego-garcia.info/">Diego Garcia</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-color: black">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Criando Um Aplicativo De Linha De Comando Com Python</h1>
+                        <span class="meta">Posted by
+                                <a href="http://www.diego-garcia.info/author/diego-garcia.html">Diego Garcia</a>
+                             on Mon 13 March 2017
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>Com certeza você já uso algum aplicativo de linha de comando, seja dos mais simples (como por exemplo o <em>echo</em>),
+ou dos mais sofisticados (como é o caso do <a href="/2014/12/13/use-o-curl/">cURL</a>).
+O fato é, todo programador deveria criar pelo menos uma vez um aplicativo de linha de comando, seja para fins de estudo,
+ou até mesmo para se tornar uma grande ferramenta. Com python, criar aplicativos de linha de comando é algo muito simples e produtivo.</p>
+
+
+<h2>Hello World</h2>
+<p>Antes de nos aprofundarmos no assunto, faremos um simples <code>Hello World</code> utilizando o módulo <code>argparse</code> que é built-in do python.</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;say your name&#39;</span><span class="p">)</span>
+
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Hello {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Resumindo o código anterior, criamos um <code>parser</code> e nesse <em>parser</em> adicionamos um <em>argumento posicional</em> (o argumento <code>name</code>).
+Depois convertemos os argumentos da linha de comando no objeto <code>args</code> e mostramos uma mensagem utilizando o valor passado para o
+argumento <em>name</em>.
+O resultado será o seguinte:</p>
+<div class="highlight"><pre><span></span>$ python cli.py World
+Hello World
+</pre></div>
+
+
+<p>Pode parecer mais complicado do que simplesmente recuperar os valores de <a href="https://docs.python.org/3/library/sys.html#sys.argv"><code>sys.argv</code></a>,
+porém, é algo muito mais poderoso.
+Um exemplo disso é o fato de que, esse código da forma como está, já possui um <em>help</em> bem intuitivo dos possíveis comandos aceitos:</p>
+<div class="highlight"><pre><span></span>$ python cli.py -h
+usage: cli.py <span class="o">[</span>-h<span class="o">]</span> name
+
+positional arguments:
+  name        say your name
+
+optional arguments:
+  -h, --help  show this <span class="nb">help</span> message and <span class="nb">exit</span>
+</pre></div>
+
+
+<h2>Um pouco sobre o Argparse</h2>
+<p>O <code>argparse</code> é um módulo que foi adicionado a standard library do python a partir da versão 2.7 substituindo seu antecessor, o módulo <code>optparse</code>.
+Ele foi projetado para criar aplicativos de linha de comando de forma amigável e descomplicada.</p>
+<h3>O parser</h3>
+<p>O principal componente do módulo <em>argparse</em> é a classe <code>ArgumentParser</code>.
+A partir de uma instância de <em>ArgumentParser</em> é possível determinar o comportamento de linha de comando do aplicativo.
+Na criação do parser é possível informar alguns parâmetros relativos ao aplicativo, sendo que alguns deles servem para customizar
+a mensagem de <em>help</em> gerada automaticamente, como é o caso do parâmetro <code>description</code>:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Powerful command-line tool&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s1">&#39;-h&#39;</span><span class="p">])</span>
+<span class="n">usage</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+
+<span class="n">Powerful</span> <span class="n">command</span><span class="o">-</span><span class="n">line</span> <span class="n">tool</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>  <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="nb">exit</span>
+</pre></div>
+
+
+<p>Note que é possível informar para o parser os argumentos que ele deve parsear, através do método <code>parse_args</code>.
+Esse método espera uma lista de strings como parâmetro e caso essa não seja informada, recupera a lista de
+argumentos através do <code>sys.argv</code>, ou seja, os argumentos de linha de comando.</p>
+<h3>Argumentos</h3>
+<p>Com vimos no primeiro exemplo, é possível adicionar argumentos ao parser, sejam eles <em>posicionais</em> (e obrigátorios),
+ou <em>opcionais</em>.</p>
+<h4>Argumentos posicionais</h4>
+<p>Os argumentos posicionais, são argumentos obrigatórios que devem ser informados na ordem em que foram declarados.
+Veja um exemplo de uma simples soma feita através da linha de comando:</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;first_number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;second_number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;{} + {} = {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">first_number</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">second_number</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">first_number</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">second_number</span>
+<span class="p">))</span>
+</pre></div>
+
+
+<p>O exemplo de uso do código anterior seria algo como:</p>
+<div class="highlight"><pre><span></span>$ python cli.py <span class="m">2</span> <span class="m">5</span>
+<span class="m">2</span> + <span class="nv">5</span> <span class="o">=</span> <span class="m">7</span>
+</pre></div>
+
+
+<blockquote>
+<p>Não se preocupe com o <code>type</code> no exemplo, veremos o que isso significa mais adiante</p>
+</blockquote>
+<h4>Argumentos opcionais</h4>
+<p>Os argumentos opcionais são declarados com um ou dois hífens no prefixo do nome (e.g. <em>-f</em>, <em>--foo</em>) e não
+dependem de uma posição especifica para serem informados.
+Usando o exemplo anterior, vamos adicionar um argumento opcional para determinar se o output do comando
+deve ou não ser verboso:</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;first_number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;second_number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">first_number</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">second_number</span>
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{} + {} = {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">first_number</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">second_number</span><span class="p">,</span>
+        <span class="n">result</span>
+    <span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Desta forma, possibilitamos saidas diferentes da nossa aplicação de acordo com a presença ou não do
+argumento <code>--verbose</code>.</p>
+<div class="highlight"><pre><span></span>$ python cli.py <span class="m">2</span> <span class="m">5</span>
+<span class="m">7</span>
+$ python t.py <span class="m">2</span> <span class="m">5</span> --verbose
+<span class="m">2</span> + <span class="nv">5</span> <span class="o">=</span> <span class="m">7</span>
+</pre></div>
+
+
+<blockquote>
+<p>Não se preocupe com o <code>action</code> no exemplo, veremos o que isso significa mais adiante</p>
+</blockquote>
+<p>Podemos simplificar aindas mais o argumento <em>--verbose</em> criando uma opção encurtada dele.
+O método <code>add_argument</code> do <code>ArgumentParser</code> aceita uma lista de nomes do argumento, sendo assim,
+basta adicionar as opções na criação do argumento:</p>
+<div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>E inclusive, essa alteração já reflete no <em>help</em> da aplicação:</p>
+<div class="highlight"><pre><span></span>$ python cli.py -h
+usage: cli.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span> first_number second_number
+
+positional arguments:
+  first_number
+  second_number
+
+optional arguments:
+  -h, --help     show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  -v, --verbose
+</pre></div>
+
+
+<p>Vale ressaltar que essa opção só faz sentido para argumentos opcionais.</p>
+<h3>Types</h3>
+<p>Por padrão, o valor de todos os argumentos são interpretados como <em>string</em>, porém, é possível determinar um tipo
+para esses valores, através do parametro <code>type</code> do método <code>add_argument</code> como já vimos anteriormente.<br>
+Ao determinar um <em>type</em> para um argumento, será executado um <em>type-checking</em> no momento do <em>parse_args()</em> para garantir
+que o valor do argumento é do tipo especificado:</p>
+<dl>
+<dt>````python</dt>
+<dt>&gt;&gt;&gt; from argparse import ArgumentParser</dt>
+<dt>&gt;&gt;&gt; parser = ArgumentParser()</dt>
+<dt>&gt;&gt;&gt; parser.add_argument('number', type=int)</dt>
+<dt>&gt;&gt;&gt; args = parser.parse_args(['a'])</dt>
+<dt>usage: [-h] number</dt>
+<dd>error: argument number: invalid int value: 'a'</dd>
+</dl>
+<div class="highlight"><pre><span></span><span class="n">Qualquer</span> <span class="n">_callable_</span> <span class="n">pode</span> <span class="n">ser</span> <span class="n">usado</span> <span class="n">como</span> <span class="nb">type</span><span class="p">,</span> <span class="n">pontencializando</span> <span class="n">ainda</span> <span class="n">mais</span> <span class="n">o</span> <span class="n">uso</span> <span class="n">de</span> <span class="n">tipos</span> <span class="n">nos</span> <span class="n">argumentos</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
+
+<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
+<span class="c1"># cli.py</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+
+<span class="k">def</span> <span class="nf">odd</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span>
+    <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="s1">&#39;{} is not an odd number&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;odd_number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">odd</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Neste exemplo, se pasarmos um numero par para o argumento <code>odd_number</code> teremos uma mensagem
+de erro indicando que esse numero não é um numero impar.</p>
+<div class="highlight"><pre><span></span>$ python cli.py <span class="m">2</span>
+usage: <span class="o">[</span>-h<span class="o">]</span> odd_number
+: error: argument odd_number: <span class="m">2</span> its not an odd number
+</pre></div>
+
+
+<h3>Actions</h3>
+<p>É possível determinar ações para determinados argumentos sendo a mais comum a ação <code>store</code> que
+basicamente armazena o valor passado para o argumento. Esta é a ação default para qualquer argumento
+caso outro tipo de ação não seja informado.<br>
+Existem outros tipos de ações, veremos algumas delas.</p>
+<h4>store_true</h4>
+<p>A action <code>store_true</code> basicamente armazena o valor <code>True</code> caso o argumento
+seja informado (como vimos anteriormente no exemplo do argumento <em>--verbose</em>).</p>
+<h4>append</h4>
+<p>A action <code>append</code> armazena uma lista dos valores passados para o mesmo argumento, e.g.:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--file&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="s1">&#39;--file 1.txt --file 2.txt --file 3.txt&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">Namespace</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;2.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;3.txt&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<h4>count</h4>
+<p>A action <code>count</code> armazena um contador de vezes em que um argumento foi usado
+(útil para determinar niveis de verbosidade), e.g.:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span>  <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s1">&#39;-vvvv&#39;</span><span class="p">])</span>
+<span class="n">Namespace</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Casos mais complexos</h2>
+<p>Normalmente, no desenvolvimento de um aplicativo <em>cli</em> acabamos tendo que lidar com casos mais complexos,
+e não somente um comando simples com alguns parâmetros. Esses aplicativos tendem a crescer
+e lidar com outros subcomandos, como por exemplo o <strong>git</strong> (<em>add</em>, <em>commit</em>, <em>branch</em>, etc):</p>
+<p>Iremos criar um aplicativo simples com dois subcomandos, o subcomando <code>read</code> e o subcomando <code>write</code>.</p>
+<p>A melhor maneira de lidar com subcomandos é criar <code>SubParsers</code> especificos para cada
+comando que o aplicativo irá lidar.</p>
+<h3>SubParsers</h3>
+<p>Subparsers são parsers independentes, com suas próprias caracteristicas
+mas que deviram de um parser principal.
+Vamos começar nosso aplicativo de exemplo criando seu parser principal e seus dois
+subparsers:</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+
+<span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">()</span>
+<span class="n">r_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Commands to read data&#39;</span><span class="p">)</span>
+<span class="n">w_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;write&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Commands to write data&#39;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Se dermos uma olhada no <em>help</em> gerado pelo python, já veremos instruções de uso
+para os subcomandos:</p>
+<div class="highlight"><pre><span></span>$ python cli.py -h
+usage: cli.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">{</span>read,write<span class="o">}</span> ...
+
+positional arguments:
+  <span class="o">{</span>read,write<span class="o">}</span>
+    <span class="nb">read</span>        Commands to <span class="nb">read</span> data
+    write       Commands to write data
+
+optional arguments:
+  -h, --help    show this <span class="nb">help</span> message and <span class="nb">exit</span>
+</pre></div>
+
+
+<p>Iremos agora incrementar um pouco mais nosso aplicativo adicionando argumentos para cada
+subcomando:</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sub commands&#39;</span><span class="p">)</span>
+
+<span class="n">r_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Commands to read data&#39;</span><span class="p">)</span>
+<span class="n">r_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;File origin&#39;</span><span class="p">)</span>
+<span class="n">r_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--head&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Read only N lines&#39;</span><span class="p">)</span>
+
+<span class="n">w_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;write&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Commands to write data&#39;</span><span class="p">)</span>
+<span class="n">w_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;destination&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Destination file&#39;</span><span class="p">)</span>
+<span class="n">w_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="s1">&#39;--upper&#39;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Write all in UPPERCASE&#39;</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Agora é possível ter um help geral do aplicativo e um help para cada subcomando:</p>
+<div class="highlight"><pre><span></span>$ python cli.py -h
+
+usage: cli.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">{</span>read,write<span class="o">}</span> ...
+
+positional arguments:
+  <span class="o">{</span>read,write<span class="o">}</span>  Sub commands
+    <span class="nb">read</span>        Commands to <span class="nb">read</span> data
+    write       Commands to write data
+
+optional arguments:
+  -h, --help    show this <span class="nb">help</span> message and <span class="nb">exit</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>$ python cli.py <span class="nb">read</span> -h
+
+usage: cli.py <span class="nb">read</span> <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--head HEAD<span class="o">]</span> origin
+
+positional arguments:
+  origin       File origin
+
+optional arguments:
+  -h, --help   show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  --head HEAD  Read only N lines
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>$ python cli.py write -h
+
+usage: cli.py write <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--upper<span class="o">]</span> destination
+
+positional arguments:
+  destination  Destination file
+
+optional arguments:
+  -h, --help   show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  --upper      Write all in UPPERCASE
+</pre></div>
+
+
+<h3>set_defaults</h3>
+<p>Um problema ao se utilizar subparsers é que ao executar o <code>parser.parser_args()</code> não
+é possível determinar qual subcomando foi requisitado, somente os argumentos do
+subparser:</p>
+<div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="n">cli</span><span class="p">.</span><span class="n">py</span> <span class="n">read</span> <span class="n">foo</span><span class="p">.</span><span class="n">txt</span> <span class="o">--</span><span class="n">head</span> <span class="mi">2</span>
+<span class="n">Namespace</span><span class="p">(</span><span class="n">head</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="c">&#39;foo.txt&#39;)</span>
+</pre></div>
+
+
+<p>Para contornar esse comportamento, é possível determinar valores default para
+um subparser através do método <code>set_default</code>, que espera um conjunto de argumentos nomeados (<em>**kwargs</em>):</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
+<span class="n">r_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s1">&#39;read&#39;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;subcommand: &#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Para o exemplo anterior, ao chamar o <em>cli.py</em> na linha de comando passando o subcomando <code>read</code>
+teriamos a seguinte saida:</p>
+<div class="highlight"><pre><span></span>$ python cli.py <span class="nb">read</span> foo.txt
+subcommand: <span class="nb">read</span>
+</pre></div>
+
+
+<h3>Criando handlers para os subparsers</h3>
+<p>Conhecendo esse truque e sabendo que o valor default pode ser de qualquer tipo (inclusive um callable),
+podemos criar <em>handlers</em> para os nossos subcommands.<br>
+Vamos mudar nosso código de exemplo adicionado duas funções, a função <code>read</code> e a função <code>write</code>:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;call read with: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;call write with: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Agora iremos usar essas funções como um valor default em nossos subparser:</p>
+<div class="highlight"><pre><span></span><span class="n">r_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">handler</span><span class="o">=</span><span class="n">read</span><span class="p">)</span>
+<span class="n">w_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">handler</span><span class="o">=</span><span class="n">write</span><span class="p">)</span>
+</pre></div>
+
+
+<p>E por fim, iremos usar essas funções após a leitura dos argumentos da linha de comando:</p>
+<div class="highlight"><pre><span></span><span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="n">args</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Ao executarmos nosso cli passando um subcomando, podemos ver que a saída do comando indica
+que nosso <em>handler</em> foi chamado:</p>
+<div class="highlight"><pre><span></span>$ python cli.py write foo.txt --upper
+call write with: Namespace<span class="o">(</span><span class="nv">destination</span><span class="o">=</span><span class="s1">&#39;foo.txt&#39;</span>, <span class="nv">handler</span><span class="o">=</span>&lt;<span class="k">function</span> write at 0x100de9140&gt;, <span class="nv">upper</span><span class="o">=</span>True<span class="o">)</span>
+</pre></div>
+
+
+<p>Isso abre a possíbilidade de criar aplicativos realmente complexos de
+forma simples e organizada.</p>
+<h3>Testando Parsers</h3>
+<blockquote>
+<p>“I don’t care if it works on your machine! We are not shipping your machine!” — Vidiu Platon.</p>
+</blockquote>
+<p>Software sem testes é um software que não deve ser entregue, ou seja, é um software incompleto.
+Já sabemos como criar complexas soluções de aplicativos de linha de comando, só nos falta saber
+como criar testes para essa aplicações.<br>
+Usando o <em>ArgumentParser</em>  do python não existe muitos mistérios em como realizar os testes,
+para utilizar o método <code>parse_args()</code> e verificar a forma como os argumentos foram processados:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">subparser</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x_parser</span> <span class="o">=</span> <span class="n">subparser</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">args</span><span class="o">.</span><span class="n">foo</span> <span class="o">==</span> <span class="s1">&#39;bar&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">args</span><span class="o">.</span><span class="n">foo</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">AssertionError</span>
+</pre></div>
+
+
+<blockquote>
+<p>Algumas quebras de linha foram adicionadas para melhorar a leitura</p>
+</blockquote>
+<p>Você pode tranquilamente utilizar esse recurso dentro da sua suite de testes.</p>
+<h2>Distribuindo seu aplicativo</h2>
+<p>Com o aplicativo já escrito (e devidamente testado), chegou a hora de distribuir para o mundo.
+Não irei entrar em detalhes sobre como prepara o arquivo <code>setup.py</code> de forma correta
+(talvez em outro post), porém irei comentar sobre uma configuração especifica, os <code>entry_points</code>.</p>
+<h3>Entrypoint</h3>
+<p>Existem diferentes tipos de entrypoints disponíveis para serem usados, em nosso exemplo iremos
+usar o mais comum deles, o <code>console_script</code>, com isso, iremos determinar como a nossa aplicação
+deverá ser chamada na linha de comando após a instalação:</p>
+<div class="highlight"><pre><span></span><span class="c1"># setup.py</span>
+<span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">find_packages</span>
+
+<span class="n">author_name</span> <span class="o">=</span> <span class="s1">&#39;Diego Garcia&#39;</span>
+<span class="n">author_email</span> <span class="o">=</span> <span class="s1">&#39;drgarcia1986@gmail.com&#39;</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cli&#39;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;0.0.1&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Cool cli&#39;</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="s1">&#39;Cool cli from http://www.diego-garcia.info/,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://github.com/drgarcia1986/cli&#39;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="n">author_name</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="n">author_email</span><span class="p">,</span>
+    <span class="n">maintainer</span><span class="o">=</span><span class="n">author_name</span><span class="p">,</span>
+    <span class="n">maintainer_email</span><span class="o">=</span><span class="n">author_email</span><span class="p">,</span>
+    <span class="n">license</span><span class="o">=</span><span class="s1">&#39;MIT&#39;</span><span class="p">,</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s1">&#39;Development Status :: 4 - Beta&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Intended Audience :: Developers&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Topic :: System :: Shells&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Programming Language :: Python :: 2.7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Programming Language :: Python :: 3.3&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Programming Language :: Python :: 3.4&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Programming Language :: Python :: 3.5&#39;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="s1">&#39;cli&#39;</span><span class="p">,</span>
+    <span class="n">download_url</span><span class="o">=</span><span class="s1">&#39;https://github.com/drgarcia1986/cli/archive/master.zip&#39;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="n">find_packages</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tests*&#39;</span><span class="p">]),</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;console_scripts&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cli = cli:main&#39;</span><span class="p">]},</span>
+    <span class="n">platforms</span><span class="o">=</span><span class="s1">&#39;windows linux&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>O detalhe importante fica por conta da linha <code>entry_points={'console_scripts': ['cli = cli:main']}</code>,
+onde determinamos que o <em>entry point</em> de <em>console script</em> da nossa aplicação, será
+a função <em>main</em> dentro do arquivo <em>cli</em>, para quando a aplicação for chamada como
+<em>cli</em> na linha de comando. <br>
+Essa função <em>main</em> nada mais é do que uma função que chama o método <em>parser_args()</em>, e.g.:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Pronto, ao realizar a instalação da aplicação podemos utiliza-la na linha de comando apenas
+chamando o comando <code>cli</code>:</p>
+<div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">cli</span> <span class="o">-</span><span class="n">h</span>
+
+<span class="n">usage</span><span class="p">:</span> <span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">read</span><span class="p">,</span><span class="n">write</span><span class="p">}</span> <span class="o">...</span>
+
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="p">{</span><span class="n">read</span><span class="p">,</span><span class="n">write</span><span class="p">}</span>  <span class="n">Sub</span> <span class="n">commands</span>
+    <span class="n">read</span>        <span class="n">Commands</span> <span class="n">to</span> <span class="n">read</span> <span class="n">data</span>
+    <span class="n">write</span>       <span class="n">Commands</span> <span class="n">to</span> <span class="n">write</span> <span class="n">data</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="nb">exit</span>
+</pre></div>
+
+
+<h2>Third party libs</h2>
+<p>Existem algumas bibliotecas opensource que podem facilitar a vida de quem pretende escrever
+um aplicativo de linha de comando, vou listar algumas:</p>
+<ul>
+<li><a href="https://github.com/google/python-fire">python-fire</a></li>
+<li><a href="http://click.pocoo.org/">click</a></li>
+<li><a href="https://github.com/docopt/docopt">docopt</a></li>
+</ul>
+<p>Você pode testá-las e concluir se alguma se encaixa melhor no seu problema ou se
+a standard library do python já é o suficiente.</p>
+<p><strong>Referências</strong><br>
+<a href="https://docs.python.org/3/library/argparse.html">Argparse Official Documentation</a><br>
+<a href="https://docs.python.org/3/howto/argparse.html">Argparse tutorial</a><br>
+<a href="https://mkaz.tech/python-argparse-cookbook.html">Python Argparse Cookbook</a><br>
+<a href="https://pymotw.com/2/argparse/">argparse – Command line option and argument parsing</a><br></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="http://www.diego-garcia.info/tag/python.html">python</a>, <a href="http://www.diego-garcia.info/tag/argparse.html">argparse</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+        <!-- AddThis Button BEGIN -->
+        <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+            <a class="addthis_button_preferred_1"></a>
+            <a class="addthis_button_preferred_2"></a>
+            <a class="addthis_button_preferred_3"></a>
+            <a class="addthis_button_preferred_4"></a>
+            <a class="addthis_button_preferred_5"></a>
+            <a class="addthis_button_preferred_6"></a>
+            <a class="addthis_button_preferred_7"></a>
+            <a class="addthis_button_preferred_8"></a>
+            <a class="addthis_button_preferred_9"></a>
+            <a class="addthis_button_compact"></a>
+            <a class="addthis_counter addthis_bubble_style"></a>
+        </div>
+        <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-56c73262ac2c1b1d"></script>
+        <!-- AddThis Button END -->
+</div>
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'codeforcloud';
+                var disqus_identifier = '2017/03/13/criando-um-aplicativo-de-linha-de-comando-com-python/';
+                var disqus_url = 'http://www.diego-garcia.info/2017/03/13/criando-um-aplicativo-de-linha-de-comando-com-python/';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//codeforcloud.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/drgarcia1986">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="http://www.diego-garcia.info/theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://www.diego-garcia.info/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="http://www.diego-garcia.info/theme/js/clean-blog.min.js"></script>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-56972446-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'codeforcloud';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
