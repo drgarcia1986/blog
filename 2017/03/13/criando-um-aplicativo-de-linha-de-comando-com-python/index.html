@@ -270,19 +270,17 @@ optional arguments:
 para esses valores, através do parametro <code>type</code> do método <code>add_argument</code> como já vimos anteriormente.<br>
 Ao determinar um <em>type</em> para um argumento, será executado um <em>type-checking</em> no momento do <em>parse_args()</em> para garantir
 que o valor do argumento é do tipo especificado:</p>
-<dl>
-<dt>````python</dt>
-<dt>&gt;&gt;&gt; from argparse import ArgumentParser</dt>
-<dt>&gt;&gt;&gt; parser = ArgumentParser()</dt>
-<dt>&gt;&gt;&gt; parser.add_argument('number', type=int)</dt>
-<dt>&gt;&gt;&gt; args = parser.parse_args(['a'])</dt>
-<dt>usage: [-h] number</dt>
-<dd>error: argument number: invalid int value: 'a'</dd>
-</dl>
-<div class="highlight"><pre><span></span><span class="n">Qualquer</span> <span class="n">_callable_</span> <span class="n">pode</span> <span class="n">ser</span> <span class="n">usado</span> <span class="n">como</span> <span class="nb">type</span><span class="p">,</span> <span class="n">pontencializando</span> <span class="n">ainda</span> <span class="n">mais</span> <span class="n">o</span> <span class="n">uso</span> <span class="n">de</span> <span class="n">tipos</span> <span class="n">nos</span> <span class="n">argumentos</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<span class="n">usage</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">number</span>
+<span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">argument</span> <span class="n">number</span><span class="p">:</span> <span class="n">invalid</span> <span class="nb">int</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span>
+</pre></div>
 
-<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
-<span class="c1"># cli.py</span>
+
+<p>Qualquer <em>callable</em> pode ser usado como type, pontencializando ainda mais o uso de tipos nos argumentos, e.g.</p>
+<div class="highlight"><pre><span></span><span class="c1"># cli.py</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
 

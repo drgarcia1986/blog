@@ -167,19 +167,17 @@ optional arguments:
 para esses valores, através do parametro &lt;code&gt;type&lt;/code&gt; do método &lt;code&gt;add_argument&lt;/code&gt; como já vimos anteriormente.&lt;br&gt;
 Ao determinar um &lt;em&gt;type&lt;/em&gt; para um argumento, será executado um &lt;em&gt;type-checking&lt;/em&gt; no momento do &lt;em&gt;parse_args()&lt;/em&gt; para garantir
 que o valor do argumento é do tipo especificado:&lt;/p&gt;
-&lt;dl&gt;
-&lt;dt&gt;````python&lt;/dt&gt;
-&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; from argparse import ArgumentParser&lt;/dt&gt;
-&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; parser = ArgumentParser()&lt;/dt&gt;
-&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; parser.add_argument('number', type=int)&lt;/dt&gt;
-&lt;dt&gt;&amp;gt;&amp;gt;&amp;gt; args = parser.parse_args(['a'])&lt;/dt&gt;
-&lt;dt&gt;usage: [-h] number&lt;/dt&gt;
-&lt;dd&gt;error: argument number: invalid int value: 'a'&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Qualquer&lt;/span&gt; &lt;span class="n"&gt;_callable_&lt;/span&gt; &lt;span class="n"&gt;pode&lt;/span&gt; &lt;span class="n"&gt;ser&lt;/span&gt; &lt;span class="n"&gt;usado&lt;/span&gt; &lt;span class="n"&gt;como&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pontencializando&lt;/span&gt; &lt;span class="n"&gt;ainda&lt;/span&gt; &lt;span class="n"&gt;mais&lt;/span&gt; &lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;uso&lt;/span&gt; &lt;span class="n"&gt;de&lt;/span&gt; &lt;span class="n"&gt;tipos&lt;/span&gt; &lt;span class="n"&gt;nos&lt;/span&gt; &lt;span class="n"&gt;argumentos&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ArgumentParser&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_argument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;number&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_args&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;usage&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;
+&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;invalid&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;a&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;span class="sb"&gt;``&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
-&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
+
+&lt;p&gt;Qualquer &lt;em&gt;callable&lt;/em&gt; pode ser usado como type, pontencializando ainda mais o uso de tipos nos argumentos, e.g.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# cli.py&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt;
 
 
