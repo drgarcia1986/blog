@@ -110,7 +110,7 @@ Muito popular no mundo Unix, o cURL já vem por padrão na maioria das distribui
 
 <p>Mesmo que muitos torçam o nariz para a linha de comando, ficar ninja no cURL vai lhe ajudar (e muito) em seu dia a dia, principalmente se você é um desenvolvedor de APIs.
 Veja o básico para começar a trabalhar com ele.</p>
-<h4>Sintaxe Padrão</h4>
+<h2>Sintaxe Padrão</h2>
 <p>A sintaxe padrão do cURL é a seguinte</p>
 <div class="highlight"><pre><span></span>curl [parâmetros] [url]
 </pre></div>
@@ -121,25 +121,25 @@ Veja o básico para começar a trabalhar com ele.</p>
 </pre></div>
 
 
-<h4>Definindo o verbo HTTP</h4>
+<h2>Definindo o verbo HTTP</h2>
 <p>Por padrão, uma requisição simples no cURL é feita implicitamente através do verbo <strong>GET</strong>, mas é possível alterar o verbo HTTP da requisição através da opção <code>-X</code>. Sendo assim, para realizar uma chamada com o verbo <strong>DELETE</strong> por exemplo, basta fazer desta forma:</p>
 <div class="highlight"><pre><span></span>curl -X DELETE http://localhost/person/foo
 </pre></div>
 
 
-<h4>Enviando corpo na requisição</h4>
+<h2>Enviando corpo na requisição</h2>
 <p>Principalmente em métodos <em>POST</em> e <em>PUT</em> é natural transmitir na requisição algum conteúdo no corpo, para fazer isso no cURL basta utilizar a opção <code>-d</code>.</p>
 <div class="highlight"><pre><span></span>curl -X POST -d &#39;name=Fulano&amp;email=fulano@foo.bar&#39; http://localhost:8888/person/
 </pre></div>
 
 
-<h3>Alterando os cabeçalhos da requisição</h3>
+<h2>Alterando os cabeçalhos da requisição</h2>
 <p>Geralmente é necessário especificar alguma informação no cabeçalho da requisição, como por exemplo o <em>Authorization</em>, <em>Content-Type</em>, etc. Para isso, utilize a opção <code>-H</code> em cada item de cabeçalho adicionado.</p>
 <div class="highlight"><pre><span></span>curl -X POST -H &#39;Content-Type: application/json&#39; -d &#39;{&quot;name&quot;: &quot;Fulano&quot;, &quot;email&quot;: &quot;fulano@foo.bar&quot;}&#39; http://localhost:8888/person/
 </pre></div>
 
 
-<h3>Salvando a resposta em arquivo</h3>
+<h2>Salvando a resposta em arquivo</h2>
 <p>É muito comum realizar requisições para pegar um conteúdo que deverá ser salvo em um arquivo, por exemplo, baixar configurações, credenciais e os famosos <em>dotfiles</em>. Existem duas formas de se fazer isso, uma é direcionando a saída do curl para um arquivo através do <code>&gt;</code>:</p>
 <div class="highlight"><pre><span></span>curl http://mydotfiles.net/vimrc &gt; ~/.vimrc
 </pre></div>
@@ -150,7 +150,7 @@ Veja o básico para começar a trabalhar com ele.</p>
 </pre></div>
 
 
-<h4>Exibindo o cabeçalho de resposta</h4>
+<h2>Exibindo o cabeçalho de resposta</h2>
 <p>O cURL por padrão exibe somente o conteúdo do corpo da resposta, porém, muitas vezes (para não dizer todas), é necessário visualizar os cabeçalhos de retorno, como por exemplo o <em>status code</em>. Nesses casos utilize a opção <code>-i</code>.</p>
 <div class="highlight"><pre><span></span>curl -i http://localhost:8888/person
 </pre></div>
