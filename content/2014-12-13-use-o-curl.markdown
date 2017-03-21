@@ -9,7 +9,7 @@ Muito popular no mundo Unix, o cURL já vem por padrão na maioria das distribui
 Mesmo que muitos torçam o nariz para a linha de comando, ficar ninja no cURL vai lhe ajudar (e muito) em seu dia a dia, principalmente se você é um desenvolvedor de APIs.
 Veja o básico para começar a trabalhar com ele.
 
-#### Sintaxe Padrão
+## Sintaxe Padrão
 A sintaxe padrão do cURL é a seguinte
 
 ```
@@ -22,28 +22,28 @@ Para requisições simples, não é necessário nenhum parâmetro, somente a url
 curl http://localhost/
 ```
 
-#### Definindo o verbo HTTP
+## Definindo o verbo HTTP
 Por padrão, uma requisição simples no cURL é feita implicitamente através do verbo **GET**, mas é possível alterar o verbo HTTP da requisição através da opção ``-X``. Sendo assim, para realizar uma chamada com o verbo **DELETE** por exemplo, basta fazer desta forma:
 
 ```
 curl -X DELETE http://localhost/person/foo
 ```
 
-#### Enviando corpo na requisição
+## Enviando corpo na requisição
 Principalmente em métodos _POST_ e _PUT_ é natural transmitir na requisição algum conteúdo no corpo, para fazer isso no cURL basta utilizar a opção ``-d``.
 
 ```
 curl -X POST -d 'name=Fulano&email=fulano@foo.bar' http://localhost:8888/person/
 ```
 
-### Alterando os cabeçalhos da requisição
+## Alterando os cabeçalhos da requisição
 Geralmente é necessário especificar alguma informação no cabeçalho da requisição, como por exemplo o _Authorization_, _Content-Type_, etc. Para isso, utilize a opção ``-H`` em cada item de cabeçalho adicionado.
 
 ```
 curl -X POST -H 'Content-Type: application/json' -d '{"name": "Fulano", "email": "fulano@foo.bar"}' http://localhost:8888/person/
 ```
 
-### Salvando a resposta em arquivo
+## Salvando a resposta em arquivo
 É muito comum realizar requisições para pegar um conteúdo que deverá ser salvo em um arquivo, por exemplo, baixar configurações, credenciais e os famosos _dotfiles_. Existem duas formas de se fazer isso, uma é direcionando a saída do curl para um arquivo através do ``>``:
 ```
 curl http://mydotfiles.net/vimrc > ~/.vimrc
@@ -53,7 +53,7 @@ Ou através da opção ``-o``:
 curl -o ~/.vimrc http://mydotfiles.net/vimrc
 ```
 
-#### Exibindo o cabeçalho de resposta
+## Exibindo o cabeçalho de resposta
 O cURL por padrão exibe somente o conteúdo do corpo da resposta, porém, muitas vezes (para não dizer todas), é necessário visualizar os cabeçalhos de retorno, como por exemplo o _status code_. Nesses casos utilize a opção ``-i``.
 
 ```
