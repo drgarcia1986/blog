@@ -199,7 +199,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('odd_number', type=odd)
 args = parser.parse_args()
 ```
-Neste exemplo, se pasarmos um numero par para o argumento `odd_number` teremos uma mensagem
+Neste exemplo, se passarmos um numero par para o argumento `odd_number` teremos uma mensagem
 de erro indicando que esse numero não é um numero impar.
 
 ```
@@ -251,7 +251,7 @@ comando que o aplicativo irá lidar.
 
 ### SubParsers
 Subparsers são parsers independentes, com suas próprias caracteristicas
-mas que deviram de um parser principal.
+mas que derivam de um parser principal.
 Vamos começar nosso aplicativo de exemplo criando seu parser principal e seus dois
 subparsers:
 
